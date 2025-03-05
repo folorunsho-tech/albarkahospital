@@ -1,0 +1,267 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Accounts {
+  id          String   @id @default(uuid())
+  username    String?
+  passHash    String?
+  menu        Json?
+  role        String   @default("user")
+  createdById String?
+  updatedById String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  authHistory    AuthHistory[]
+  patients       Patients[]
+  encounters     Encounters[]
+  drugsInventory DrugsInventory[]
+  stocksHistory  StocksHistory[]
+  drugPurchases  DrugPurchases[]
+  transactions   Transactions[]
+}
+
+model AuthHistory {
+  id          String    @id @default(cuid())
+  accountId   String?
+  account     Accounts? @relation(fields: [accountId], references: [id])
+  loggedInAt  DateTime?
+  loggedOutAt DateTime?
+}
+
+model Patients {
+  id          String    @id @default(cuid())
+  hosp_no     String
+  year        Int?
+  month       String?
+  name        String?
+  sex         String?
+  age         String?
+  address     String?
+  phone_no    String?
+  reg_date    DateTime?
+  createdById String?
+  updatedById String?
+  updatedBy   Accounts? @relation(fields: [updatedById], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  encounters   Encounters[]
+  transactions Transactions[]
+  group_id     String?
+  groups       Groups?        @relation(fields: [group_id], references: [id])
+}
+
+model Encounters {
+  id               Int                @id @default(autoincrement())
+  patient_id       String
+  year             Int?
+  month            String?
+  patient          Patients           @relation(fields: [patient_id], references: [id])
+  adm_date         DateTime?          @default(now())
+  time             String?
+  // admitted         Boolean?
+  createdById      String?
+  updatedById      String?
+  updatedBy        Accounts?          @relation(fields: [updatedById], references: [id])
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  prescriptions    Json?
+  drugsGiven       DrugsGiven[]
+  delivery         Json?
+  labTest          LabTest[]
+  diagnosis        Diagnosis[]
+  care_id          String?
+  care             Care?              @relation(fields: [care_id], references: [id])
+  prescriptionHist prescriptionHist[]
+  procedureId      String?
+  procedure        Procedures?        @relation(fields: [procedureId], references: [id])
+  proc_date        DateTime           @default(now())
+}
+
+model DrugsGiven {
+  id               String             @id @default(cuid())
+  rate             Int?               @default(0)
+  price            Int?               @default(0)
+  quantity         Int?               @default(0)
+  drug_id          String?
+  name             String?
+  drug             DrugsInventory?    @relation(fields: [drug_id], references: [id])
+  encounter_id     Int?
+  encounter        Encounters?        @relation(fields: [encounter_id], references: [id])
+  date             DateTime           @default(now())
+  year             Int?
+  month            String?
+  createdAt        DateTime           @default(now())
+  prescriptionHist prescriptionHist[]
+}
+
+model LabTest {
+  id           String      @id @default(cuid())
+  encounter_id Int?
+  encounter    Encounters? @relation(fields: [encounter_id], references: [id])
+  test_id      String
+  testType     Tests       @relation(fields: [test_id], references: [id])
+  result       String?
+  info         String?
+  range        String?     @default("")
+  date         DateTime    @default(now())
+  year         Int?
+  month        String?
+  createdAt    DateTime    @default(now())
+}
+
+model Transactions {
+  id          String     @id
+  items       Payments[]
+  method      String?
+  status      String?
+  date        DateTime   @default(now())
+  year        Int?
+  month       String?
+  createdById String?
+  updatedById String?
+  updatedBy   Accounts?  @relation(fields: [updatedById], references: [id])
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  patient_id  String?
+  patient     Patients?  @relation(fields: [patient_id], references: [id])
+}
+
+model Payments {
+  id            String        @id @default(uuid())
+  hosp_no       String?
+  patient_name  String?
+  item_id       String?
+  item          Fees?         @relation(fields: [item_id], references: [id])
+  amount        Int?          @default(0)
+  paid          Int?          @default(0)
+  method        String?
+  status        String?
+  date          DateTime      @default(now())
+  year          Int?
+  month         String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  transactionId String?
+  transaction   Transactions? @relation(fields: [transactionId], references: [id])
+}
+
+model DrugsInventory {
+  id            String          @id @default(uuid())
+  drug          String?
+  stock_qty     Int             @default(0)
+  added         Int?            @default(0)
+  rate          Int?            @default(0)
+  createdById   String?
+  updatedById   String?
+  updatedBy     Accounts?       @relation(fields: [updatedById], references: [id])
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
+  givenHistory  DrugsGiven[]
+  stockHistory  StocksHistory[]
+  drugPurchases DrugPurchases[]
+}
+
+model prescriptionHist {
+  id           Int         @id @default(autoincrement())
+  drug         String
+  hosp_no      String
+  quantity     Int
+  rate         Int?        @default(0)
+  price        Int?        @default(0)
+  stock_remain Int?
+  month        String?
+  date         DateTime    @default(now())
+  time         String?
+  year         Int?
+  given_id     String?
+  given        DrugsGiven? @relation(fields: [given_id], references: [id])
+  enc_id       Int?
+  encounter    Encounters? @relation(fields: [enc_id], references: [id])
+}
+
+model StocksHistory {
+  id          Int             @id @default(autoincrement())
+  drug_id     String?
+  drug        DrugsInventory? @relation(fields: [drug_id], references: [id])
+  name        String?
+  stock_qty   Int?
+  added       Int?
+  month       String?
+  year        Int?
+  updatedById String?
+  updatedBy   Accounts?       @relation(fields: [updatedById], references: [id])
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model DrugPurchases {
+  id          String          @id @default(uuid())
+  drug_id     String?
+  drug        DrugsInventory? @relation(fields: [drug_id], references: [id])
+  name        String?
+  quantity    Int?
+  price       Int?
+  month       String?
+  time        String?
+  year        Int?
+  date        DateTime        @default(now())
+  createdAt   DateTime        @default(now())
+  createdById String?
+  createdBy   Accounts?       @relation(fields: [createdById], references: [id])
+}
+
+model Diagnosis {
+  id         String       @id @default(cuid())
+  name       String?
+  date       DateTime?    @default(now())
+  createdAt  DateTime     @default(now())
+  encounters Encounters[]
+}
+
+model Tests {
+  id        String    @id @default(cuid())
+  name      String?
+  createdAt DateTime  @default(now())
+  LabTest   LabTest[]
+}
+
+model Procedures {
+  id         String       @id @default(cuid())
+  name       String?
+  createdAt  DateTime     @default(now())
+  encounters Encounters[]
+}
+
+model Fees {
+  id        String     @id @default(cuid())
+  name      String?
+  amount    Int?
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  payments  Payments[]
+}
+
+model Care {
+  id         String       @id @default(cuid())
+  name       String
+  createdAt  DateTime     @default(now())
+  encounters Encounters[]
+}
+
+model Groups {
+  id        String     @id @default(cuid())
+  name      String
+  createdAt DateTime   @default(now())
+  patients  Patients[]
+}

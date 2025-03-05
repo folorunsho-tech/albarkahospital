@@ -1,0 +1,34 @@
+import express from "express";
+import { config } from "dotenv";
+import cors from "cors";
+import accounts from "./routes/accounts.js";
+import auth from "./routes/auth.js";
+import backup from "./routes/backup.js";
+import report from "./routes/report.js";
+import settings from "./routes/settings.js";
+import patients from "./routes/patients.js";
+import encounters from "./routes/encounters.js";
+import drugsInventory from "./routes/drugsInventory.js";
+import payments from "./routes/payments.js";
+import drugsgiven from "./routes/drugsGiven.js";
+const app = express();
+const port = 8000;
+config();
+app.use(express.json());
+app.use(cors());
+app.use("/accounts", accounts);
+app.use("/auth", auth);
+app.use("/backup", backup);
+app.use("/report", report);
+app.use("/patients", patients);
+app.use("/payments", payments);
+app.use("/drugsgiven", drugsgiven);
+app.use("/encounters", encounters);
+app.use("/drugsinventory", drugsInventory);
+app.use("/settings", settings);
+app.get("/", (req, res) => {
+	res.send("<h2>Welcome</h2>");
+});
+app.listen(port, () => {
+	console.log(`Albarka server listening on port ${port}`);
+});

@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #171717;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.print{
+	@apply m-2
+}
+.printable {
+	@apply border-collapse ;
+}
+.printable th {
+	@apply  border border-black bg-gray-200;
+}
+.printable tbody tr {
+	@apply  border border-black;
+}
+.printable tbody td {
+	@apply  border border-black;
+}
