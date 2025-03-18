@@ -22,11 +22,16 @@ const View = () => {
 	const { fetch } = useFetch();
 	const [queryData, setQueryData] = useState<any>(null);
 	const router = useRouter();
+	const [createdBy, setCreatedBy] = useState<any>(null);
 
 	useEffect(() => {
 		const getAll = async () => {
 			const { data: found } = await fetch(`/patients/${id}`);
+			const { data: created } = await fetch(
+				`/accounts/${found?.createdById}/basic`
+			);
 			setQueryData(found);
+			setCreatedBy(created);
 		};
 		getAll();
 	}, []);
@@ -93,7 +98,7 @@ const View = () => {
 						</Group>
 						<Group>
 							<Text fw={600}>Address:</Text>
-							<Text>{queryData?.address}</Text>
+							<Text>{queryData?.town?.name}</Text>
 						</Group>
 						<Group>
 							<Text fw={600}>Group:</Text>
@@ -102,6 +107,14 @@ const View = () => {
 						<Group>
 							<Text fw={600}>Registration date:</Text>
 							<Text>{new Date(queryData?.reg_date).toLocaleDateString()}</Text>
+						</Group>
+						<Group>
+							<Text fw={600}>Created By:</Text>
+							<i className='underline'>{createdBy?.username}</i>
+						</Group>
+						<Group>
+							<Text fw={600}>Last Updated By:</Text>
+							<i className='underline'>{queryData?.updatedBy?.username}</i>
 						</Group>
 					</main>
 				</Tabs.Panel>

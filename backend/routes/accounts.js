@@ -10,8 +10,33 @@ const hashpass = (password) => {
 
 router.get("/", async (req, res) => {
 	try {
-		const found = await prisma.accounts.findMany({});
+		const found = await prisma.accounts.findMany();
 		res.status(200).json(found);
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
+router.get("/history/:id", async (req, res) => {
+	try {
+		const found = await prisma.authHistory.findMany({
+			where: {
+				accountId: req.params.id,
+			},
+			include: {
+				account: true,
+			},
+		});
+		res.status(200).json(found);
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
+router.post("/history/many", async (req, res) => {
+	try {
+		const created = await prisma.authHistory.createMany({
+			data: [...req.body],
+		});
+		res.status(200).json(created);
 	} catch (error) {
 		res.status(500).json(error);
 	}
@@ -28,6 +53,7 @@ router.get("/:account_id/basic", async (req, res) => {
 		res.status(500).json(error);
 	}
 });
+
 router.get("/:account_id", async (req, res) => {
 	try {
 		const found = await prisma.accounts.findUnique({
@@ -47,6 +73,7 @@ router.get("/:account_id", async (req, res) => {
 		res.status(500).json(error);
 	}
 });
+
 router.post("/", async (req, res) => {
 	const { username, password, menu, createdById, updatedById, role } = req.body;
 	try {
@@ -65,10 +92,20 @@ router.post("/", async (req, res) => {
 		res.status(500).json(error);
 	}
 });
-router.post("/edit/:id", async (req, res) => {
-	const { password, menu, updatedById, role } = req.body;
+router.post("/many", async (req, res) => {
 	try {
-		if (password !== "") {
+		const created = await prisma.accounts.createMany({
+			data: [...req.body],
+		});
+		res.status(200).json(created);
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
+router.post("/edit/:id", async (req, res) => {
+	const { password, menu, updatedById, role, status } = req.body;
+	try {
+		if (password) {
 			const updated = await prisma.accounts.update({
 				where: {
 					id: req.params.id,
@@ -78,6 +115,7 @@ router.post("/edit/:id", async (req, res) => {
 					menu,
 					updatedById,
 					role,
+					status,
 				},
 			});
 			res.status(200).json(updated);
@@ -90,6 +128,7 @@ router.post("/edit/:id", async (req, res) => {
 					menu,
 					updatedById,
 					role,
+					status,
 				},
 			});
 			res.status(200).json(updated);

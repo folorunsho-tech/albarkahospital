@@ -95,6 +95,17 @@ router.post("/", async (req, res) => {
 		res.status(500).json(error);
 	}
 });
+router.post("/many", async (req, res) => {
+	try {
+		const created = await prisma.drugsInventory.createMany({
+			data: [...req.body],
+		});
+
+		res.status(200).json(created);
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
 
 router.post("/edit/:id", async (req, res) => {
 	const { drug_id, stock_qty, added, rate, prevStock, updatedById } = req.body;
@@ -121,6 +132,40 @@ router.post("/edit/:id", async (req, res) => {
 				year: new Date().getFullYear(),
 				updatedAt: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
 				name: updated.drug,
+				type: "gain",
+			},
+		});
+		res.status(200).json({ updated, drugHist });
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
+router.post("/loss/:id", async (req, res) => {
+	const { drug_id, stock_qty, added, rate, prevStock, updatedById } = req.body;
+	try {
+		const updated = await prisma.drugsInventory.update({
+			where: {
+				id: req.params.id,
+			},
+			data: {
+				drug_id,
+				stock_qty,
+				added,
+				rate,
+				updatedById,
+			},
+		});
+		const drugHist = await prisma.stocksHistory.create({
+			data: {
+				drug_id: updated.id,
+				updatedById: updated.updatedById,
+				stock_qty: prevStock,
+				added: updated.added,
+				month: months[new Date().getMonth()],
+				year: new Date().getFullYear(),
+				updatedAt: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
+				name: updated.drug,
+				type: "loss",
 			},
 		});
 		res.status(200).json({ updated, drugHist });

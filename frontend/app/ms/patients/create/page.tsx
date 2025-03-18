@@ -21,9 +21,12 @@ const Create = () => {
 	const { fetch: hospF } = useHospNo();
 	const { post, loading } = usePost();
 	const [groupsList, setGroupsList] = useState([]);
+	const [townsList, setTownsList] = useState([]);
 	const [group_id, setGroupId] = useState("cm5fk55fk0009uqyoyc55c44n");
 	const [sex, setSex] = useState("");
 	const [hosp_no, setHospNo] = useState("");
+	const [religion, setReligion] = useState("");
+	const [townId, setTownId] = useState<any>("");
 	const [reg_date, setRegDate] = useState<any>(new Date());
 	const form = useForm({
 		mode: "uncontrolled",
@@ -31,7 +34,7 @@ const Create = () => {
 			name: "",
 			age: "",
 			phone_no: "",
-			address: "",
+			occupation: "",
 			month: months[new Date().getMonth()],
 			year: new Date().getFullYear(),
 		},
@@ -52,6 +55,14 @@ const Create = () => {
 					label: group.name,
 				};
 			});
+			const { data: towns } = await fetch("/settings/town");
+			const sortedT = towns.map((town: { id: string; name: string }) => {
+				return {
+					value: town.id,
+					label: town.name,
+				};
+			});
+			setTownsList(sortedT);
 			setGroupsList(sortedG);
 		};
 		getAll();
@@ -63,6 +74,8 @@ const Create = () => {
 			sex,
 			group_id,
 			reg_date,
+			religion,
+			townId,
 		});
 		form.reset();
 		getHospNo();
@@ -103,15 +116,12 @@ const Create = () => {
 				<Select
 					label='Sex'
 					placeholder='Select patient sex'
-					data={["M", "F"]}
+					data={["Male", "Female"]}
 					allowDeselect={false}
 					value={sex}
 					onChange={(value: any) => {
 						setSex(value);
 					}}
-					required
-					searchable
-					nothingFoundMessage='Nothing found...'
 				/>
 				<TextInput
 					label='Card No'
@@ -122,12 +132,18 @@ const Create = () => {
 						setHospNo(e.currentTarget.value);
 					}}
 				/>
-				<TextInput
-					className='w-60'
-					label='Patient address'
-					placeholder='address...'
-					key={form.key("address")}
-					{...form.getInputProps("address")}
+				<Select
+					label='Address'
+					placeholder='Select patient addres'
+					data={townsList}
+					allowDeselect={false}
+					value={townId}
+					onChange={(value: any) => {
+						setTownId(value);
+					}}
+					required
+					searchable
+					nothingFoundMessage='Nothing found...'
 				/>
 				<TextInput
 					label='Phone No'
@@ -140,6 +156,22 @@ const Create = () => {
 					placeholder='age...'
 					key={form.key("age")}
 					{...form.getInputProps("age")}
+				/>
+				<TextInput
+					label='Occupation'
+					placeholder='occupation...'
+					key={form.key("occupation")}
+					{...form.getInputProps("occupation")}
+				/>
+
+				<Select
+					label='Religion'
+					placeholder='Select patient religion'
+					data={["Islam", "Christianity", "Others"]}
+					value={religion}
+					onChange={(value: any) => {
+						setReligion(value);
+					}}
 				/>
 				<Select
 					label='Group'
@@ -163,7 +195,9 @@ const Create = () => {
 					>
 						Cancel
 					</Button>
-					<Button type='submit'>Add patient</Button>
+					<Button color='teal' type='submit'>
+						Add patient
+					</Button>
 				</Group>
 				<LoadingOverlay visible={loading} />
 			</form>

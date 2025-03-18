@@ -9,6 +9,7 @@ import {
 	Cross,
 	Hospital,
 	Scissors,
+	Syringe,
 	TestTubes,
 } from "lucide-react";
 import { Select, Text, Tabs, rem } from "@mantine/core";
@@ -16,10 +17,14 @@ import { DatePickerInput } from "@mantine/dates";
 import Diagnosis from "@/components/encounter/edit/Diagnosis";
 import DrugsGiven from "@/components/encounter/edit/DrugsGiven";
 import Labtest from "@/components/encounter/edit/Labtest";
-import Procedures from "@/components/encounter/edit/Procedures";
 import Delivery from "@/components/encounter/edit/Delivery";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Admission from "@/components/encounter/edit/Admission";
+import { IconWoman } from "@tabler/icons-react";
+import Operations from "@/components/encounter/edit/Operations";
+import Immunization from "@/components/encounter/edit/Immunization";
+import ANC from "@/components/encounter/edit/ANC";
 
 const Edit = () => {
 	const { fetch } = useFetch();
@@ -27,9 +32,12 @@ const Edit = () => {
 	const [patientData, setPatientData] = useState<any>(null);
 	const [cares, setCares] = useState([]);
 	const [care, setCare] = useState("");
-	const [adm_date, setDate] = useState<any>(new Date());
+	const [outcome, setOutcome] = useState("");
+	const [enc_date, setDate] = useState<Date | null>(null);
+	const [admission, setAdmission] = useState(null);
 	const searchParams = useSearchParams();
 	const id = searchParams.get("id");
+	const router = useRouter();
 	const getAll = async () => {
 		const { data } = await fetch("/settings/care");
 		const { data: found } = await fetch(`/encounters/${id}`);
@@ -41,12 +49,18 @@ const Edit = () => {
 		});
 		setQueryData(found);
 		setPatientData(found?.patient);
-		setDate(new Date(found?.adm_date));
+		setDate(new Date(found?.enc_date));
 		setCares(sorted);
 		setCare(found?.care?.id);
+		setOutcome(found?.outcome);
+		setAdmission(found?.admission);
 	};
 	useEffect(() => {
-		getAll();
+		if (id !== "" || id !== null) {
+			getAll();
+		} else {
+			router.push("/ms/encounters");
+		}
 	}, []);
 
 	const iconStyle = { width: rem(22), height: rem(22) };
@@ -62,7 +76,6 @@ const Edit = () => {
 						<ArrowLeft />
 						Go back
 					</Link>
-					<Text size='xl'>Editing encounter id: {id}</Text>
 				</div>
 			</section>
 			<section className='flex justify-between gap-3'>
@@ -85,9 +98,10 @@ const Edit = () => {
 					</div>
 					<div className='flex gap-3 items-center'>
 						<h3 className='font-semibold'>Address: </h3>
-						<Text>{patientData?.address}</Text>
+						<Text>{patientData?.town?.name}</Text>
 					</div>
 				</section>
+
 				<Select
 					label='Care type'
 					placeholder='Select a care'
@@ -105,11 +119,39 @@ const Edit = () => {
 					placeholder='Reg. date...'
 					className='w-44'
 					disabled
-					value={adm_date}
+					value={enc_date}
 					onChange={setDate}
 				/>
 			</section>
-
+			<section className='flex gap-6'>
+				<Select
+					placeholder='outcome'
+					label='Outcome'
+					className='w-max'
+					data={[
+						"Admitted",
+						"DAMA",
+						"Dead",
+						"Discharged",
+						"Police Case",
+						"ReferGH",
+						"ReferFMC",
+						"ReferUITH",
+						"Treated",
+					]}
+					value={outcome}
+					disabled
+					onChange={(value: any) => {
+						setOutcome(value);
+					}}
+				/>
+				{outcome == "Admitted" && (
+					<div className='flex flex-col gap-2'>
+						<label className='font-bold underline'>Admission</label>
+						<Admission admission={admission} />
+					</div>
+				)}
+			</section>
 			<main>
 				<Tabs defaultValue='diagnosis' keepMounted={false}>
 					<Tabs.List>
@@ -123,19 +165,13 @@ const Edit = () => {
 							value='drugs'
 							leftSection={<Hospital style={iconStyle} />}
 						>
-							Drugs given
+							Prescriptions
 						</Tabs.Tab>
 						<Tabs.Tab
 							value='tests'
 							leftSection={<TestTubes style={iconStyle} />}
 						>
-							Lab test
-						</Tabs.Tab>
-						<Tabs.Tab
-							value='procedures'
-							leftSection={<Scissors style={iconStyle} />}
-						>
-							Procedures
+							Lab tests
 						</Tabs.Tab>
 						<Tabs.Tab
 							value='delivery'
@@ -143,31 +179,43 @@ const Edit = () => {
 						>
 							Delivery
 						</Tabs.Tab>
+						<Tabs.Tab
+							value='operation'
+							leftSection={<Scissors style={iconStyle} />}
+						>
+							Operation
+						</Tabs.Tab>
+
+						<Tabs.Tab
+							value='immunization'
+							leftSection={<Syringe style={iconStyle} />}
+						>
+							Immunization
+						</Tabs.Tab>
+						<Tabs.Tab value='anc' leftSection={<IconWoman style={iconStyle} />}>
+							Antinatal Care
+						</Tabs.Tab>
 					</Tabs.List>
-
 					<Tabs.Panel value='diagnosis'>
-						<Diagnosis data={queryData?.diagnosis} id={id} getEnc={getAll} />
+						<Diagnosis enc_id={id} />
 					</Tabs.Panel>
-
 					<Tabs.Panel value='drugs'>
-						<DrugsGiven data={queryData?.drugsGiven} id={id} getEnc={getAll} />
+						<DrugsGiven enc_id={id} />
 					</Tabs.Panel>
-
 					<Tabs.Panel value='tests'>
-						<Labtest data={queryData?.labTest} id={id} getEnc={getAll} />
-					</Tabs.Panel>
-					<Tabs.Panel value='procedures'>
-						<Procedures
-							data={{
-								procedure: queryData?.procedure?.id,
-								proc_date: queryData?.proc_date,
-							}}
-							id={id}
-							getEnc={getAll}
-						/>
+						<Labtest enc_id={id} />
 					</Tabs.Panel>
 					<Tabs.Panel value='delivery'>
-						<Delivery data={queryData?.delivery} id={id} getEnc={getAll} />
+						<Delivery enc_id={id} />
+					</Tabs.Panel>
+					<Tabs.Panel value='operation'>
+						<Operations enc_id={id} />
+					</Tabs.Panel>
+					<Tabs.Panel value='immunization'>
+						<Immunization enc_id={id} />
+					</Tabs.Panel>
+					<Tabs.Panel value='anc'>
+						<ANC enc_id={id} />
 					</Tabs.Panel>
 				</Tabs>
 			</main>

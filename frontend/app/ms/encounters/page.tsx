@@ -24,13 +24,14 @@ const Encounter = () => {
 	const rows = sortedData?.map((row, i: number) => (
 		<Table.Tr key={row?.id}>
 			<Table.Td>{i + 1}</Table.Td>
-			<Table.Td>{row?.id}</Table.Td>
 			<Table.Td>{row?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.patient?.name}</Table.Td>
 			<Table.Td>{row?.care?.name}</Table.Td>
 			<Table.Td>{row?._count?.diagnosis}</Table.Td>
 			<Table.Td>{row?._count?.drugsGiven}</Table.Td>
-			<Table.Td>{format(new Date(row?.adm_date), "dd/MM/yyyy")}</Table.Td>
+			<Table.Td>{row?._count?.labTest}</Table.Td>
+			<Table.Td>{format(new Date(row?.enc_date), "dd/MM/yyyy")}</Table.Td>
+			<Table.Td>{format(new Date(row?.updatedAt), "dd/MM/yyyy, p")}</Table.Td>
 			<Table.Td>
 				<Menu shadow='md' width={200}>
 					<Menu.Target>
@@ -67,13 +68,13 @@ const Encounter = () => {
 	const printRows = printData?.map((row, i: number) => (
 		<Table.Tr key={row?.id}>
 			<Table.Td>{i + 1}</Table.Td>
-			<Table.Td>{row?.id}</Table.Td>
 			<Table.Td>{row?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.patient?.name}</Table.Td>
 			<Table.Td>{row?.care?.name}</Table.Td>
 			<Table.Td>{row?._count?.diagnosis}</Table.Td>
 			<Table.Td>{row?._count?.drugsGiven}</Table.Td>
-			<Table.Td>{format(new Date(row?.adm_date), "dd/MM/yyyy")}</Table.Td>
+			<Table.Td>{row?._count?.labTest}</Table.Td>
+			<Table.Td>{format(new Date(row?.enc_date), "dd/MM/yyyy")}</Table.Td>
 		</Table.Tr>
 	));
 
@@ -102,13 +103,14 @@ const Encounter = () => {
 			<PaginatedTable
 				headers={[
 					"S/N",
-					"ENC ID",
 					"Hosp No",
 					"Name",
 					"Care",
 					"Diag Count",
 					"Drugs Count",
+					"Tests Count",
 					"Enc Date",
+					"Last UpdatedAt",
 					"Actions",
 				]}
 				placeholder='Search by name or hospital no'
@@ -123,12 +125,12 @@ const Encounter = () => {
 				ref={contentRef}
 				printHeaders={[
 					"S/N",
-					"ENC ID",
 					"Hosp No",
 					"Name",
 					"Care",
 					"Diag Count",
 					"Drugs Count",
+					"Tests Count",
 					"Enc Date",
 				]}
 				printRows={printRows}

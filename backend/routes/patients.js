@@ -15,12 +15,11 @@ router.get("/groups", async (req, res) => {
 	}
 });
 router.post("/no", async (req, res) => {
-	const { year, month } = req.body;
+	const { year } = req.body;
 	try {
 		const found = await prisma.patients.findMany({
 			where: {
 				year: Number(year),
-				month,
 			},
 			select: {
 				hosp_no: true,
@@ -29,15 +28,14 @@ router.post("/no", async (req, res) => {
 				hosp_no: "desc",
 			},
 		});
-
 		const gotten = found[0];
 		if (!gotten) {
-			const card = `${curYear}/${curMonthNo + 1}/1`;
+			const card = `${curYear}/1`;
 			res.status(200).json(card);
 		} else {
 			const splited = gotten.hosp_no?.split("/");
-			const no = Number(splited[2]) + 1;
-			const card = `${splited[0]}/${splited[1]}/${no}`;
+			const no = Number(splited[1]) + 1;
+			const card = `${splited[0]}/${no}`;
 			res.status(200).json(card);
 		}
 	} catch (error) {
@@ -56,7 +54,16 @@ router.get("/", async (req, res) => {
 		res.status(500).json(error);
 	}
 });
-
+router.post("/many", async (req, res) => {
+	try {
+		const created = await prisma.patients.createMany({
+			data: [...req.body],
+		});
+		res.status(200).json(created);
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
 router.post("/transactions", async (req, res) => {
 	const { id } = req.body;
 
@@ -101,7 +108,6 @@ router.post("/encounters", async (req, res) => {
 		res.status(200).json(found);
 	} catch (error) {
 		res.status(500).json(error);
-		console.log(error);
 	}
 });
 router.get("/:id", async (req, res) => {
@@ -112,6 +118,8 @@ router.get("/:id", async (req, res) => {
 			},
 			include: {
 				groups: true,
+				town: true,
+				updatedBy: true,
 			},
 		});
 		res.status(200).json(found);
@@ -140,6 +148,15 @@ router.post("/search", async (req, res) => {
 					],
 				},
 				take: 100,
+				include: {
+					encounters: {
+						include: {
+							care: true,
+						},
+					},
+					groups: true,
+					town: true,
+				},
 			});
 			res.status(200).json(found);
 		} else {
@@ -175,7 +192,6 @@ router.post("/", async (req, res) => {
 		}
 	} catch (error) {
 		res.status(500).json(error);
-		console.log(error);
 	}
 });
 router.post("/edit/:id", async (req, res) => {
@@ -191,6 +207,7 @@ router.post("/edit/:id", async (req, res) => {
 				),
 			},
 			include: {
+				updatedBy: true,
 				groups: true,
 			},
 		});
@@ -211,6 +228,7 @@ router.post("/:criteria", async (req, res) => {
 				},
 				include: {
 					groups: true,
+					town: true,
 				},
 				orderBy: {
 					updatedAt: "desc",
@@ -226,6 +244,7 @@ router.post("/:criteria", async (req, res) => {
 				},
 				include: {
 					groups: true,
+					town: true,
 				},
 				orderBy: {
 					updatedAt: "desc",
@@ -240,6 +259,7 @@ router.post("/:criteria", async (req, res) => {
 				},
 				include: {
 					groups: true,
+					town: true,
 				},
 				orderBy: {
 					updatedAt: "desc",
@@ -264,6 +284,7 @@ router.post("/:criteria", async (req, res) => {
 				},
 				include: {
 					groups: true,
+					town: true,
 				},
 				orderBy: {
 					updatedAt: "desc",

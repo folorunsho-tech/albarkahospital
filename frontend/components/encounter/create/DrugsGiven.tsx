@@ -52,7 +52,6 @@ const DrugsGiven = ({
 						return {
 							value: drug?.id,
 							label: `${drug?.drug} `,
-							disabled: drug?.stock_qty < 1 ? true : false,
 						};
 					})}
 					className='w-[18rem]'
@@ -111,7 +110,7 @@ const DrugsGiven = ({
 					}}
 				/>
 				<Button
-					disabled={!(drugRate && drugQnty && drugId)}
+					disabled={!drugId}
 					onClick={() => {
 						const filtered = drugsGiven.filter((d: any) => drugId !== d?.id);
 						setDrugsGiven([

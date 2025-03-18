@@ -5,6 +5,8 @@ import { useFetch } from "@/queries";
 import {
 	ActionIcon,
 	Button,
+	NumberFormatter,
+	NumberInput,
 	ScrollArea,
 	Select,
 	Table,
@@ -25,6 +27,7 @@ const Labtest = ({
 	const [testInfo, setTestInfo] = useState("");
 	const [testName, setTestName] = useState("");
 	const [testResult, setTestResult] = useState("");
+	const [testRate, setTestRate] = useState<number | string>();
 	const [search, setSearch] = useState("");
 
 	const [testsList, setTestsList] = useState([]);
@@ -49,7 +52,7 @@ const Labtest = ({
 					label='Test'
 					placeholder='Select test'
 					data={testsList}
-					className='w-[20rem]'
+					className='w-[16rem]'
 					clearable
 					searchable
 					searchValue={search}
@@ -75,25 +78,28 @@ const Labtest = ({
 				<Select
 					label='Test Info'
 					placeholder='Select test info'
-					data={[
-						"High",
-						"Low",
-						"Normal",
-						"Mod severe",
-						"Negative",
-						"Positive",
-						"Severe",
-					]}
-					className='w-[20rem]'
+					data={["High", "Low", "Negative", "Positive"]}
+					className='w-[10rem]'
 					value={testInfo}
 					onChange={(value: any) => {
 						setTestInfo(value);
 					}}
 					nothingFoundMessage='Nothing found...'
 				/>
+				<NumberInput
+					thousandSeparator
+					prefix='N '
+					label='Test Rate'
+					placeholder='Input test rate'
+					className='w-[10rem]'
+					value={testResult}
+					onChange={(value) => {
+						setTestRate(value);
+					}}
+				/>
 
 				<Button
-					disabled={!(testInfo && testId)}
+					disabled={!testId}
 					onClick={() => {
 						const filtered = labTest.filter((t: any) => testId !== t?.id);
 						setLabTest([
@@ -102,6 +108,7 @@ const Labtest = ({
 								id: testId,
 								name: testName,
 								result: testResult,
+								rate: testRate,
 								info: testInfo,
 							},
 							...filtered,
@@ -122,6 +129,7 @@ const Labtest = ({
 							<Table.Th>Name</Table.Th>
 							<Table.Th>Result</Table.Th>
 							<Table.Th>Info</Table.Th>
+							<Table.Th>Rate</Table.Th>
 							<Table.Th></Table.Th>
 						</Table.Tr>
 					</Table.Thead>
@@ -132,6 +140,13 @@ const Labtest = ({
 								<Table.Td>{test?.name}</Table.Td>
 								<Table.Td>{test?.result}</Table.Td>
 								<Table.Td>{test?.info}</Table.Td>
+								<Table.Td>
+									<NumberFormatter
+										prefix='N '
+										value={test?.rate}
+										thousandSeparator
+									/>
+								</Table.Td>
 
 								<Table.Td>
 									<ActionIcon

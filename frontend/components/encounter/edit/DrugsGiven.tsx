@@ -18,17 +18,8 @@ import { IconPencil, IconReload } from "@tabler/icons-react";
 import { useEffect, useState, useContext } from "react";
 import { curYear, curMonth } from "@/lib/ynm";
 
-const DrugsGiven = ({
-	data,
-	id,
-	getEnc,
-}: {
-	data: any[];
-	id: string | null;
-	getEnc: any;
-}) => {
+const DrugsGiven = ({ enc_id }: { enc_id: string | null }) => {
 	const { user } = useContext(userContext);
-
 	const { fetch } = useFetch();
 	const { edit, loading } = useEditT();
 	const [drugsGiven, setDrugsGiven] = useState<any[]>([]);
@@ -38,12 +29,14 @@ const DrugsGiven = ({
 		null
 	);
 	const [toEdit, setToEdit] = useState<any | null | undefined>(null);
+	const [data, setData] = useState<any | null | undefined>(null);
 	const [drugQnty, setDrugQnty] = useState(0);
 	const [drugRate, setDrugRate] = useState(0);
 	const [drugsList, setDrugsList] = useState([]);
 	const [drugM, setDrugM] = useState([]);
 	const getAll = async () => {
 		const { data } = await fetch("/drugsinventory");
+		const { data: enc } = await fetch(`/encounters/${enc_id}`);
 		setDrugsList(data);
 		const sorted = data?.map((drug: any) => {
 			return {
@@ -53,9 +46,7 @@ const DrugsGiven = ({
 			};
 		});
 		setDrugM(sorted);
-	};
-	const setData = () => {
-		const sortedDrug = data?.map((d) => {
+		const sortedDrug = enc?.drugsGiven?.map((d: any) => {
 			return {
 				id: d?.id,
 				inv: d?.drug_id,
@@ -67,12 +58,11 @@ const DrugsGiven = ({
 				price: Number(d?.rate) * Number(d?.quantity),
 			};
 		});
-		getEnc();
-		getAll();
+		setData(enc?.drugsGiven);
 		setDrugsGiven(sortedDrug);
 	};
 	useEffect(() => {
-		setData();
+		getAll();
 	}, []);
 	const total = drugsGiven?.reduce((prev, curr) => {
 		return Number(prev) + Number(curr?.price);
@@ -82,7 +72,7 @@ const DrugsGiven = ({
 			className='space-y-6 my-4'
 			onSubmit={async (e) => {
 				e.preventDefault();
-				await edit("/encounters/edit/drugs/" + id, {
+				await edit("/encounters/edit/drugs/" + enc_id, {
 					drugs: drugsGiven,
 					stock_updates: drugsGiven.map((drug) => {
 						return {
@@ -171,7 +161,7 @@ const DrugsGiven = ({
 						color='orange'
 						leftSection={<IconReload />}
 						onClick={() => {
-							setData();
+							getAll();
 							setDrugRate(0);
 							setDrugQnty(0);
 							setSelectedDrug(null);

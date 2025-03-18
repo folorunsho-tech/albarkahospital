@@ -33,7 +33,7 @@ const Drughistory = () => {
 				<NumberFormatter value={row?.added} thousandSeparator />
 			</Table.Td>
 
-			<Table.Td>{format(new Date(row?.createdAt), "Pp")}</Table.Td>
+			<Table.Td>{format(new Date(row?.updatedAt), "dd/MM/yyyy, p")}</Table.Td>
 		</Table.Tr>
 	));
 	const printRows = printData?.map((row, i: number) => (
@@ -48,7 +48,7 @@ const Drughistory = () => {
 				<NumberFormatter value={row?.added} thousandSeparator />
 			</Table.Td>
 
-			<Table.Td>{format(new Date(row?.updatedAt), "dd/MM/yyyy")}</Table.Td>
+			<Table.Td>{format(new Date(row?.updatedAt), "dd/MM/yyyy, p")}</Table.Td>
 		</Table.Tr>
 	));
 	return (

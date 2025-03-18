@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useFetch, usePost } from "@/queries";
+import { useEdit, useFetch, usePost } from "@/queries";
 import { ArrowLeft } from "lucide-react";
 import {
 	Button,
@@ -20,11 +20,15 @@ const Edit = () => {
 	const searchParams = useSearchParams();
 	const id = searchParams.get("id");
 	const { fetch } = useFetch();
-	const { post, loading } = usePost();
+	const { edit, loading } = useEdit();
 	const [groupsList, setGroupsList] = useState([]);
+	const [townsList, setTownsList] = useState([]);
 	const [group_id, setGroupId] = useState("");
 	const [sex, setSex] = useState("");
 	const [reg_date, setRegDate] = useState<any>(new Date());
+	const [religion, setReligion] = useState("");
+	const [townId, setTownId] = useState<any>("");
+
 	const form = useForm({
 		mode: "uncontrolled",
 		initialValues: {
@@ -32,7 +36,7 @@ const Edit = () => {
 			hosp_no: "",
 			age: "",
 			phone_no: "",
-			address: "",
+			occupation: "",
 		},
 	});
 	const router = useRouter();
@@ -41,7 +45,14 @@ const Edit = () => {
 		const getAll = async () => {
 			const { data: found } = await fetch(`/patients/${id}`);
 			const { data } = await fetch("/patients/groups");
-
+			const { data: towns } = await fetch("/settings/town");
+			const sortedT = towns.map((town: { id: string; name: string }) => {
+				return {
+					value: town.id,
+					label: town.name,
+				};
+			});
+			setTownsList(sortedT);
 			const sortedG = data.map((group: { id: string; name: string }) => {
 				return {
 					value: group.id,
@@ -53,10 +64,12 @@ const Edit = () => {
 				hosp_no: found?.hosp_no,
 				age: found?.age,
 				phone_no: found?.phone_no,
-				address: found?.address,
+				occupation: found?.occupation,
 			});
 
 			setSex(found?.sex);
+			setReligion(found?.religion);
+			setTownId(found?.townId);
 			setRegDate(new Date(found?.reg_date));
 			setGroupId(found?.group_id || null);
 			setGroupsList(sortedG);
@@ -64,13 +77,15 @@ const Edit = () => {
 		getAll();
 	}, []);
 	const handleSubmit = async (values: typeof form.values) => {
-		await post(`/patients/edit/${id}`, {
+		await edit(`/patients/edit/${id}`, {
 			...values,
 			sex,
 			reg_date,
 			group_id,
+			religion,
+			townId,
 		});
-		form.reset();
+		// form.reset();
 	};
 
 	return (
@@ -106,7 +121,7 @@ const Edit = () => {
 				<Select
 					label='Sex'
 					placeholder='Select patient sex'
-					data={["M", "F"]}
+					data={["Male", "Female"]}
 					allowDeselect={false}
 					value={sex}
 					onChange={(value: any) => {
@@ -122,12 +137,18 @@ const Edit = () => {
 					key={form.key("hosp_no")}
 					{...form.getInputProps("hosp_no")}
 				/>
-				<TextInput
-					className='w-60'
-					label='Patient address'
-					placeholder='address...'
-					key={form.key("address")}
-					{...form.getInputProps("address")}
+				<Select
+					label='Address'
+					placeholder='Select patient addres'
+					data={townsList}
+					allowDeselect={false}
+					value={townId}
+					onChange={(value: any) => {
+						setTownId(value);
+					}}
+					required
+					searchable
+					nothingFoundMessage='Nothing found...'
 				/>
 				<TextInput
 					label='Phone No'
@@ -140,6 +161,22 @@ const Edit = () => {
 					placeholder='age...'
 					key={form.key("age")}
 					{...form.getInputProps("age")}
+				/>
+				<TextInput
+					label='Occupation'
+					placeholder='occupation...'
+					key={form.key("occupation")}
+					{...form.getInputProps("occupation")}
+				/>
+
+				<Select
+					label='Religion'
+					placeholder='Select patient religion'
+					data={["Islam", "Christianity", "Others"]}
+					value={religion}
+					onChange={(value: any) => {
+						setReligion(value);
+					}}
 				/>
 				<Select
 					label='Group'
@@ -154,6 +191,7 @@ const Edit = () => {
 					searchable
 					nothingFoundMessage='Nothing found...'
 				/>
+
 				<Group mt={20} justify='end'>
 					<Button
 						onClick={() => {

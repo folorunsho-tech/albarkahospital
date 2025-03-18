@@ -92,7 +92,7 @@ export default function PatientSearch({
 					}}
 					onBlur={() => combobox.closeDropdown()}
 					rightSection={loading && <Loader size={18} />}
-					className='w-[25rem]'
+					className='w-[15rem]'
 				/>
 			</Combobox.Target>
 

@@ -40,3 +40,15 @@ body {
 .printable tbody td {
 	@apply  border border-black;
 }
+.enc_data p{
+  font-weight: bold;
+}
+.enc_data label{
+  text-decoration: underline;
+}
+.enc_data i{
+  font-weight: normal;
+}
+.navs a{
+  @apply hover:bg-teal-600
+}

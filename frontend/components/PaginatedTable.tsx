@@ -61,7 +61,7 @@ const PaginatedTable = ({
 	const [total, setTotal] = useState(1);
 	const [activePage, setPage] = useState(1);
 	const [search, setSearch] = useState("");
-	function filterData(data: any, search: string) {
+	function filterData(data: any[], search: string) {
 		const query = search.toLowerCase().trim();
 		const filtered = data.filter((item: any) =>
 			keys(data[0]).some((key) =>

@@ -30,7 +30,7 @@ const Patients = () => {
 			<Table.Td>{row?.groups?.name}</Table.Td>
 			<Table.Td>{row?.sex}</Table.Td>
 			<Table.Td>{row?.age}</Table.Td>
-			<Table.Td>{row?.address}</Table.Td>
+			<Table.Td>{row?.town?.name}</Table.Td>
 			<Table.Td>{row?.phone_no}</Table.Td>
 			<Table.Td>{format(new Date(row?.reg_date), "dd/MM/yyyy")}</Table.Td>
 			<Table.Td>
@@ -74,6 +74,7 @@ const Patients = () => {
 			<Table.Td>{row?.groups?.name}</Table.Td>
 			<Table.Td>{row?.sex}</Table.Td>
 			<Table.Td>{row?.age}</Table.Td>
+			<Table.Td>{row?.town?.name}</Table.Td>
 			<Table.Td>{row?.phone_no}</Table.Td>
 			<Table.Td>{format(new Date(row?.reg_date), "dd/MM/yyyy")}</Table.Td>
 		</Table.Tr>
@@ -128,6 +129,7 @@ const Patients = () => {
 					"Group",
 					"Sex",
 					"Age",
+					"Address",
 					"Phone No",
 					"Reg date",
 				]}

@@ -6,25 +6,22 @@ import {
 	ActionIcon,
 	Button,
 	LoadingOverlay,
+	NumberFormatter,
+	NumberInput,
 	ScrollArea,
 	Select,
 	Table,
 	TextInput,
 } from "@mantine/core";
 import { IconPencil, IconX } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { nanoid } from "nanoid";
+import { userContext } from "@/context/User";
 
-const Labtest = ({
-	data,
-	id,
-	getEnc,
-}: {
-	data: any[];
-	id: string | null;
-	getEnc: any;
-}) => {
+const Labtest = ({ enc_id }: { enc_id: string | null }) => {
 	const [labTest, setLabTest] = useState<any[]>([]);
+	const { user } = useContext(userContext);
+
 	const { fetch } = useFetch();
 	const { edit, loading } = useEdit();
 	const [testId, setTestId] = useState("");
@@ -33,10 +30,13 @@ const Labtest = ({
 	const [testResult, setTestResult] = useState("");
 	const [testsList, setTestsList] = useState([]);
 	const [search, setSearch] = useState("");
+	const [testRate, setTestRate] = useState<number | string>();
 
 	useEffect(() => {
 		const getAll = async () => {
 			const { data: found } = await fetch("/settings/tests");
+			const { data: enc } = await fetch(`/encounters/${enc_id}`);
+
 			const mapped = found?.map((test: any) => {
 				return {
 					value: test?.id,
@@ -45,19 +45,19 @@ const Labtest = ({
 			});
 			setTestsList(mapped);
 			setLabTest(
-				data?.map((test) => {
+				enc?.labTest?.map((test: any) => {
 					return {
 						lab_id: test?.id,
 						id: test?.test_id,
 						name: test?.testType?.name,
 						result: test?.result,
 						info: test?.info,
+						rate: test?.rate,
 					};
 				})
 			);
 		};
 		getAll();
-		getEnc();
 	}, []);
 
 	return (
@@ -65,7 +65,7 @@ const Labtest = ({
 			className='space-y-6 my-4'
 			onSubmit={async (e) => {
 				e.preventDefault();
-				await edit("/encounters/edit/labs/" + id, {
+				await edit("/encounters/edit/labs/" + enc_id, {
 					labs: labTest,
 				});
 			}}
@@ -75,7 +75,7 @@ const Labtest = ({
 					label='Lab Test'
 					placeholder='Select or search test'
 					data={testsList}
-					className='w-[20rem]'
+					className='w-[18rem]'
 					value={testId}
 					clearable
 					onSearchChange={setSearch}
@@ -101,16 +101,8 @@ const Labtest = ({
 				<Select
 					label='Test Info'
 					placeholder='Select test info'
-					data={[
-						"High",
-						"Low",
-						"Normal",
-						"Mod severe",
-						"Negative",
-						"Positive",
-						"Severe",
-					]}
-					className='w-[20rem]'
+					data={["High", "Low", "Negative", "Positive"]}
+					className='w-[10rem]'
 					clearable
 					value={testInfo}
 					onChange={(value: any) => {
@@ -118,7 +110,17 @@ const Labtest = ({
 					}}
 					nothingFoundMessage='Nothing found...'
 				/>
-
+				<NumberInput
+					thousandSeparator
+					prefix='N '
+					label='Test Rate'
+					placeholder='Input test rate'
+					className='w-[10rem]'
+					value={testResult}
+					onChange={(value: any) => {
+						setTestRate(value);
+					}}
+				/>
 				<Button
 					disabled={!(testInfo && testId)}
 					onClick={() => {
@@ -130,6 +132,7 @@ const Labtest = ({
 								name: testName,
 								result: testResult,
 								info: testInfo,
+								rate: testRate,
 							},
 							...filtered,
 						]);
@@ -149,6 +152,7 @@ const Labtest = ({
 							<Table.Th>Name</Table.Th>
 							<Table.Th>Result</Table.Th>
 							<Table.Th>Info</Table.Th>
+							<Table.Th>Rate</Table.Th>
 							<Table.Th></Table.Th>
 						</Table.Tr>
 					</Table.Thead>
@@ -159,6 +163,13 @@ const Labtest = ({
 								<Table.Td>{test?.name}</Table.Td>
 								<Table.Td>{test?.result}</Table.Td>
 								<Table.Td>{test?.info}</Table.Td>
+								<Table.Td>
+									<NumberFormatter
+										prefix='N '
+										value={test?.rate}
+										thousandSeparator
+									/>
+								</Table.Td>
 
 								<Table.Td className='flex items-center gap-2'>
 									<ActionIcon
@@ -168,22 +179,25 @@ const Labtest = ({
 											setTestInfo(test?.info);
 											setTestResult(test?.result);
 											setTestName(test?.name);
+											setTestRate(test?.rate);
 										}}
 									>
 										<IconPencil />
 									</ActionIcon>
-									<ActionIcon
-										color='red'
-										onClick={() => {
-											const filtered = labTest.filter(
-												(t: any) => test?.id !== t?.id
-											);
+									{user?.role == "admin" && (
+										<ActionIcon
+											color='red'
+											onClick={() => {
+												const filtered = labTest.filter(
+													(t: any) => test?.id !== t?.id
+												);
 
-											setLabTest(filtered);
-										}}
-									>
-										<IconX />
-									</ActionIcon>
+												setLabTest(filtered);
+											}}
+										>
+											<IconX />
+										</ActionIcon>
+									)}
 								</Table.Td>
 							</Table.Tr>
 						))}

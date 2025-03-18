@@ -5,21 +5,15 @@ import { useEdit, useFetch } from "@/queries";
 import { Button, LoadingOverlay, MultiSelect } from "@mantine/core";
 import { useEffect, useState } from "react";
 
-const Diagnosis = ({
-	data,
-	id,
-	getEnc,
-}: {
-	data: any[];
-	id: string | null;
-	getEnc: any;
-}) => {
+const Diagnosis = ({ enc_id }: { enc_id: string | null }) => {
 	const { fetch } = useFetch();
 	const { edit, loading } = useEdit();
 	const [diagnosisL, setDiagnosisL] = useState([]);
 	const [diagnosis, setDiagnosis] = useState<any[]>([]);
 	const getAll = async () => {
 		const { data: found } = await fetch("/settings/diagnosis");
+		const { data: enc } = await fetch(`/encounters/${enc_id}`);
+
 		const mapped = found?.map((diag: any) => {
 			return {
 				value: diag?.id,
@@ -27,27 +21,27 @@ const Diagnosis = ({
 			};
 		});
 		setDiagnosisL(mapped);
-		getEnc();
+		setDiagnosis(
+			enc?.diagnosis?.map((diag: any) => {
+				return diag?.id;
+			})
+		);
 	};
 	useEffect(() => {
 		getAll();
-		if (data?.length > 0) {
-			setDiagnosis(
-				data?.map((diag: any) => {
-					return diag?.id;
-				})
-			);
-		}
-	}, [data?.length]);
+	}, []);
 
 	return (
 		<form
 			className='space-y-6 my-4'
 			onSubmit={async (e) => {
 				e.preventDefault();
-				const { data: res } = await edit("/encounters/edit/diagnosis/" + id, {
-					diagnosis,
-				});
+				const { data: res } = await edit(
+					"/encounters/edit/diagnosis/" + enc_id,
+					{
+						diagnosis,
+					}
+				);
 
 				setDiagnosis(
 					res?.diagnosis?.map((diag: any) => {

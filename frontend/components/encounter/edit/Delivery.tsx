@@ -2,77 +2,134 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEdit } from "@/queries";
+import { useEdit, useFetch } from "@/queries";
 
-import { Button, LoadingOverlay, NumberInput, Select } from "@mantine/core";
+import { Button, LoadingOverlay, Select, TextInput } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { useEffect, useState } from "react";
 
-const Delivery = ({
-	data,
-	id,
-	getEnc,
-}: {
-	data: any;
-	id: string | null;
-	getEnc: any;
-}) => {
+const Delivery = ({ enc_id }: { enc_id: string | null }) => {
 	const { edit, loading } = useEdit();
+	const { fetch } = useFetch();
 
-	const [anc, setAnc] = useState("");
-	const [fDiag, setFDiag] = useState("");
-	const [outcome, setOutcome] = useState("");
+	const [baby_outcome, setBOutcome] = useState("");
+	const [mother_outcome, setMOutcome] = useState("");
+	const [parity, setParity] = useState("");
+	const [labour_duration, setDuration] = useState("");
+	const [delivery_type, setDelivType] = useState("");
+	const [delivery_id, setDelivId] = useState<null | string>("");
+	const [placenta_delivery, setPlacenta] = useState("");
+	const [apgar_score, setApgarScore] = useState("");
+	const [baby_maturity, setBabyMaturity] = useState("");
+	const [baby_weight, setBabyWeight] = useState("");
+	const [baby_sex, setbabySex] = useState("");
+	const [congenital_no, setCongenital] = useState<number | string>("");
+	const [midwife, setMidWife] = useState("");
+	const [mother_diag, setMDiag] = useState("");
+	const [delivery_date, setDelveryDate] = useState<any>(null);
+	const getData = async () => {
+		const { data: enc } = await fetch(`/encounters/${enc_id}`);
+		const data = enc?.delivery[0];
+
+		setDelivId(data?.id);
+		setBOutcome(data?.baby_outcome);
+		setMOutcome(data?.mother_outcome);
+		setParity(data?.parity);
+		setDuration(data?.labour_duration);
+		setDelivType(data?.delivery_type);
+		setPlacenta(data?.placenta_delivery);
+		setApgarScore(data?.apgar_score);
+		setBabyMaturity(data?.baby_maturity);
+		setBabyWeight(data?.baby_weight);
+		setbabySex(data?.baby_sex);
+		setCongenital(data?.congenital_no);
+		setMidWife(data?.midwife);
+		setMDiag(data?.mother_diag);
+		if (data?.delivery_date) setDelveryDate(new Date(data?.delivery_date));
+	};
 	useEffect(() => {
-		if (data !== null || data !== undefined) {
-			const q = JSON.parse(data);
-			setAnc(q?.anc_ega);
-			setFDiag(q?.foetal_diag);
-			setOutcome(q?.baby_outcome);
-		}
-		getEnc();
+		getData();
 	}, []);
 	return (
 		<form
-			className='flex flex-col gap-4 mt-4'
+			className='flex flex-wrap gap-6 items-end mt-4'
 			onSubmit={async (e) => {
 				e.preventDefault();
-				const { data } = await edit("/encounters/edit/delivery/" + id, {
-					foetal_diag: fDiag,
-					anc_ega: anc,
-					baby_outcome: outcome,
+				await edit("/encounters/edit/delivery/" + enc_id, {
+					delivery: {
+						baby_outcome,
+						delivery_date,
+						mother_outcome,
+						parity,
+						labour_duration,
+						delivery_type,
+						placenta_delivery,
+						apgar_score,
+						baby_maturity,
+						baby_weight,
+						baby_sex,
+						congenital_no,
+						midwife,
+						mother_diag,
+					},
+					delivery_id,
 				});
-				const q = JSON.parse(data?.delivery);
-				setAnc(q?.anc_ega);
-				setFDiag(q?.foetal_diag);
-				setOutcome(q?.baby_outcome);
 			}}
 		>
-			<NumberInput
-				label='ANC ENG'
-				placeholder='Input week(s)'
-				suffix=' Weeks'
-				className='w-max'
-				min={1}
-				max={44}
-				value={anc}
-				onChange={(value: any) => {
-					setAnc(value);
+			<DatePickerInput
+				label='Delivery date'
+				placeholder='Delivery date...'
+				className='w-44'
+				value={delivery_date}
+				onChange={setDelveryDate}
+				allowDeselect
+				clearable
+				closeOnChange={false}
+			/>
+			<TextInput
+				label='Parity'
+				placeholder='parity'
+				value={parity}
+				onChange={(e) => {
+					setParity(e.currentTarget.value);
+				}}
+			/>
+			<TextInput
+				label='Labour Duration'
+				placeholder='labour duration'
+				value={labour_duration}
+				onChange={(e) => {
+					setDuration(e.currentTarget.value);
+				}}
+			/>
+			<TextInput
+				label='Placenta deivery'
+				placeholder='placenta delivery'
+				value={placenta_delivery}
+				onChange={(e) => {
+					setPlacenta(e.currentTarget.value);
 				}}
 			/>
 			<Select
-				label='Foetal Diagnosis'
-				placeholder='Select a diagnosis'
-				data={["Breech", "Cephalic", "IUFD", "Multiple", "Transverse"]}
-				className='w-[20rem]'
+				label='Delivery Type'
+				placeholder='Select a type'
+				data={[
+					"Delivery breech",
+					"Delivery multiple",
+					"Delivery SVD",
+					"Delivery Vacuum",
+				]}
+				className='w-[10rem]'
 				clearable
-				value={fDiag}
+				value={delivery_type}
 				onChange={(value: any) => {
-					setFDiag(value);
+					setDelivType(value);
 				}}
 				nothingFoundMessage='Nothing found...'
 			/>
 			<Select
-				label='Baby Outcome'
-				placeholder='Select an outcome'
+				label='Mother Diagnosis'
+				placeholder='Select a diagnosis'
 				data={[
 					"Live Birth (F)",
 					"Live Birth (M)",
@@ -83,11 +140,87 @@ const Delivery = ({
 				]}
 				className='w-[20rem]'
 				clearable
-				value={outcome}
+				value={mother_diag}
 				onChange={(value: any) => {
-					setOutcome(value);
+					setMDiag(value);
 				}}
 				nothingFoundMessage='Nothing found...'
+			/>
+			<Select
+				label='Mother Outcome'
+				placeholder='Select an outcome'
+				data={["Alive", "Mat Death"]}
+				className='w-[11rem]'
+				clearable
+				value={mother_outcome}
+				onChange={(value: any) => {
+					setMOutcome(value);
+				}}
+				nothingFoundMessage='Nothing found...'
+			/>
+			<Select
+				label='Baby Outcome'
+				placeholder='Select an outcome'
+				data={["Live Birth", "Still Birth"]}
+				className='w-[11rem]'
+				clearable
+				value={baby_outcome}
+				onChange={(value: any) => {
+					setBOutcome(value);
+				}}
+				nothingFoundMessage='Nothing found...'
+			/>
+			<Select
+				label='Baby Sex'
+				placeholder='Select a sex'
+				data={["Male", "Female"]}
+				className='w-[8rem]'
+				clearable
+				value={baby_sex}
+				onChange={(value: any) => {
+					setbabySex(value);
+				}}
+				nothingFoundMessage='Nothing found...'
+			/>
+			<TextInput
+				label='Baby Weight'
+				placeholder='baby weight'
+				value={baby_weight}
+				onChange={(e) => {
+					setBabyWeight(e.currentTarget.value);
+				}}
+			/>
+			<TextInput
+				label='Baby Maturity'
+				placeholder='Baby Maturity'
+				value={baby_maturity}
+				onChange={(e) => {
+					setBabyMaturity(e.currentTarget.value);
+				}}
+			/>
+			<TextInput
+				label='Baby Activity'
+				placeholder='APGAR score'
+				value={apgar_score}
+				onChange={(e) => {
+					setApgarScore(e.currentTarget.value);
+				}}
+			/>
+			<TextInput
+				label='Baby Congenital Malform'
+				placeholder='Image No'
+				value={congenital_no}
+				onChange={(e) => {
+					setCongenital(Number(e.currentTarget.value));
+				}}
+			/>
+			<TextInput
+				label='Midwife'
+				placeholder='midwife'
+				value={midwife}
+				onChange={(e) => {
+					setMidWife(e.currentTarget.value);
+				}}
 			/>
 			<Button color='teal' w={200} type='submit'>
 				Update delivery

@@ -1,9 +1,15 @@
 "use client";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { userContext } from "@/context/User";
-import { Divider, Group, ScrollAreaAutosize, Text } from "@mantine/core";
+import {
+	Divider,
+	Group,
+	Accordion,
+	ScrollAreaAutosize,
+	Text,
+} from "@mantine/core";
 import { delete_cookie } from "sfcookies";
 import { ChevronRight, HomeIcon } from "lucide-react";
 import { axiosInstance as axios } from "@/lib/config";
@@ -17,11 +23,12 @@ import {
 	BookUser,
 } from "lucide-react";
 import Image from "next/image";
+import { IconReport } from "@tabler/icons-react";
 const NavMenu = () => {
 	const url = usePathname();
+	const currPath = url.split("/");
 	const router = useRouter();
 	const { permissions: menu, user } = useContext(userContext);
-	const currPath = url.split("/");
 	const getIcon = (name: string) => {
 		if (name == "transactions") {
 			return <ReceiptText />;
@@ -37,6 +44,8 @@ const NavMenu = () => {
 			return <Contact />;
 		} else if (name == "backup") {
 			return <DatabaseBackup />;
+		} else if (name == "reports") {
+			return <IconReport />;
 		}
 	};
 	return (

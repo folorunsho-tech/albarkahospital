@@ -33,18 +33,18 @@ router.post("/", async (req, res) => {
 	}
 });
 
-router.post("/:id", async (req, res) => {
-	try {
-		const created = await prisma.drugsGiven.update({
-			where: {
-				id: req.params.id,
-			},
-			data: req.body,
-		});
-		res.status(200).json(created);
-	} catch (error) {
-		res.status(500).json(error);
-	}
-});
+// router.post("/:id", async (req, res) => {
+// 	try {
+// 		const created = await prisma.drugsGiven.update({
+// 			where: {
+// 				id: req.params.id,
+// 			},
+// 			data: req.body,
+// 		});
+// 		res.status(200).json(created);
+// 	} catch (error) {
+// 		res.status(500).json(error);
+// 	}
+// });
 
 export default router;

@@ -11,9 +11,11 @@ import {
 	Receipt,
 	Group,
 	List,
+	LocateIcon,
 } from "lucide-react";
 import Care from "@/components/settings/Care";
 import Groups from "@/components/settings/Groups";
+import Towns from "@/components/settings/Towns";
 const Settings = () => {
 	const iconStyle = { width: rem(22), height: rem(22) };
 	return (
@@ -44,6 +46,9 @@ const Settings = () => {
 				<Tabs.Tab value='groups' leftSection={<Group style={iconStyle} />}>
 					Groups List
 				</Tabs.Tab>
+				<Tabs.Tab value='towns' leftSection={<LocateIcon style={iconStyle} />}>
+					Towns List
+				</Tabs.Tab>
 			</Tabs.List>
 
 			<Tabs.Panel value='tests'>
@@ -64,6 +69,9 @@ const Settings = () => {
 			</Tabs.Panel>
 			<Tabs.Panel value='groups'>
 				<Groups />
+			</Tabs.Panel>
+			<Tabs.Panel value='towns'>
+				<Towns />
 			</Tabs.Panel>
 		</Tabs>
 	);

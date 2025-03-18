@@ -2,49 +2,115 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { NumberInput, Select } from "@mantine/core";
+import { MultiSelect, Select, TextInput } from "@mantine/core";
+import { DatePickerInput } from "@mantine/dates";
 import { useEffect, useState } from "react";
 
 const Delivery = ({ setDelivery }: { setDelivery: any }) => {
-	const [anc, setAnc] = useState("");
-	const [fDiag, setFDiag] = useState("");
-	const [outcome, setOutcome] = useState("");
+	const [baby_outcome, setBOutcome] = useState("");
+	const [mother_outcome, setMOutcome] = useState("");
+	const [parity, setParity] = useState("");
+	const [labour_duration, setDuration] = useState("");
+	const [delivery_type, setDelivType] = useState("");
+	const [placenta_delivery, setPlacenta] = useState("");
+	const [apgar_score, setApgarScore] = useState("");
+	const [baby_maturity, setBabyMaturity] = useState("");
+	const [baby_weight, setBabyWeight] = useState("");
+	const [baby_sex, setbabySex] = useState("");
+	const [congenital_no, setCongenital] = useState<number | string>("");
+	const [midwife, setMidWife] = useState("");
+	const [mother_diag, setMDiag] = useState("");
+	const [delivery_date, setDelveryDate] = useState<any>(null);
+
 	useEffect(() => {
 		setDelivery({
-			anc: `${Number(anc)} Weeks`,
-			fDiag,
-			outcome,
+			baby_outcome,
+			delivery_date,
+			mother_outcome,
+			parity,
+			labour_duration,
+			delivery_type,
+			placenta_delivery,
+			apgar_score,
+			baby_maturity,
+			baby_weight,
+			baby_sex,
+			congenital_no,
+			midwife,
+			mother_diag,
 		});
-	}, [anc, fDiag, outcome]);
+	}, [
+		baby_outcome,
+		delivery_date,
+		mother_outcome,
+		parity,
+		labour_duration,
+		delivery_type,
+		placenta_delivery,
+		apgar_score,
+		baby_maturity,
+		baby_weight,
+		baby_sex,
+		congenital_no,
+		midwife,
+		mother_diag,
+	]);
 	return (
-		<main className='flex gap-4 '>
-			<NumberInput
-				label='ANC ENG'
-				placeholder='Input week(s)'
-				suffix=' Weeks'
-				className='w-max'
-				min={1}
-				max={44}
-				value={anc}
-				onChange={(value: any) => {
-					setAnc(value);
+		<main className='flex gap-4 flex-wrap'>
+			<DatePickerInput
+				label='Delivery date'
+				placeholder='Delivery date...'
+				className='w-44'
+				value={delivery_date}
+				onChange={setDelveryDate}
+				allowDeselect
+				clearable
+				closeOnChange={false}
+			/>
+			<TextInput
+				label='Parity'
+				placeholder='parity'
+				value={parity}
+				onChange={(e) => {
+					setParity(e.currentTarget.value);
+				}}
+			/>
+			<TextInput
+				label='Labour Duration'
+				placeholder='labour duration'
+				value={labour_duration}
+				onChange={(e) => {
+					setDuration(e.currentTarget.value);
+				}}
+			/>
+			<TextInput
+				label='Placenta deivery'
+				placeholder='placenta delivery'
+				value={placenta_delivery}
+				onChange={(e) => {
+					setPlacenta(e.currentTarget.value);
 				}}
 			/>
 			<Select
-				label='Foetal Diagnosis'
-				placeholder='Select a diagnosis'
-				data={["Breech", "Cephalic", "IUFD", "Multiple", "Transverse"]}
-				className='w-[20rem]'
+				label='Delivery Type'
+				placeholder='Select a type'
+				data={[
+					"Delivery breech",
+					"Delivery multiple",
+					"Delivery SVD",
+					"Delivery Vacuum",
+				]}
+				className='w-[10rem]'
 				clearable
-				value={fDiag}
+				value={delivery_type}
 				onChange={(value: any) => {
-					setFDiag(value);
+					setDelivType(value);
 				}}
 				nothingFoundMessage='Nothing found...'
 			/>
 			<Select
-				label='Baby Outcome'
-				placeholder='Select an outcome'
+				label='Mother Diagnosis'
+				placeholder='Select a diagnosis'
 				data={[
 					"Live Birth (F)",
 					"Live Birth (M)",
@@ -55,11 +121,87 @@ const Delivery = ({ setDelivery }: { setDelivery: any }) => {
 				]}
 				className='w-[20rem]'
 				clearable
-				value={outcome}
+				value={mother_diag}
 				onChange={(value: any) => {
-					setOutcome(value);
+					setMDiag(value);
 				}}
 				nothingFoundMessage='Nothing found...'
+			/>
+			<Select
+				label='Mother Outcome'
+				placeholder='Select an outcome'
+				data={["Alive", "Mat Death"]}
+				className='w-[11rem]'
+				clearable
+				value={mother_outcome}
+				onChange={(value: any) => {
+					setMOutcome(value);
+				}}
+				nothingFoundMessage='Nothing found...'
+			/>
+			<Select
+				label='Baby Outcome'
+				placeholder='Select an outcome'
+				data={["Live Birth", "Still Birth"]}
+				className='w-[11rem]'
+				clearable
+				value={baby_outcome}
+				onChange={(value: any) => {
+					setBOutcome(value);
+				}}
+				nothingFoundMessage='Nothing found...'
+			/>
+			<Select
+				label='Baby Sex'
+				placeholder='Select a sex'
+				data={["Male", "Female"]}
+				className='w-[8rem]'
+				clearable
+				value={baby_sex}
+				onChange={(value: any) => {
+					setbabySex(value);
+				}}
+				nothingFoundMessage='Nothing found...'
+			/>
+			<TextInput
+				label='Baby Weight'
+				placeholder='baby weight'
+				value={baby_weight}
+				onChange={(e) => {
+					setBabyWeight(e.currentTarget.value);
+				}}
+			/>
+			<TextInput
+				label='Baby Maturity'
+				placeholder='Baby Maturity'
+				value={baby_maturity}
+				onChange={(e) => {
+					setBabyMaturity(e.currentTarget.value);
+				}}
+			/>
+			<TextInput
+				label='Baby Activity'
+				placeholder='APGAR score'
+				value={apgar_score}
+				onChange={(e) => {
+					setApgarScore(e.currentTarget.value);
+				}}
+			/>
+			<TextInput
+				label='Baby Congenital Malform'
+				placeholder='Image No'
+				value={congenital_no}
+				onChange={(e) => {
+					setCongenital(Number(e.currentTarget.value));
+				}}
+			/>
+			<TextInput
+				label='Midwife'
+				placeholder='midwife'
+				value={midwife}
+				onChange={(e) => {
+					setMidWife(e.currentTarget.value);
+				}}
 			/>
 		</main>
 	);

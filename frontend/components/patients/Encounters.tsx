@@ -23,13 +23,13 @@ const Encounters = ({ hosp_no, id }: { hosp_no: string; id: string }) => {
 	const rows = sortedData?.map((row, i: number) => (
 		<Table.Tr key={row?.id}>
 			<Table.Td>{i + 1}</Table.Td>
-			<Table.Td>{row?.id}</Table.Td>
+
 			<Table.Td>{row?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.patient?.name}</Table.Td>
 			<Table.Td>{row?.care?.name}</Table.Td>
 			<Table.Td>{row?._count?.diagnosis}</Table.Td>
 			<Table.Td>{row?._count?.drugsGiven}</Table.Td>
-			<Table.Td>{format(new Date(row?.adm_date), "dd/MM/yyyy")}</Table.Td>
+			<Table.Td>{format(new Date(row?.enc_date), "dd/MM/yyyy")}</Table.Td>
 			<Table.Td>
 				<Menu shadow='md' width={200}>
 					<Menu.Target>
@@ -56,13 +56,13 @@ const Encounters = ({ hosp_no, id }: { hosp_no: string; id: string }) => {
 	const printRows = printData?.map((row, i: number) => (
 		<Table.Tr key={row?.id}>
 			<Table.Td>{i + 1}</Table.Td>
-			<Table.Td>{row?.id}</Table.Td>
+
 			<Table.Td>{row?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.patient?.name}</Table.Td>
 			<Table.Td>{row?.care?.name}</Table.Td>
 			<Table.Td>{row?._count?.diagnosis}</Table.Td>
 			<Table.Td>{row?._count?.drugsGiven}</Table.Td>
-			<Table.Td>{format(new Date(row?.adm_date), "dd/MM/yyyy")}</Table.Td>
+			<Table.Td>{format(new Date(row?.enc_date), "dd/MM/yyyy")}</Table.Td>
 		</Table.Tr>
 	));
 	useEffect(() => {
@@ -87,7 +87,7 @@ const Encounters = ({ hosp_no, id }: { hosp_no: string; id: string }) => {
 			<PaginatedTable
 				headers={[
 					"S/N",
-					"ENC ID",
+
 					"Hosp No",
 					"Name",
 					"Care",
@@ -108,7 +108,7 @@ const Encounters = ({ hosp_no, id }: { hosp_no: string; id: string }) => {
 				ref={contentRef}
 				printHeaders={[
 					"S/N",
-					"ENC ID",
+
 					"Hosp No",
 					"Name",
 					"Care",
@@ -117,7 +117,7 @@ const Encounters = ({ hosp_no, id }: { hosp_no: string; id: string }) => {
 					"Enc Date",
 				]}
 				printRows={printRows}
-				tableReport={`Patient - ${hosp_no} encounter record`}
+				tableReport={`Patient - ${hosp_no} encounters record`}
 				setPrintData={setPrintData}
 			/>
 		</main>
