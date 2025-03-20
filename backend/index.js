@@ -19,7 +19,7 @@ app.use(cors());
 app.use("/accounts", accounts);
 app.use("/auth", auth);
 app.use("/backup", backup);
-app.use("/report", report);
+app.use("/reports", report);
 app.use("/patients", patients);
 app.use("/payments", payments);
 app.use("/drugsgiven", drugsgiven);

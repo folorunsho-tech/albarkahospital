@@ -30,6 +30,21 @@ router.get("/", async (req, res) => {
 		res.status(500).json(error);
 	}
 });
+router.get("/report", async (req, res) => {
+	try {
+		const found = await prisma.drugsInventory.findMany({
+			orderBy: {
+				drug: "asc",
+			},
+			select: {
+				drug: true,
+			},
+		});
+		res.status(200).json(found);
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
 
 router.get("/:id", async (req, res) => {
 	try {
@@ -383,91 +398,4 @@ router.post("/stocks/:criteria", async (req, res) => {
 
 // DRUGS STOCK HISTORY
 
-// DRUGS GIVEN HISTORY
-
-router.post("/report/:criteria", async (req, res) => {
-	const { value } = req.body;
-	const criteria = req.params.criteria;
-
-	try {
-		if (criteria == "year") {
-			const found = await prisma.drugsGiven.findMany({
-				where: {
-					year: value,
-				},
-			});
-
-			res.status(200).json(found);
-		} else if (criteria == "yearnmonth") {
-			const found = await prisma.drugsGiven.findMany({
-				where: {
-					year: value?.year,
-					month: value?.month,
-				},
-				include: {
-					drug: {
-						select: {
-							drug: true,
-						},
-					},
-				},
-				orderBy: {
-					createdAt: "desc",
-				},
-			});
-
-			res.status(200).json(found);
-		} else if (criteria == "date") {
-			const found = await prisma.drugsGiven.findMany({
-				where: {
-					createdAt: new Date(new Date(value).setUTCHours(0, 0, 0, 0, 0)),
-				},
-				include: {
-					drug: {
-						select: {
-							drug: true,
-						},
-					},
-				},
-				orderBy: {
-					createdAt: "desc",
-				},
-			});
-			res.status(200).json(found);
-		} else if (criteria == "range") {
-			const found = await prisma.drugsGiven.findMany({
-				where: {
-					AND: [
-						{
-							date: {
-								gte: new Date(new Date(value?.from).setUTCHours(0, 0, 0, 0, 0)),
-							},
-						},
-						{
-							date: {
-								lte: new Date(new Date(value?.to).setUTCHours(23, 0, 0, 0, 0)),
-							},
-						},
-					],
-				},
-				include: {
-					drug: {
-						select: {
-							drug: true,
-						},
-					},
-				},
-				orderBy: {
-					createdAt: "desc",
-				},
-			});
-
-			res.status(200).json(found);
-		}
-	} catch (error) {
-		res.status(500).json(error);
-	}
-});
-
-// DRUGS GIVEN HISTORY
 export default router;

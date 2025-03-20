@@ -255,7 +255,18 @@ router.post("/:criteria", async (req, res) => {
 		} else if (criteria == "date") {
 			const found = await prisma.patients.findMany({
 				where: {
-					reg_date: new Date(new Date(value).setUTCHours(0, 0, 0, 0, 0)),
+					AND: [
+						{
+							reg_date: {
+								gte: new Date(new Date(value).setUTCHours(0, 0, 0, 0, 0)),
+							},
+						},
+						{
+							reg_date: {
+								lte: new Date(new Date(value).setUTCHours(23, 0, 0, 0, 0)),
+							},
+						},
+					],
 				},
 				include: {
 					groups: true,

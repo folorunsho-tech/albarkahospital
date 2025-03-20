@@ -416,7 +416,7 @@ router.post("/edit/operation/:id", async (req, res) => {
 			},
 		});
 		if (found) {
-			await prisma.operations.update({
+			const updated = await prisma.operations.update({
 				where: {
 					id: req.body.operation_id,
 				},
@@ -424,17 +424,38 @@ router.post("/edit/operation/:id", async (req, res) => {
 					...req.body.operation,
 				},
 			});
+			if (updated) {
+				await prisma.encounters.update({
+					where: {
+						id: updated.encounter_id,
+					},
+					data: {
+						updatedAt: new Date(),
+					},
+				});
+			}
 		} else {
-			await prisma.operations.create({
+			const updated = await prisma.operations.create({
 				data: {
 					...req.body.operation,
 					encounter_id: req.params.id,
 				},
 			});
+			if (updated) {
+				await prisma.encounters.update({
+					where: {
+						id: updated.encounter_id,
+					},
+					data: {
+						updatedAt: new Date(),
+					},
+				});
+			}
 		}
 		res.status(200).json(found);
 	} catch (error) {
 		res.status(500).json(error);
+		console.log(error);
 	}
 });
 router.post("/edit/immunization/:id", async (req, res) => {
@@ -445,7 +466,7 @@ router.post("/edit/immunization/:id", async (req, res) => {
 			},
 		});
 		if (found) {
-			await prisma.immunization.update({
+			const updated = await prisma.immunization.update({
 				where: {
 					id: req.body.immunization_id,
 				},
@@ -453,13 +474,33 @@ router.post("/edit/immunization/:id", async (req, res) => {
 					...req.body.immunization,
 				},
 			});
+			if (updated) {
+				await prisma.encounters.update({
+					where: {
+						id: updated.encounter_id,
+					},
+					data: {
+						updatedAt: new Date(),
+					},
+				});
+			}
 		} else {
-			await prisma.immunization.create({
+			const updated = await prisma.immunization.create({
 				data: {
 					encounter_id: req.params.id,
 					...req.body.immunization,
 				},
 			});
+			if (updated) {
+				await prisma.encounters.update({
+					where: {
+						id: updated.encounter_id,
+					},
+					data: {
+						updatedAt: new Date(),
+					},
+				});
+			}
 		}
 		res.status(200).json(found);
 	} catch (error) {
@@ -474,7 +515,7 @@ router.post("/edit/anc/:id", async (req, res) => {
 			},
 		});
 		if (found) {
-			await prisma.anc.update({
+			const updated = await prisma.anc.update({
 				where: {
 					id: req.body.anc_id,
 				},
@@ -482,14 +523,35 @@ router.post("/edit/anc/:id", async (req, res) => {
 					...req.body.anc,
 				},
 			});
+			if (updated) {
+				await prisma.encounters.update({
+					where: {
+						id: updated.encounter_id,
+					},
+					data: {
+						updatedAt: new Date(),
+					},
+				});
+			}
 		} else {
-			await prisma.anc.create({
+			const updated = await prisma.anc.create({
 				data: {
 					encounter_id: req.params.id,
 					...req.body.anc,
 				},
 			});
+			if (updated) {
+				await prisma.encounters.update({
+					where: {
+						id: updated.encounter_id,
+					},
+					data: {
+						updatedAt: new Date(),
+					},
+				});
+			}
 		}
+
 		res.status(200).json(found);
 	} catch (error) {
 		res.status(500).json(error);
@@ -503,7 +565,7 @@ router.post("/edit/delivery/:id", async (req, res) => {
 			},
 		});
 		if (found) {
-			await prisma.delivery.update({
+			const updated = await prisma.delivery.update({
 				where: {
 					id: req.body.delivery_id,
 				},
@@ -511,35 +573,34 @@ router.post("/edit/delivery/:id", async (req, res) => {
 					...req.body.delivery,
 				},
 			});
+			if (updated) {
+				await prisma.encounters.update({
+					where: {
+						id: updated.encounter_id,
+					},
+					data: {
+						updatedAt: new Date(),
+					},
+				});
+			}
 		} else {
-			await prisma.delivery.create({
+			const updated = await prisma.delivery.create({
 				data: {
 					encounter_id: req.params.id,
 					...req.body.delivery,
 				},
 			});
+			if (updated) {
+				await prisma.encounters.update({
+					where: {
+						id: updated.encounter_id,
+					},
+					data: {
+						updatedAt: new Date(),
+					},
+				});
+			}
 		}
-		res.status(200).json(found);
-	} catch (error) {
-		res.status(500).json(error);
-	}
-});
-router.post("/edit/operation/:id", async (req, res) => {
-	try {
-		const found = await prisma.operations.update({
-			where: {
-				id: req.params.id,
-			},
-			data: {
-				procedureId: req.body.procedureId,
-				proc_date: new Date(req.body?.proc_date),
-				updatedById: req.body.updatedById,
-			},
-			select: {
-				procedure: true,
-				proc_date: true,
-			},
-		});
 		res.status(200).json(found);
 	} catch (error) {
 		res.status(500).json(error);
