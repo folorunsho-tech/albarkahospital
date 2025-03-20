@@ -8,7 +8,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
 	return (
 		<main>
-			<nav className='flex  items-center bg-teal-700 text-white navs rounded-r-full'>
+			<nav className='flex  items-center bg-teal-700 text-white navs rounded-r-full mb-3'>
 				<NavLink
 					variant='filled'
 					color='teal'

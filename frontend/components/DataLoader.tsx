@@ -13,22 +13,24 @@ const DataLoader = ({
 	post,
 	updated,
 	defaultLoad = "yearnmonth",
+	setLoaded,
 }: {
 	link: string;
 	setQueryData: any;
 	post: any;
 	updated?: boolean;
 	defaultLoad?: string;
+	setLoaded?: any;
 }) => {
 	const [criteria, setCriteria] = useState(defaultLoad);
 	const [cYear, setCYear] = useState<string | null>(curYear);
 	const [cYnmY, setCYnmY] = useState<string | null>(curYear);
 	const [cYnmM, setCYnmM] = useState<string | null>(curMonth);
-	const [cDate, setCDate] = useState<Date>(new Date());
-	const [from, setFrom] = useState<Date | null>(
+	const [cDate, setCDate] = useState<Date | any>(new Date());
+	const [from, setFrom] = useState<Date | any>(
 		new Date(Number(curYear), curMonthNo, 2)
 	);
-	const [to, setTo] = useState<Date | null>(new Date());
+	const [to, setTo] = useState<Date | any>(new Date());
 	const loadValue = (criteria: string) => {
 		if (criteria == "yearnmonth") {
 			return (
@@ -130,6 +132,22 @@ const DataLoader = ({
 	useEffect(() => {
 		getData();
 	}, [criteria, cYear, cYnmY, cYnmM, cDate, to, updated]);
+	useEffect(() => {
+		if (setLoaded)
+			if (criteria == "yearnmonth") {
+				setLoaded(`Year - ${cYnmY} and Month - ${cYnmM}`);
+			} else if (criteria == "year") {
+				setLoaded(`Year - ${cYear}`);
+			} else if (criteria == "date") {
+				setLoaded(`Date - ${new Date(cDate).toLocaleDateString()}`);
+			} else if (criteria == "range") {
+				setLoaded(
+					`From - ${new Date(from).toLocaleDateString()}, To - ${new Date(
+						to
+					).toLocaleDateString()}`
+				);
+			}
+	}, [criteria, cYear, cYnmY, cYnmM, cDate, to]);
 	return (
 		<form
 			className='flex items-end gap-6 '

@@ -2,11 +2,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { MultiSelect, Select, TextInput } from "@mantine/core";
+import { NumberInput, Select, TextInput } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { useEffect, useState } from "react";
 
-const Delivery = ({ setDelivery }: { setDelivery: any }) => {
+const Delivery = ({
+	setDelivery,
+	diagnosis,
+}: {
+	setDelivery: any;
+	diagnosis: any[];
+}) => {
 	const [baby_outcome, setBOutcome] = useState("");
 	const [mother_outcome, setMOutcome] = useState("");
 	const [parity, setParity] = useState("");
@@ -33,7 +39,7 @@ const Delivery = ({ setDelivery }: { setDelivery: any }) => {
 			placenta_delivery,
 			apgar_score,
 			baby_maturity,
-			baby_weight,
+			baby_weight: String(baby_weight),
 			baby_sex,
 			congenital_no,
 			midwife,
@@ -55,6 +61,7 @@ const Delivery = ({ setDelivery }: { setDelivery: any }) => {
 		midwife,
 		mother_diag,
 	]);
+
 	return (
 		<main className='flex gap-4 flex-wrap'>
 			<DatePickerInput
@@ -111,15 +118,9 @@ const Delivery = ({ setDelivery }: { setDelivery: any }) => {
 			<Select
 				label='Mother Diagnosis'
 				placeholder='Select a diagnosis'
-				data={[
-					"Live Birth (F)",
-					"Live Birth (M)",
-					"Live Multiple (F & F)",
-					"Live Multiple (M & F)",
-					"Live Multiple (M & M)",
-					"Still Birth",
-				]}
+				data={diagnosis}
 				className='w-[20rem]'
+				searchable
 				clearable
 				value={mother_diag}
 				onChange={(value: any) => {
@@ -163,12 +164,14 @@ const Delivery = ({ setDelivery }: { setDelivery: any }) => {
 				}}
 				nothingFoundMessage='Nothing found...'
 			/>
-			<TextInput
+			<NumberInput
 				label='Baby Weight'
 				placeholder='baby weight'
 				value={baby_weight}
-				onChange={(e) => {
-					setBabyWeight(e.currentTarget.value);
+				min={0}
+				suffix=' KG'
+				onChange={(value: any) => {
+					setBabyWeight(value);
 				}}
 			/>
 			<TextInput

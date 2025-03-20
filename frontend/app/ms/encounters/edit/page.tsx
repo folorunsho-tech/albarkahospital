@@ -28,18 +28,24 @@ import ANC from "@/components/encounter/edit/ANC";
 
 const Edit = () => {
 	const { fetch } = useFetch();
-	const [queryData, setQueryData] = useState<any>(null);
 	const [patientData, setPatientData] = useState<any>(null);
 	const [cares, setCares] = useState([]);
 	const [care, setCare] = useState("");
 	const [outcome, setOutcome] = useState("");
 	const [enc_date, setDate] = useState<Date | null>(null);
 	const [admission, setAdmission] = useState(null);
+	const [diags, setDiags] = useState<any[]>([]);
+
 	const searchParams = useSearchParams();
 	const id = searchParams.get("id");
 	const router = useRouter();
 	const getAll = async () => {
 		const { data } = await fetch("/settings/care");
+		const { data: diags } = await fetch("/settings/diagnosis");
+		const sortedD = diags.map((diag: { id: string; name: string }) => {
+			return diag.name;
+		});
+		setDiags(sortedD);
 		const { data: found } = await fetch(`/encounters/${id}`);
 		const sorted = data.map((care: { id: string; name: string }) => {
 			return {
@@ -47,7 +53,6 @@ const Edit = () => {
 				label: care.name,
 			};
 		});
-		setQueryData(found);
 		setPatientData(found?.patient);
 		setDate(new Date(found?.enc_date));
 		setCares(sorted);
@@ -206,7 +211,7 @@ const Edit = () => {
 						<Labtest enc_id={id} />
 					</Tabs.Panel>
 					<Tabs.Panel value='delivery'>
-						<Delivery enc_id={id} />
+						<Delivery enc_id={id} diagnosis={diags} />
 					</Tabs.Panel>
 					<Tabs.Panel value='operation'>
 						<Operations enc_id={id} />

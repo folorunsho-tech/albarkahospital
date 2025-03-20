@@ -4,14 +4,25 @@
 
 import { useEdit, useFetch } from "@/queries";
 
-import { Button, LoadingOverlay, Select, TextInput } from "@mantine/core";
+import {
+	Button,
+	LoadingOverlay,
+	NumberInput,
+	Select,
+	TextInput,
+} from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { useEffect, useState } from "react";
 
-const Delivery = ({ enc_id }: { enc_id: string | null }) => {
+const Delivery = ({
+	enc_id,
+	diagnosis,
+}: {
+	enc_id: string | null;
+	diagnosis: any[];
+}) => {
 	const { edit, loading } = useEdit();
 	const { fetch } = useFetch();
-
 	const [baby_outcome, setBOutcome] = useState("");
 	const [mother_outcome, setMOutcome] = useState("");
 	const [parity, setParity] = useState("");
@@ -21,7 +32,7 @@ const Delivery = ({ enc_id }: { enc_id: string | null }) => {
 	const [placenta_delivery, setPlacenta] = useState("");
 	const [apgar_score, setApgarScore] = useState("");
 	const [baby_maturity, setBabyMaturity] = useState("");
-	const [baby_weight, setBabyWeight] = useState("");
+	const [baby_weight, setBabyWeight] = useState<number | string>("");
 	const [baby_sex, setbabySex] = useState("");
 	const [congenital_no, setCongenital] = useState<number | string>("");
 	const [midwife, setMidWife] = useState("");
@@ -40,7 +51,7 @@ const Delivery = ({ enc_id }: { enc_id: string | null }) => {
 		setPlacenta(data?.placenta_delivery);
 		setApgarScore(data?.apgar_score);
 		setBabyMaturity(data?.baby_maturity);
-		setBabyWeight(data?.baby_weight);
+		setBabyWeight(Number(data?.baby_weight));
 		setbabySex(data?.baby_sex);
 		setCongenital(data?.congenital_no);
 		setMidWife(data?.midwife);
@@ -66,7 +77,7 @@ const Delivery = ({ enc_id }: { enc_id: string | null }) => {
 						placenta_delivery,
 						apgar_score,
 						baby_maturity,
-						baby_weight,
+						baby_weight: String(baby_weight),
 						baby_sex,
 						congenital_no,
 						midwife,
@@ -130,15 +141,9 @@ const Delivery = ({ enc_id }: { enc_id: string | null }) => {
 			<Select
 				label='Mother Diagnosis'
 				placeholder='Select a diagnosis'
-				data={[
-					"Live Birth (F)",
-					"Live Birth (M)",
-					"Live Multiple (F & F)",
-					"Live Multiple (M & F)",
-					"Live Multiple (M & M)",
-					"Still Birth",
-				]}
+				data={diagnosis}
 				className='w-[20rem]'
+				searchable
 				clearable
 				value={mother_diag}
 				onChange={(value: any) => {
@@ -182,12 +187,14 @@ const Delivery = ({ enc_id }: { enc_id: string | null }) => {
 				}}
 				nothingFoundMessage='Nothing found...'
 			/>
-			<TextInput
+			<NumberInput
 				label='Baby Weight'
 				placeholder='baby weight'
 				value={baby_weight}
-				onChange={(e) => {
-					setBabyWeight(e.currentTarget.value);
+				min={0}
+				suffix=' KG'
+				onChange={(value: any) => {
+					setBabyWeight(value);
 				}}
 			/>
 			<TextInput

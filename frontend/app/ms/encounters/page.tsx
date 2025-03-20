@@ -95,8 +95,8 @@ const Encounter = () => {
 					>
 						Print
 					</Button>
-					<Button>
-						<Link href='encounters/create'>Add a new encounter</Link>
+					<Button component={Link} href='encounters/create'>
+						Add a new encounter
 					</Button>
 				</div>
 			</div>

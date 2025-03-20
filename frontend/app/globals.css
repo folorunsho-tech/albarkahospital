@@ -52,3 +52,6 @@ body {
 .navs a{
   @apply hover:bg-teal-600
 }
+.tableFoot td{
+border: 1px solid;
+}

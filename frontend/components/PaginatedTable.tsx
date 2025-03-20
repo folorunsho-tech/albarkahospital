@@ -118,7 +118,7 @@ const PaginatedTable = ({
 						<div className='space-y-1 w-full'>
 							<div className='flex items-center w-full justify-between'>
 								<h2 className='text-xl font-extrabold font-serif '>
-									AL-BARKA HOSPITAL
+									AL-BARKA HOSPITAL, WAWA
 								</h2>
 								<p>{format(new Date(), "PPPpp")}</p>
 							</div>
@@ -126,7 +126,7 @@ const PaginatedTable = ({
 							<p className='text-md  italic'>
 								E-mail: hospitalalbarka@gmail.com
 							</p>
-							<p className='text-lg font-extrabold bg-black text-white p-1 px-2 text-center uppercase'>
+							<p className='text-md font-extrabold bg-black text-white p-1 px-2 text-center uppercase'>
 								{tableReport}
 							</p>
 						</div>

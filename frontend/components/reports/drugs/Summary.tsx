@@ -1,21 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { Button, Text, NumberFormatter, Table, Select } from "@mantine/core";
-
-import { ArrowLeft, Printer } from "lucide-react";
+import { Text, NumberFormatter, Table } from "@mantine/core";
 import { usePostNormal } from "@/queries";
-import { useState, useRef } from "react";
-import { useReactToPrint } from "react-to-print";
+import { useState } from "react";
 import DataLoader from "@/components/DataLoader";
-import { format } from "date-fns";
-import Link from "next/link";
+
 import ReportsTable from "@/components/ReportsTable";
 const Summary = () => {
 	const { post, loading } = usePostNormal();
 	const [queryData, setQueryData] = useState<any[]>([]);
-	const [sortedData, setSortedData] = useState<any[]>([]);
-	const [filter, setFilter] = useState("");
+	const [sortedData, setSortedData] = useState<any[]>(queryData);
+	const [loaded, setLoaded] = useState<any>("");
 
 	const rows = sortedData?.map((row, i) => (
 		<Table.Tr key={row?.name + i}>
@@ -49,38 +45,21 @@ const Summary = () => {
 			</Table.Td>
 		</Table.Tr>
 	));
-	const filters = (
-		<div className='flex gap-3 items-end flex-wrap'>
-			<Select
-				label='Filters'
-				placeholder='select filter'
-				data={[]}
-				value={filter}
-				searchable
-				clearable
-				onChange={(value: any) => {
-					setFilter(value);
-				}}
-			/>
-		</div>
-	);
+
 	return (
 		<main className='space-y-6'>
 			<div className='flex justify-between items-end'>
-				<Link
-					className='bg-blue-500 hover:bg-blue-600 p-1 px-2 rounded-lg text-white flex gap-3'
-					href='/ms/drugs'
-				>
-					<ArrowLeft />
-					Go back
-				</Link>
-				{/* <DataLoader
-					link='/report/drugs'
+				<DataLoader
+					link='/reports/drugs/summary'
 					post={post}
 					setQueryData={setQueryData}
-				/> */}
+					defaultLoad='year'
+					setLoaded={setLoaded}
+				/>
 
-				<Text size='md'>Drugs report summary</Text>
+				<Text size='md' fw={600}>
+					Drugs report summary
+				</Text>
 			</div>
 
 			<ReportsTable
@@ -93,9 +72,9 @@ const Summary = () => {
 				rows={rows}
 				printRows={printRows}
 				showSearch={false}
-				filters={filters}
-				filter={filter}
+				// filters={filters}
 				tableReport='Drugs report summary'
+				loaded={loaded}
 			/>
 		</main>
 	);

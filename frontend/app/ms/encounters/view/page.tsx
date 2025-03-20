@@ -214,6 +214,9 @@ const View = () => {
 								Baby Outcome: <i>{queryData?.delivery[0]?.baby_outcome}</i>
 							</Text>
 							<Text>
+								Baby Weight: <i>{queryData?.delivery[0]?.baby_weight} KG</i>
+							</Text>
+							<Text>
 								Baby Sex: <i>{queryData?.delivery[0]?.baby_sex}</i>
 							</Text>
 							<Text>

@@ -44,6 +44,7 @@ const Create = () => {
 	const [outcome, setOutcome] = useState<any>("");
 	const [follow_up_to, setFollowUPTo] = useState<string | null>("");
 	const [follow_ups, setFollowUps] = useState<any[]>([]);
+	const [diags, setDiags] = useState<any[]>([]);
 	const [posted, setPosted] = useState(false);
 	const [enc_date, setEncDate] = useState<any>(new Date());
 	const router = useRouter();
@@ -62,13 +63,17 @@ const Create = () => {
 	useEffect(() => {
 		const getAll = async () => {
 			const { data } = await fetch("/settings/care");
+			const { data: diags } = await fetch("/settings/diagnosis");
 			const sorted = data.map((care: { id: string; name: string }) => {
 				return {
 					value: care.id,
 					label: care.name,
 				};
 			});
-
+			const sortedD = diags.map((diag: { id: string; name: string }) => {
+				return diag.name;
+			});
+			setDiags(sortedD);
 			setCares(sorted);
 		};
 		getAll();
@@ -230,7 +235,7 @@ const Create = () => {
 							</div>
 							<div className='flex flex-col gap-2'>
 								<label className='font-bold underline'>Delivery</label>
-								<Delivery setDelivery={setDelivery} />
+								<Delivery setDelivery={setDelivery} diagnosis={diags} />
 							</div>
 							<div className='flex flex-col gap-2'>
 								<label className='font-bold underline'>Operation</label>

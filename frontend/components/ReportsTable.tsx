@@ -16,7 +16,6 @@ import {
 import { Printer, Search } from "lucide-react";
 import { format } from "date-fns";
 import Image from "next/image";
-import { useFetch } from "@/queries";
 
 const ReportsTable = ({
 	showSearch = true,
@@ -34,8 +33,8 @@ const ReportsTable = ({
 	tableFoot,
 	showPrint = true,
 	filters,
-	filter,
 	pdfTitle = "",
+	loaded = "",
 }: {
 	showSearch?: boolean;
 	headers: string[];
@@ -52,10 +51,9 @@ const ReportsTable = ({
 	tableFoot?: ReactElement;
 	showPrint?: Boolean;
 	filters?: ReactNode;
-	filter: string;
 	pdfTitle?: string;
+	loaded?: string;
 }) => {
-	const { loading, fetch } = useFetch();
 	const contentRef = useRef<HTMLDivElement>(null);
 	const reactToPrintFn = useReactToPrint({
 		contentRef,
@@ -85,6 +83,9 @@ const ReportsTable = ({
 		const filtered = filterData(mappedData, value);
 		setSortedData(filtered);
 	};
+	useEffect(() => {
+		setSortedData(data);
+	}, [tableLoading]);
 	return (
 		<Box pos='relative'>
 			<section style={{ display: "none" }}>
@@ -99,7 +100,7 @@ const ReportsTable = ({
 						<div className='space-y-1 w-full'>
 							<div className='flex items-center w-full justify-between'>
 								<h2 className='text-xl font-extrabold font-serif '>
-									AL-BARKA HOSPITAL
+									AL-BARKA HOSPITAL, WAWA
 								</h2>
 								<p>{format(new Date(), "PPPpp")}</p>
 							</div>
@@ -107,8 +108,8 @@ const ReportsTable = ({
 							<p className='text-md  italic'>
 								E-mail: hospitalalbarka@gmail.com
 							</p>
-							<p className='text-lg font-extrabold bg-black text-white p-1 px-2 text-center uppercase'>
-								{tableReport}
+							<p className='text-sm font-extrabold bg-black text-white p-1 px-2 text-center uppercase'>
+								{tableReport} - {loaded}
 							</p>
 						</div>
 					</div>
@@ -121,7 +122,7 @@ const ReportsTable = ({
 							</Table.Tr>
 						</Table.Thead>
 						<Table.Tbody>{printRows}</Table.Tbody>
-						<Table.Tfoot className='font-semibold border border-black'>
+						<Table.Tfoot className='font-semibold border bg-gray-200'>
 							{tableFoot}
 						</Table.Tfoot>
 					</Table>
@@ -176,6 +177,9 @@ const ReportsTable = ({
 								</Table.Tr>
 							)}
 						</Table.Tbody>
+						<Table.Tfoot className='font-semibold border border-black bg-gray-200'>
+							{tableFoot}
+						</Table.Tfoot>
 					</Table>
 				</ScrollArea>
 
