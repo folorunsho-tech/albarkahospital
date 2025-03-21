@@ -19,7 +19,9 @@ const page = () => {
 	const [loaded, setLoaded] = useState<any>("");
 	const rows = sortedData?.map((row, i) => (
 		<Table.Tr key={row?.id}>
-			<Table.Td>{i + 1}</Table.Td>
+			<Table.Td>
+				{new Date(row?.encounter?.enc_date).toLocaleDateString()}
+			</Table.Td>
 			<Table.Td>{new Date(row?.delivery_date).toLocaleDateString()}</Table.Td>
 			<Table.Td>{row?.encounter?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.encounter?.patient?.name}</Table.Td>
@@ -33,7 +35,9 @@ const page = () => {
 	));
 	const printRows = sortedData?.map((row, i) => (
 		<Table.Tr key={row?.id}>
-			<Table.Td>{i + 1}</Table.Td>
+			<Table.Td>
+				{new Date(row?.encounter?.enc_date).toLocaleDateString()}
+			</Table.Td>
 			<Table.Td>{new Date(row?.delivery_date).toLocaleDateString()}</Table.Td>
 			<Table.Td>{row?.encounter?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.encounter?.patient?.name}</Table.Td>
@@ -181,7 +185,7 @@ const page = () => {
 	);
 	const getReport = () => {
 		if (criteria && value) {
-			return `Deliveries report for ${criteria} of ${value}`;
+			return `Deliveries report for ${criteria} --> ${value}`;
 		}
 		return "Deliveries report for";
 	};
@@ -195,7 +199,11 @@ const page = () => {
 		};
 		getD();
 	}, []);
-
+	useEffect(() => {
+		setSortedData(queryData);
+		setCriteria(null);
+		setValue(null);
+	}, [loaded]);
 	return (
 		<main className='space-y-6'>
 			<div className='flex justify-between items-end'>
@@ -213,7 +221,7 @@ const page = () => {
 
 			<ReportsTable
 				headers={[
-					"S/N",
+					"ENC Date",
 					"Date",
 					"Hosp No",
 					"Patient",
@@ -225,7 +233,7 @@ const page = () => {
 					"Baby Weight",
 				]}
 				printHeaders={[
-					"S/N",
+					"ENC Date",
 					"Date",
 					"Hosp No",
 					"Patient",
@@ -246,6 +254,11 @@ const page = () => {
 				filters={filters}
 				loaded={loaded}
 				tableReport={getReport()}
+				metadata={
+					<div className='text-lg font-semibold my-2'>
+						<h2>Total Count: {sortedData.length}</h2>
+					</div>
+				}
 			/>
 		</main>
 	);

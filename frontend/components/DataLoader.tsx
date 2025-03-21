@@ -40,6 +40,7 @@ const DataLoader = ({
 						placeholder='Select a year'
 						data={years}
 						value={cYnmY}
+						searchable
 						allowDeselect={false}
 						onChange={(yearvalue) => {
 							setCYnmY(yearvalue);
@@ -50,6 +51,7 @@ const DataLoader = ({
 						placeholder='Select a month'
 						data={months}
 						allowDeselect={false}
+						searchable
 						value={cYnmM}
 						onChange={(monthvalue: any) => {
 							setCYnmM(monthvalue);
@@ -98,6 +100,7 @@ const DataLoader = ({
 					placeholder='Select a year'
 					data={years}
 					value={cYear}
+					searchable
 					allowDeselect={false}
 					onChange={(yearvalue) => {
 						setCYear(yearvalue);

@@ -19,7 +19,9 @@ const Detailed = () => {
 
 	const rows = sortedData?.map((row, i) => (
 		<Table.Tr key={row?.id}>
-			<Table.Td>{i + 1}</Table.Td>
+			<Table.Td>
+				{new Date(row?.encounter?.enc_date).toLocaleDateString()}
+			</Table.Td>
 			<Table.Td>{new Date(row?.date).toLocaleDateString()}</Table.Td>
 			<Table.Td>{row?.encounter?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.encounter?.patient?.name}</Table.Td>
@@ -37,7 +39,9 @@ const Detailed = () => {
 	));
 	const printRows = sortedData?.map((row, i) => (
 		<Table.Tr key={row?.id}>
-			<Table.Td>{i + 1}</Table.Td>
+			<Table.Td>
+				{new Date(row?.encounter?.enc_date).toLocaleDateString()}
+			</Table.Td>
 			<Table.Td>{new Date(row?.date).toLocaleDateString()}</Table.Td>
 			<Table.Td>{row?.encounter?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.encounter?.patient?.name}</Table.Td>
@@ -92,10 +96,14 @@ const Detailed = () => {
 			setSortedData(queryData);
 		}
 	}, [filter]);
+	useEffect(() => {
+		setSortedData(queryData);
+		setFilter(null);
+	}, [loaded]);
 	const total = sortedData.reduce((prev, curr) => {
 		return Number(prev) + Number(curr?.price);
 	}, 0);
-	const qauntity = sortedData.reduce((prev, curr) => {
+	const quantity = sortedData.reduce((prev, curr) => {
 		return Number(prev) + Number(curr?.quantity);
 	}, 0);
 	return (
@@ -115,7 +123,7 @@ const Detailed = () => {
 
 			<ReportsTable
 				headers={[
-					"S/N",
+					"ENC Date",
 					"Date",
 					"Hosp No",
 					"Patient",
@@ -125,7 +133,7 @@ const Detailed = () => {
 					"Rate",
 				]}
 				printHeaders={[
-					"S/N",
+					"ENC Date",
 					"Date",
 					"Hosp No",
 					"Patient",
@@ -152,13 +160,18 @@ const Detailed = () => {
 						<Table.Td></Table.Td>
 						<Table.Td>Total: </Table.Td>
 						<Table.Td>
-							<NumberFormatter value={qauntity} thousandSeparator />
+							<NumberFormatter value={quantity} thousandSeparator />
 						</Table.Td>
 						<Table.Td>
 							<NumberFormatter prefix='NGN ' value={total} thousandSeparator />
 						</Table.Td>
 						<Table.Td></Table.Td>
 					</Table.Tr>
+				}
+				metadata={
+					<div className='text-lg font-semibold my-2'>
+						<h2>Total Count: {sortedData.length}</h2>
+					</div>
 				}
 			/>
 		</main>

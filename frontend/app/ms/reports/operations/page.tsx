@@ -19,7 +19,9 @@ const page = () => {
 	const [loaded, setLoaded] = useState<any>("");
 	const rows = sortedData?.map((row, i) => (
 		<Table.Tr key={row?.id}>
-			<Table.Td>{i + 1}</Table.Td>
+			<Table.Td>
+				{new Date(row?.encounter?.enc_date).toLocaleDateString()}
+			</Table.Td>
 			<Table.Td>{new Date(row?.proc_date).toLocaleDateString()}</Table.Td>
 			<Table.Td>{row?.encounter?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.encounter?.patient?.name}</Table.Td>
@@ -32,7 +34,9 @@ const page = () => {
 	));
 	const printRows = sortedData?.map((row, i) => (
 		<Table.Tr key={row?.id}>
-			<Table.Td>{i + 1}</Table.Td>
+			<Table.Td>
+				{new Date(row?.encounter?.enc_date).toLocaleDateString()}
+			</Table.Td>
 			<Table.Td>{new Date(row?.proc_date).toLocaleDateString()}</Table.Td>
 			<Table.Td>{row?.encounter?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.encounter?.patient?.name}</Table.Td>
@@ -120,13 +124,13 @@ const page = () => {
 	const getFilter = () => {
 		if (criteria == "Surgeon") {
 			const found = queryData.filter((d: any) =>
-				String(d?.surgeon).includes(value)
+				String(d?.surgeon).toLowerCase().includes(value)
 			);
 			setSortedData(found);
 		}
 		if (criteria == "Assistant") {
 			const found = queryData.filter((d: any) =>
-				String(d?.assistant).includes(value)
+				String(d?.assistant).toLowerCase().includes(value)
 			);
 			setSortedData(found);
 		}
@@ -192,7 +196,7 @@ const page = () => {
 	);
 	const getReport = () => {
 		if (criteria && value) {
-			return `Operations report for ${criteria} of ${value}`;
+			return `Operations report for ${criteria} --> ${value}`;
 		}
 		return "Operations report for";
 	};
@@ -206,6 +210,11 @@ const page = () => {
 		};
 		getD();
 	}, []);
+	useEffect(() => {
+		setSortedData(queryData);
+		setCriteria(null);
+		setValue(null);
+	}, [loaded]);
 
 	return (
 		<main className='space-y-6'>
@@ -224,7 +233,7 @@ const page = () => {
 
 			<ReportsTable
 				headers={[
-					"S/N",
+					"ENC Date",
 					"Date",
 					"Hosp No",
 					"Patient",
@@ -235,7 +244,7 @@ const page = () => {
 					"Assistant",
 				]}
 				printHeaders={[
-					"S/N",
+					"ENC Date",
 					"Date",
 					"Hosp No",
 					"Patient",
@@ -255,6 +264,11 @@ const page = () => {
 				filters={filters}
 				loaded={loaded}
 				tableReport={getReport()}
+				metadata={
+					<div className='text-lg font-semibold my-2'>
+						<h2>Total Count: {sortedData.length}</h2>
+					</div>
+				}
 			/>
 		</main>
 	);

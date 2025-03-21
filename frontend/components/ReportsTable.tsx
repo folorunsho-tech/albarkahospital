@@ -35,6 +35,7 @@ const ReportsTable = ({
 	filters,
 	pdfTitle = "",
 	loaded = "",
+	metadata,
 }: {
 	showSearch?: boolean;
 	headers: string[];
@@ -53,6 +54,7 @@ const ReportsTable = ({
 	filters?: ReactNode;
 	pdfTitle?: string;
 	loaded?: string;
+	metadata?: ReactNode;
 }) => {
 	const contentRef = useRef<HTMLDivElement>(null);
 	const reactToPrintFn = useReactToPrint({
@@ -113,7 +115,8 @@ const ReportsTable = ({
 							</p>
 						</div>
 					</div>
-					<Table miw={700}>
+					{metadata}
+					<Table miw={700} fz={13}>
 						<Table.Thead>
 							<Table.Tr>
 								{printHeaders?.map((head: string, index: number) => (
@@ -150,12 +153,14 @@ const ReportsTable = ({
 					/>
 				)}
 				<ScrollArea h={700}>
+					{metadata}
 					<Table
 						miw={700}
 						striped
 						highlightOnHover
 						withTableBorder
 						withColumnBorders
+						fz={13}
 					>
 						<Table.Thead>
 							<Table.Tr>

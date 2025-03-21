@@ -247,7 +247,14 @@ router.post("/patients/:criteria", async (req, res) => {
 					encounters: true,
 					town: true,
 					groups: true,
+					_count: {
+						select: {
+							encounters: true,
+							transactions: true,
+						},
+					},
 				},
+
 				orderBy: {
 					updatedAt: "desc",
 				},
@@ -264,6 +271,12 @@ router.post("/patients/:criteria", async (req, res) => {
 					encounters: true,
 					town: true,
 					groups: true,
+					_count: {
+						select: {
+							encounters: true,
+							transactions: true,
+						},
+					},
 				},
 				orderBy: {
 					updatedAt: "desc",
@@ -291,6 +304,12 @@ router.post("/patients/:criteria", async (req, res) => {
 					encounters: true,
 					town: true,
 					groups: true,
+					_count: {
+						select: {
+							encounters: true,
+							transactions: true,
+						},
+					},
 				},
 				orderBy: {
 					updatedAt: "desc",
@@ -317,6 +336,12 @@ router.post("/patients/:criteria", async (req, res) => {
 					encounters: true,
 					town: true,
 					groups: true,
+					_count: {
+						select: {
+							encounters: true,
+							transactions: true,
+						},
+					},
 				},
 				orderBy: {
 					updatedAt: "desc",
@@ -433,7 +458,6 @@ router.post("/encounters/:criteria", async (req, res) => {
 router.post("/deliveries/:criteria", async (req, res) => {
 	const { value } = req.body;
 	const criteria = req.params.criteria;
-	console.log(value);
 	try {
 		if (criteria == "year") {
 			const found = await prisma.delivery.findMany({
@@ -748,7 +772,7 @@ router.post("/operations/:criteria", async (req, res) => {
 					],
 				},
 				include: {
-					encounter: true,
+					procedure: true,
 					encounter: {
 						include: {
 							patient: true,
@@ -767,4 +791,224 @@ router.post("/operations/:criteria", async (req, res) => {
 	}
 });
 // OPERATIONS END
+
+// IMMUNIZATION
+router.post("/immunization/:criteria", async (req, res) => {
+	const { value } = req.body;
+	const criteria = req.params.criteria;
+	try {
+		if (criteria == "year") {
+			const found = await prisma.immunization.findMany({
+				where: {
+					encounter: {
+						year: value,
+					},
+				},
+				include: {
+					encounter: {
+						include: {
+							patient: true,
+						},
+					},
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+
+			res.status(200).json(found);
+		} else if (criteria == "yearnmonth") {
+			const found = await prisma.immunization.findMany({
+				where: {
+					encounter: {
+						year: value?.year,
+						month: value?.month,
+					},
+				},
+				include: {
+					encounter: {
+						include: {
+							patient: true,
+						},
+					},
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+
+			res.status(200).json(found);
+		} else if (criteria == "date") {
+			const found = await prisma.immunization.findMany({
+				where: {
+					AND: [
+						{
+							date: {
+								gte: new Date(new Date(value).setUTCHours(0, 0, 0, 0, 0)),
+							},
+						},
+						{
+							date: {
+								lte: new Date(new Date(value).setUTCHours(23, 0, 0, 0, 0)),
+							},
+						},
+					],
+				},
+				include: {
+					encounter: {
+						include: {
+							patient: true,
+						},
+					},
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+			res.status(200).json(found);
+		} else if (criteria == "range") {
+			const found = await prisma.immunization.findMany({
+				where: {
+					AND: [
+						{
+							date: {
+								gte: new Date(new Date(value?.from).setUTCHours(0, 0, 0, 0, 0)),
+							},
+						},
+						{
+							date: {
+								lte: new Date(new Date(value?.to).setUTCHours(23, 0, 0, 0, 0)),
+							},
+						},
+					],
+				},
+				include: {
+					encounter: {
+						include: {
+							patient: true,
+						},
+					},
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+
+			res.status(200).json(found);
+		}
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
+// IMMUNIZATION END
+
+// ANC
+router.post("/anc/:criteria", async (req, res) => {
+	const { value } = req.body;
+	const criteria = req.params.criteria;
+	try {
+		if (criteria == "year") {
+			const found = await prisma.anc.findMany({
+				where: {
+					encounter: {
+						year: value,
+					},
+				},
+				include: {
+					encounter: {
+						include: {
+							patient: true,
+						},
+					},
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+
+			res.status(200).json(found);
+		} else if (criteria == "yearnmonth") {
+			const found = await prisma.anc.findMany({
+				where: {
+					encounter: {
+						year: value?.year,
+						month: value?.month,
+					},
+				},
+				include: {
+					encounter: {
+						include: {
+							patient: true,
+						},
+					},
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+
+			res.status(200).json(found);
+		} else if (criteria == "date") {
+			const found = await prisma.anc.findMany({
+				where: {
+					AND: [
+						{
+							date: {
+								gte: new Date(new Date(value).setUTCHours(0, 0, 0, 0, 0)),
+							},
+						},
+						{
+							date: {
+								lte: new Date(new Date(value).setUTCHours(23, 0, 0, 0, 0)),
+							},
+						},
+					],
+				},
+				include: {
+					encounter: {
+						include: {
+							patient: true,
+						},
+					},
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+			res.status(200).json(found);
+		} else if (criteria == "range") {
+			const found = await prisma.anc.findMany({
+				where: {
+					AND: [
+						{
+							date: {
+								gte: new Date(new Date(value?.from).setUTCHours(0, 0, 0, 0, 0)),
+							},
+						},
+						{
+							date: {
+								lte: new Date(new Date(value?.to).setUTCHours(23, 0, 0, 0, 0)),
+							},
+						},
+					],
+				},
+				include: {
+					encounter: {
+						include: {
+							patient: true,
+						},
+					},
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+
+			res.status(200).json(found);
+		}
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
+// ANC END
 export default router;

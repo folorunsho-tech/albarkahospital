@@ -76,7 +76,7 @@ const ANC = ({ enc_id }: { enc_id: string | null }) => {
 				onChange={setEDate}
 			/>
 			<Select
-				label='ANC ENG'
+				label='ANC EGA'
 				placeholder='Select week(s)'
 				data={[
 					"1W",
@@ -165,7 +165,7 @@ const ANC = ({ enc_id }: { enc_id: string | null }) => {
 				nothingFoundMessage='Nothing found...'
 			/>
 			<Select
-				label='Foetal Abnormallity'
+				label='Foetal Abnormal'
 				placeholder='Select a value'
 				data={["Present", "Absent"]}
 				className='w-[12rem]'

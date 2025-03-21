@@ -63,6 +63,24 @@ const Layout = ({ children }: { children: ReactNode }) => {
 					className='rounded-r-full'
 					active={`/ms/reports/operations` == url}
 				/>
+				<NavLink
+					variant='filled'
+					color='teal'
+					component={Link}
+					href='/ms/reports/anc'
+					label='ANC'
+					className='rounded-r-full'
+					active={`/ms/reports/anc` == url}
+				/>
+				<NavLink
+					variant='filled'
+					color='teal'
+					component={Link}
+					href='/ms/reports/immunizations'
+					label='Immunizations'
+					className='rounded-r-full'
+					active={`/ms/reports/immunizations` == url}
+				/>
 			</nav>
 			{children}
 		</main>

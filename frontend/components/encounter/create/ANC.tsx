@@ -55,7 +55,7 @@ const ANC = ({ setANC }: { setANC: any }) => {
 				onChange={setEDate}
 			/>
 			<Select
-				label='ANC ENG'
+				label='ANC EGA'
 				placeholder='Select week(s)'
 				data={[
 					"1W",
