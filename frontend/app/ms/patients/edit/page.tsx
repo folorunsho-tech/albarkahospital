@@ -28,13 +28,121 @@ const Edit = () => {
 	const [reg_date, setRegDate] = useState<any>(new Date());
 	const [religion, setReligion] = useState("");
 	const [townId, setTownId] = useState<any>("");
-
+	const [age, setAge] = useState<string | null>("");
+	const ages = [
+		"1d",
+		"2d",
+		"3d",
+		"4d",
+		"5d",
+		"6d",
+		"7d",
+		"8d",
+		"9d",
+		"10d",
+		"11d",
+		"12d",
+		"13d",
+		"2w",
+		"3w",
+		"4w",
+		"5w",
+		"6w",
+		"7w",
+		"2m",
+		"3m",
+		"4m",
+		"5m",
+		"6m",
+		"7m",
+		"8m",
+		"9m",
+		"10m",
+		"11m",
+		"1y",
+		"1y 6m",
+		"2y",
+		"2y 6m",
+		"3y",
+		"3y 6m",
+		"4y",
+		"4y 6m",
+		"5y",
+		"6y",
+		"7y",
+		"8y",
+		"9y",
+		"10y",
+		"11y",
+		"12y",
+		"13y",
+		"14y",
+		"15y",
+		"16y",
+		"17y",
+		"18y",
+		"19y",
+		"20y",
+		"21y",
+		"22y",
+		"23y",
+		"24y",
+		"25y",
+		"26y",
+		"27y",
+		"28y",
+		"29y",
+		"30y",
+		"31y",
+		"32y",
+		"33y",
+		"34y",
+		"35y",
+		"36y",
+		"37y",
+		"38y",
+		"39y",
+		"40y",
+		"41y",
+		"42y",
+		"43y",
+		"44y",
+		"45y",
+		"46y",
+		"47y",
+		"48y",
+		"49y",
+		"50y",
+		"51y",
+		"52y",
+		"53y",
+		"54y",
+		"55y",
+		"56y",
+		"57y",
+		"58y",
+		"59y",
+		"60y",
+		"61y",
+		"62y",
+		"63y",
+		"64y",
+		"65y",
+		"66y",
+		"67y",
+		"68y",
+		"69y",
+		"70y",
+		"75y",
+		"80y",
+		"85y",
+		"90y",
+	];
 	const form = useForm({
 		mode: "uncontrolled",
 		initialValues: {
 			name: "",
 			hosp_no: "",
-			age: "",
 			phone_no: "",
 			occupation: "",
 		},
@@ -62,11 +170,10 @@ const Edit = () => {
 			form.setValues({
 				name: found?.name,
 				hosp_no: found?.hosp_no,
-				age: found?.age,
 				phone_no: found?.phone_no,
 				occupation: found?.occupation,
 			});
-
+			setAge(found?.age);
 			setSex(found?.sex);
 			setReligion(found?.religion);
 			setTownId(found?.townId);
@@ -84,6 +191,7 @@ const Edit = () => {
 			group_id,
 			religion,
 			townId,
+			age,
 		});
 		// form.reset();
 	};
@@ -156,11 +264,14 @@ const Edit = () => {
 					key={form.key("phone_no")}
 					{...form.getInputProps("phone_no")}
 				/>
-				<TextInput
+				<Select
 					label='Age'
 					placeholder='age...'
-					key={form.key("age")}
-					{...form.getInputProps("age")}
+					data={ages}
+					value={age}
+					onChange={(value) => {
+						setAge(value);
+					}}
 				/>
 				<TextInput
 					label='Occupation'

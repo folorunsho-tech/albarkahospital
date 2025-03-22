@@ -368,8 +368,27 @@ router.post("/encounters/:criteria", async (req, res) => {
 				},
 				include: {
 					care: true,
-					follow_ups: true,
+					follow_ups: {
+						include: {
+							encounter: {
+								select: {
+									diagnosis: { select: { name: true } },
+									care: true,
+								},
+							},
+						},
+					},
 					diagnosis: true,
+					_count: {
+						select: {
+							drugsGiven: true,
+							labTest: true,
+							anc: true,
+							immunization: true,
+							follow_ups: true,
+						},
+					},
+					patient: true,
 				},
 				orderBy: {
 					updatedAt: "desc",
@@ -385,8 +404,27 @@ router.post("/encounters/:criteria", async (req, res) => {
 				},
 				include: {
 					care: true,
-					follow_ups: true,
+					follow_ups: {
+						include: {
+							encounter: {
+								select: {
+									care: true,
+									diagnosis: { select: { name: true } },
+								},
+							},
+						},
+					},
 					diagnosis: true,
+					_count: {
+						select: {
+							drugsGiven: true,
+							labTest: true,
+							anc: true,
+							follow_ups: true,
+							immunization: true,
+						},
+					},
+					patient: true,
 				},
 				orderBy: {
 					updatedAt: "desc",
@@ -412,8 +450,27 @@ router.post("/encounters/:criteria", async (req, res) => {
 				},
 				include: {
 					care: true,
-					follow_ups: true,
+					follow_ups: {
+						include: {
+							encounter: {
+								select: {
+									diagnosis: { select: { name: true } },
+									care: true,
+								},
+							},
+						},
+					},
 					diagnosis: true,
+					_count: {
+						select: {
+							drugsGiven: true,
+							labTest: true,
+							anc: true,
+							follow_ups: true,
+							immunization: true,
+						},
+					},
+					patient: true,
 				},
 				orderBy: {
 					updatedAt: "desc",
@@ -438,8 +495,27 @@ router.post("/encounters/:criteria", async (req, res) => {
 				},
 				include: {
 					care: true,
-					follow_ups: true,
+					follow_ups: {
+						include: {
+							encounter: {
+								select: {
+									diagnosis: { select: { name: true } },
+									care: true,
+								},
+							},
+						},
+					},
 					diagnosis: true,
+					_count: {
+						select: {
+							drugsGiven: true,
+							labTest: true,
+							anc: true,
+							follow_ups: true,
+							immunization: true,
+						},
+					},
+					patient: true,
 				},
 				orderBy: {
 					updatedAt: "desc",
