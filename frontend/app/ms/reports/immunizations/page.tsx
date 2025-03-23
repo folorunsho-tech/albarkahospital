@@ -121,7 +121,6 @@ const page = () => {
 				tableLoading={loading}
 				rows={rows}
 				printRows={printRows}
-				showSearch={false}
 				filters={filters}
 				loaded={loaded}
 				tableReport={`Immunizations report for Type --> ${value || ""}`}

@@ -71,8 +71,6 @@ const Summary = () => {
 				tableLoading={loading}
 				rows={rows}
 				printRows={printRows}
-				showSearch={false}
-				// filters={filters}
 				tableReport='Drugs report summary'
 				loaded={loaded}
 			/>

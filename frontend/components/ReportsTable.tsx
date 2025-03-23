@@ -18,7 +18,6 @@ import { format } from "date-fns";
 import Image from "next/image";
 
 const ReportsTable = ({
-	showSearch = true,
 	headers,
 	rows,
 	data,
@@ -26,7 +25,6 @@ const ReportsTable = ({
 	sortedData,
 	placeholder,
 	tableLoading,
-	depth = "",
 	printHeaders,
 	printRows,
 	tableReport = "",
@@ -37,7 +35,6 @@ const ReportsTable = ({
 	loaded = "",
 	metadata,
 }: {
-	showSearch?: boolean;
 	headers: string[];
 	rows: ReactElement[];
 	printHeaders?: string[];
@@ -47,7 +44,6 @@ const ReportsTable = ({
 	sortedData: any[];
 	placeholder?: string;
 	tableLoading?: boolean;
-	depth?: string;
 	tableReport?: string;
 	tableFoot?: ReactElement;
 	showPrint?: Boolean;
@@ -62,29 +58,7 @@ const ReportsTable = ({
 		bodyClass: "print",
 		documentTitle: pdfTitle,
 	});
-	const [search, setSearch] = useState("");
-	function filterData(data: any[], search: string) {
-		const query = search.toLowerCase().trim();
-		const filtered = data.filter((item: any) =>
-			keys(data[0]).some((key) =>
-				String(item[key]).toLowerCase().includes(query)
-			)
-		);
 
-		return filtered;
-	}
-	const mappedData = data.map((mDtata) => {
-		return {
-			...mDtata,
-			...mDtata[depth],
-		};
-	});
-	const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		const { value } = event.currentTarget;
-		setSearch(value);
-		const filtered = filterData(mappedData, value);
-		setSortedData(filtered);
-	};
 	useEffect(() => {
 		setSortedData(data);
 	}, [tableLoading]);
@@ -144,14 +118,7 @@ const ReportsTable = ({
 						</Button>
 					)}
 				</div>
-				{showSearch && (
-					<TextInput
-						placeholder={placeholder}
-						leftSection={<Search size={16} />}
-						value={search}
-						onChange={handleSearchChange}
-					/>
-				)}
+
 				<ScrollArea h={700}>
 					{metadata}
 					<Table

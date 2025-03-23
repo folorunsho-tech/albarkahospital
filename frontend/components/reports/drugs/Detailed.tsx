@@ -148,7 +148,6 @@ const Detailed = () => {
 				tableLoading={loading}
 				rows={rows}
 				printRows={printRows}
-				showSearch={false}
 				filters={filters}
 				loaded={loaded}
 				tableReport={`Drugs report detailed for ${filter}`}

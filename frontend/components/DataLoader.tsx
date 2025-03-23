@@ -14,6 +14,8 @@ const DataLoader = ({
 	updated,
 	defaultLoad = "yearnmonth",
 	setLoaded,
+	setLoadedC,
+	setSData,
 }: {
 	link: string;
 	setQueryData: any;
@@ -21,6 +23,8 @@ const DataLoader = ({
 	updated?: boolean;
 	defaultLoad?: string;
 	setLoaded?: any;
+	setLoadedC?: any;
+	setSData?: any;
 }) => {
 	const [criteria, setCriteria] = useState(defaultLoad);
 	const [cYear, setCYear] = useState<string | null>(curYear);
@@ -115,11 +119,13 @@ const DataLoader = ({
 				value: Number(cYear),
 			});
 			setQueryData(data);
+			setSData(data);
 		} else if (criteria == "yearnmonth") {
 			const { data } = await post(`${link}/${criteria}`, {
 				value: { year: Number(cYnmY), month: cYnmM },
 			});
 			setQueryData(data);
+			setSData(data);
 		} else if (criteria == "date") {
 			const { data } = await post(`${link}/${criteria}`, {
 				value: cDate,
@@ -130,11 +136,12 @@ const DataLoader = ({
 				value: { from, to },
 			});
 			setQueryData(data);
+			setSData(data);
 		}
 	};
 	useEffect(() => {
 		getData();
-	}, [criteria, cYear, cYnmY, cYnmM, cDate, to, updated]);
+	}, [criteria, cYear, cYnmY, cYnmM, cDate, to, updated, from]);
 	useEffect(() => {
 		if (setLoaded)
 			if (criteria == "yearnmonth") {
@@ -150,7 +157,37 @@ const DataLoader = ({
 					).toLocaleDateString()}`
 				);
 			}
-	}, [criteria, cYear, cYnmY, cYnmM, cDate, to]);
+	}, [criteria, cYear, cYnmY, cYnmM, cDate, to, from]);
+	useEffect(() => {
+		if (setLoadedC)
+			if (criteria == "yearnmonth") {
+				setLoadedC({
+					criteria,
+					value: {
+						year: Number(cYnmY),
+						month: cYnmM,
+					},
+				});
+			} else if (criteria == "year") {
+				setLoadedC({
+					criteria,
+					value: Number(cYear),
+				});
+			} else if (criteria == "date") {
+				setLoadedC({
+					criteria,
+					value: cDate,
+				});
+			} else if (criteria == "range") {
+				setLoadedC({
+					criteria,
+					value: {
+						from,
+						to,
+					},
+				});
+			}
+	}, [criteria, cYear, cYnmY, cYnmM, cDate, to, from]);
 	return (
 		<form
 			className='flex items-end gap-6 '

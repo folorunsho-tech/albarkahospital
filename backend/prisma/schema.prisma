@@ -22,14 +22,13 @@ model Accounts {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  authHistory     AuthHistory[]
-  patients        Patients[]
-  encounters      Encounters[]
-  drugsInventory  DrugsInventory[]
-  stocksHistory   StocksHistory[]
-  drugPurchases   DrugPurchases[]
-  transactions    Transactions[]
-  transactionHist TransactionHist[]
+  authHistory    AuthHistory[]
+  patients       Patients[]
+  encounters     Encounters[]
+  drugsInventory DrugsInventory[]
+  stocksHistory  StocksHistory[]
+  drugPurchases  DrugPurchases[]
+  transactions   Transaction[]
 }
 
 model AuthHistory {
@@ -41,7 +40,7 @@ model AuthHistory {
 }
 
 model Patients {
-  id           String         @id @default(cuid())
+  id           String        @id @default(cuid())
   hosp_no      String
   year         Int?
   month        String?
@@ -54,15 +53,15 @@ model Patients {
   reg_date     DateTime?
   createdById  String?
   updatedById  String?
-  updatedBy    Accounts?      @relation(fields: [updatedById], references: [id])
-  createdAt    DateTime       @default(now())
-  updatedAt    DateTime       @updatedAt
+  updatedBy    Accounts?     @relation(fields: [updatedById], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   encounters   Encounters[]
-  transactions Transactions[]
+  transactions Transaction[]
   group_id     String?
-  groups       Groups?        @relation(fields: [group_id], references: [id])
+  groups       Groups?       @relation(fields: [group_id], references: [id])
   townId       String?
-  town         Town?          @relation(fields: [townId], references: [id])
+  town         Town?         @relation(fields: [townId], references: [id])
 }
 
 model Encounters {
@@ -120,7 +119,7 @@ model Admission {
   encounter_id  String?     @unique
   encounter     Encounters? @relation(fields: [encounter_id], references: [id])
   adm_date      DateTime?
-  admitted_for  String?
+  admitted_for  Int?
   discharged_on DateTime?
   nok_phone     String?
   ward_matron   String?
@@ -220,59 +219,46 @@ model LabTest {
   updatedAt    DateTime    @updatedAt
 }
 
-model Transactions {
-  id              String            @id
-  items           TnxItems[]
-  method          String?
-  status          String?
-  total           Int?
-  date            DateTime          @default(now())
-  year            Int?
-  month           String?
-  createdById     String?
-  updatedById     String?
-  updatedBy       Accounts?         @relation(fields: [updatedById], references: [id])
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
-  patient_id      String?
-  patient         Patients?         @relation(fields: [patient_id], references: [id])
-  transactionHist TransactionHist[]
+model Transaction {
+  id          String    @id
+  items       TnxItem[]
+  total       Int
+  date        DateTime  @default(now())
+  year        Int
+  month       String
+  status      String
+  createdById String?
+  updatedById String?
+  updatedBy   Accounts? @relation(fields: [updatedById], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  patientId   String?
+  patient     Patients? @relation(fields: [patientId], references: [id])
 }
 
-model TransactionHist {
-  id            String        @id
-  items         Json?
-  method        String?
-  status        String?
-  date          DateTime      @default(now())
-  year          Int?
-  total         Int?
-  month         String?
-  createdById   String?
-  createdBy     Accounts?     @relation(fields: [createdById], references: [id])
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  transactionId String?
-  transaction   Transactions? @relation(fields: [transactionId], references: [id])
-}
-
-model TnxItems {
+model TnxItem {
   id            String        @id @default(uuid())
-  hosp_no       String?
-  patient_name  String?
-  item_id       String?
-  item          Fees?         @relation(fields: [item_id], references: [id])
-  amount        Int?          @default(0)
-  paid          Int?          @default(0)
+  transactionId String
+  transaction   Transaction   @relation(fields: [transactionId], references: [id])
+  name          String
+  amount        Int           @default(0)
+  paid          Int           @default(0)
   method        String?
-  status        String?
+  payments      ItemPayment[] // All payments made for this item
   date          DateTime      @default(now())
   year          Int?
   month         String?
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
-  transactionId String?
-  transaction   Transactions? @relation(fields: [transactionId], references: [id])
+}
+
+model ItemPayment {
+  id         String   @id @default(uuid())
+  itemId     String
+  tnxItem    TnxItem  @relation(fields: [itemId], references: [id])
+  amountPaid Float
+  method     String?
+  paidAt     DateTime @default(now())
 }
 
 model DrugsInventory {
@@ -373,11 +359,10 @@ model Procedures {
 }
 
 model Fees {
-  id        String     @id @default(cuid())
+  id        String   @id @default(cuid())
   name      String?
   amount    Int?
-  createdAt DateTime   @default(now())
-  tnxItems  TnxItems[]
+  createdAt DateTime @default(now())
 }
 
 model Care {
