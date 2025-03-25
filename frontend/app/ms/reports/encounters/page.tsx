@@ -9,16 +9,15 @@ import DataLoader from "@/components/DataLoader";
 import ReportsTable from "@/components/ReportsTable";
 
 const page = () => {
-	const { post, loading } = usePostNormal();
-	const { fetch } = useFetch();
+	const { post, loading, data } = usePostNormal();
 	const [queryData, setQueryData] = useState<any[]>([]);
+	const [sortedData, setSortedData] = useState<any[]>(queryData);
+	const { fetch } = useFetch();
 	const [cares, setCares] = useState<any[]>([]);
 	const [diagnosis, setDiagnosis] = useState<any[]>([]);
-	const [sortedData, setSortedData] = useState<any[]>(queryData);
 	const [value, setValue] = useState<any>("");
 	const [criteria, setCriteria] = useState<string | null>("");
 	const [loaded, setLoaded] = useState<any>("");
-	const [loadedC, setLoadedC] = useState<any>(null);
 	const rows = sortedData?.map((row, i) => (
 		<Table.Tr key={row?.id}>
 			<Table.Td>{new Date(row?.enc_date).toLocaleDateString()}</Table.Td>
@@ -181,6 +180,7 @@ const page = () => {
 		"85y",
 		"90y",
 	];
+
 	const getValuesUI = () => {
 		if (criteria == "Care") {
 			return (
@@ -332,20 +332,29 @@ const page = () => {
 			setSortedData(found);
 		}
 		if (criteria == "Diagnosis") {
-			const { data: fetched } = await post(
-				`/reports/diagnosis/${value}`,
-				loadedC
-			);
-			setSortedData(fetched);
+			const isDiags = queryData.filter((d: any) => d?.diagnosis.length > 0);
+			const found: any[] = [];
+			isDiags.forEach((enc: { diagnosis: any[] }) => {
+				const filtered = enc.diagnosis.filter(
+					(diag: { id: string; name: string }) => diag.id == value
+				);
+				if (filtered.length > 0) found.push(enc);
+			});
+			setSortedData(found);
 		}
 		if (criteria == "Under-5 Malaria") {
-			const { data: fetched } = await post(
-				`/reports/diagnosis/cm5futgxg003puqowdki7wszk`,
-				loadedC
+			const isDiags = queryData.filter(
+				(d: any) =>
+					d?.diagnosis.length > 0 && ages.indexOf(d?.age) < ages.indexOf("5y")
 			);
-			const found = fetched?.filter(
-				(d: any) => ages.indexOf(d?.age) < ages.indexOf("5y")
-			);
+			const found: any[] = [];
+			isDiags.forEach((enc: { diagnosis: any[] }) => {
+				const filtered = enc.diagnosis.filter(
+					(diag: { id: string; name: string }) =>
+						diag.name.toLowerCase().includes("malaria")
+				);
+				if (filtered.length > 0) found.push(enc);
+			});
 			setSortedData(found);
 		}
 
@@ -414,7 +423,6 @@ const page = () => {
 						setSortedData(queryData);
 						setCriteria(null);
 						setValue(null);
-						// setCondition("equals");
 					}}
 				>
 					Clear Filter
@@ -447,11 +455,12 @@ const page = () => {
 		};
 		getD();
 	}, []);
+
 	useEffect(() => {
-		setSortedData(queryData);
 		setCriteria(null);
 		setValue(null);
-	}, [loaded]);
+		setSortedData(queryData);
+	}, [loaded, data]);
 
 	return (
 		<main className='space-y-6'>
@@ -460,9 +469,7 @@ const page = () => {
 					link='/reports/encounters'
 					post={post}
 					setQueryData={setQueryData}
-					setSData={setSortedData}
 					setLoaded={setLoaded}
-					setLoadedC={setLoadedC}
 				/>
 
 				<Text size='md' fw={600}>

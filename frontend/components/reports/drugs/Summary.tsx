@@ -53,7 +53,6 @@ const Summary = () => {
 					link='/reports/drugs/summary'
 					post={post}
 					setQueryData={setQueryData}
-					defaultLoad='year'
 					setLoaded={setLoaded}
 				/>
 

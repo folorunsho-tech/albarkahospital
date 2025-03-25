@@ -1,4 +1,4 @@
-import { TextInput } from "@mantine/core";
+import { NumberInput, TextInput } from "@mantine/core";
 import { DatePickerInput } from "@mantine/dates";
 import { useEffect, useState } from "react";
 
@@ -7,7 +7,7 @@ const Admission = ({ setAdmission }: { setAdmission: any }) => {
 	const [discharged_on, setDischargedOn] = useState<any>(null);
 	const [nok_phone, setNokPhone] = useState<any>("");
 	const [ward_matron, setMatron] = useState<any>("");
-	const [admitted_for, setAdmittedFor] = useState<any>("");
+	const [admitted_for, setAdmittedFor] = useState<number | string>();
 	useEffect(() => {
 		setAdmission({
 			adm_date,
@@ -37,12 +37,13 @@ const Admission = ({ setAdmission }: { setAdmission: any }) => {
 					setNokPhone(e.currentTarget.value);
 				}}
 			/>
-			<TextInput
+			<NumberInput
 				label='Days of Admission'
 				placeholder='Days of Admission'
 				value={admitted_for}
-				onChange={(e) => {
-					setAdmittedFor(e.currentTarget.value);
+				suffix=' Days'
+				onChange={(value) => {
+					setAdmittedFor(value);
 				}}
 			/>
 			<DatePickerInput

@@ -31,6 +31,15 @@ const Layout = ({ children }: { children: ReactNode }) => {
 					variant='filled'
 					color='teal'
 					component={Link}
+					href='/ms/reports/admissions'
+					label='Admissions'
+					className='rounded-r-full'
+					active={`/ms/reports/admissions` == url}
+				/>
+				<NavLink
+					variant='filled'
+					color='teal'
+					component={Link}
 					href='/ms/reports/drugs'
 					label='Drugs'
 					className='rounded-r-full'

@@ -5,9 +5,13 @@ const router = Router();
 
 router.get("/", async (req, res) => {
 	try {
-		const found = await prisma.transactions.findMany({
+		const found = await prisma.transaction.findMany({
 			include: {
-				items: true,
+				include: {
+					items: true,
+					reciepts: true,
+					patient: true,
+				},
 			},
 		});
 		res.status(200).json(found);
@@ -17,12 +21,14 @@ router.get("/", async (req, res) => {
 });
 router.get("/:id", async (req, res) => {
 	try {
-		const found = await prisma.transactions.findMany({
+		const found = await prisma.transaction.findMany({
 			where: {
 				id: req.params.id,
 			},
 			include: {
 				items: true,
+				reciepts: true,
+				patient: true,
 			},
 		});
 		res.status(200).json(found);

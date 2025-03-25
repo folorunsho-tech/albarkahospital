@@ -256,7 +256,15 @@ router.post("/", async (req, res) => {
 				month,
 			};
 		});
-
+		if (follow_up_to !== "" || follow_up_to !== null) {
+			await prisma.followups.create({
+				data: {
+					encounter_id: follow_up_to,
+					year,
+					month,
+				},
+			});
+		}
 		const created = await prisma.encounters.create({
 			data: {
 				patient_id,
@@ -329,15 +337,6 @@ router.post("/", async (req, res) => {
 				},
 			});
 		}
-		if (follow_up_to !== "" || follow_up_to !== null) {
-			await prisma.followups.create({
-				data: {
-					encounter_id: follow_up_to,
-					year,
-					month,
-				},
-			});
-		}
 		if (anc?.date) {
 			await prisma.anc.create({
 				data: {
@@ -406,6 +405,7 @@ router.post("/", async (req, res) => {
 		res.status(200).json(created);
 	} catch (error) {
 		res.status(500).json(error);
+		console.log(error);
 	}
 });
 router.post("/edit/operation/:id", async (req, res) => {

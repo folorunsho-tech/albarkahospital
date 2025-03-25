@@ -5,14 +5,15 @@ import { Text, Table, Select, Button } from "@mantine/core";
 import { usePostNormal } from "@/queries";
 import { useEffect, useState } from "react";
 import DataLoader from "@/components/DataLoader";
-
+import { isEqual } from "date-fns";
 import ReportsTable from "@/components/ReportsTable";
+import { DatePickerInput } from "@mantine/dates";
 
 const page = () => {
 	const { post, loading } = usePostNormal();
 	const [queryData, setQueryData] = useState<any[]>([]);
 	const [sortedData, setSortedData] = useState<any[]>(queryData);
-	const [value, setValue] = useState<string | undefined | null>("");
+	const [value, setValue] = useState<string | any | null>("");
 	const [criteria, setCriteria] = useState<string | null>("");
 	const [loaded, setLoaded] = useState<any>("");
 	const rows = sortedData?.map((row, i) => (
@@ -103,6 +104,19 @@ const page = () => {
 					className='w-[16rem]'
 					searchable
 					clearable
+					value={value}
+					onChange={(value) => {
+						setValue(value);
+					}}
+				/>
+			);
+		}
+		if (criteria == "EDD") {
+			return (
+				<DatePickerInput
+					label='EDD'
+					placeholder='date'
+					className='w-44'
 					value={value}
 					onChange={(value) => {
 						setValue(value);
@@ -212,6 +226,14 @@ const page = () => {
 			const found = queryData?.filter((d: any) => d?.ega == value);
 			setSortedData(found);
 		}
+		if (criteria == "EDD") {
+			const date = new Date(value).setHours(0, 0, 0, 0);
+			const found = queryData?.filter((d: any) => {
+				const edd = new Date(new Date(d?.edd).setHours(0, 0, 0, 0));
+				return isEqual(edd, new Date(date));
+			});
+			setSortedData(found);
+		}
 		if (criteria == "Foetal Presentation") {
 			const found = queryData?.filter((d: any) => d?.fe_diagnosis == value);
 			setSortedData(found);
@@ -252,6 +274,7 @@ const page = () => {
 					placeholder='select a criteria'
 					data={[
 						"EGA",
+						"EDD",
 						"Foetal Presentation",
 						"Foetal No",
 						"Foetal Live",

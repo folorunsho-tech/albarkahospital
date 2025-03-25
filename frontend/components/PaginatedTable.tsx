@@ -82,7 +82,6 @@ const PaginatedTable = ({
 		setSearch(value);
 		const filtered = filterData(mappedData, value);
 		const chunked = chunk(filtered, chunkAmnt);
-		// console.log(filtered);
 		setPage(1);
 		setSortedData(chunked[activePage - 1]);
 		setPrintData(filtered);
