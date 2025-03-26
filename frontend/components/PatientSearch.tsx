@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Combobox, Loader, TextInput, useCombobox } from "@mantine/core";
 import { axiosInstance as axios } from "@/lib/config";
 
@@ -18,13 +18,7 @@ function getAsyncData(searchQuery: string, signal: AbortSignal) {
 	});
 }
 
-export default function PatientSearch({
-	setSelected,
-	setPatient,
-}: {
-	setSelected: any;
-	setPatient: any;
-}) {
+export default function PatientSearch({ setPatient }: { setPatient: any }) {
 	const combobox = useCombobox({
 		onDropdownClose: () => combobox.resetSelectedOption(),
 	});
@@ -55,15 +49,16 @@ export default function PatientSearch({
 			{item?.hosp_no} - {item?.name}
 		</Combobox.Option>
 	));
-
+	useEffect(() => {
+		if (value == "") {
+			setPatient(null);
+		}
+	}, [value]);
 	return (
 		<Combobox
 			onOptionSubmit={(optionValue) => {
 				setValue(optionValue);
-				const id = data?.find(
-					(patient: any) => patient?.hosp_no == optionValue
-				);
-				setSelected(id?.id);
+
 				setPatient(
 					data?.find((patient: any) => patient?.hosp_no == optionValue)
 				);

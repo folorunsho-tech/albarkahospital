@@ -21,9 +21,8 @@ const Immunization = ({ setImmunization }: { setImmunization: any }) => {
 				placeholder='imm date'
 				className='w-44'
 				onChange={setDate}
-				allowDeselect
 				clearable
-				closeOnChange={false}
+				required
 			/>
 			<Select
 				label='Type'
@@ -43,6 +42,7 @@ const Immunization = ({ setImmunization }: { setImmunization: any }) => {
 				placeholder='next date'
 				className='w-44'
 				onChange={setNDate}
+				required
 			/>
 		</main>
 	);

@@ -50,6 +50,7 @@ const Operations = ({ setOperation }: { setOperation: any }) => {
 					setProcedureId(value);
 				}}
 				searchable
+				required
 				nothingFoundMessage='Nothing found...'
 			/>
 			<DatePickerInput
@@ -58,9 +59,8 @@ const Operations = ({ setOperation }: { setOperation: any }) => {
 				className='w-44'
 				value={proc_date}
 				onChange={setOpDate}
-				allowDeselect
 				clearable
-				closeOnChange={false}
+				required
 			/>
 			<Select
 				label='Anaesthesia'

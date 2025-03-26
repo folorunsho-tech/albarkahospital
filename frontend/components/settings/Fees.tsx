@@ -112,7 +112,7 @@ const Fees = () => {
 				tableLoading={loading}
 			/>
 
-			<Modal opened={opened} onClose={close} title='Edit Test'>
+			<Modal opened={opened} onClose={close} title='Edit Fee'>
 				<form
 					className='relative'
 					onSubmit={async (e) => {
@@ -149,7 +149,7 @@ const Fees = () => {
 							Cancel
 						</Button>
 						<Button disabled={!Ename} type='submit'>
-							Update Test
+							Update Fee
 						</Button>
 					</Group>
 				</form>

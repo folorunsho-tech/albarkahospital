@@ -47,9 +47,7 @@ const Immunization = ({ enc_id }: { enc_id: string | null }) => {
 				placeholder='imm date'
 				className='w-44'
 				onChange={setDate}
-				allowDeselect
 				clearable
-				closeOnChange={false}
 			/>
 			<Select
 				label='Type'
@@ -69,6 +67,7 @@ const Immunization = ({ enc_id }: { enc_id: string | null }) => {
 				placeholder='next date'
 				className='w-44'
 				onChange={setNDate}
+				clearable
 			/>
 			<Button color='teal' w={200} type='submit'>
 				Update Immunization

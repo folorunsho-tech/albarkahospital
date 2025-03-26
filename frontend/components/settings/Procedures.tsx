@@ -97,7 +97,7 @@ const Procedures = () => {
 				tableLoading={loading}
 			/>
 
-			<Modal opened={opened} onClose={close} title='Edit Test'>
+			<Modal opened={opened} onClose={close} title='Edit Procedure'>
 				<form
 					className='relative'
 					onSubmit={async (e) => {
@@ -124,7 +124,7 @@ const Procedures = () => {
 							Cancel
 						</Button>
 						<Button disabled={!Ename} type='submit'>
-							Update Test
+							Update Procedure
 						</Button>
 					</Group>
 				</form>

@@ -196,6 +196,9 @@ router.get("/:id/followup", async (req, res) => {
 			include: {
 				care: true,
 			},
+			orderBy: {
+				updatedAt: "desc",
+			},
 		});
 
 		res.status(200).json(found);
@@ -204,20 +207,473 @@ router.get("/:id/followup", async (req, res) => {
 	}
 });
 
-router.post("/", async (req, res) => {
+router.post("/create/anc", async (req, res) => {
 	const {
-		care,
+		careId,
+		month,
+		year,
+		diagnosis,
+		drugsGiven,
+		labTest,
+		createdById,
+		time,
+		stock_updates,
+		anc,
+		follow_up_to,
+		admitted,
+		admission,
+		enc_date,
+		outcome,
+		patient_id,
+	} = req.body;
+	try {
+		const diags = diagnosis?.map((diag) => {
+			return {
+				id: diag,
+			};
+		});
+		const labs = labTest?.map((test) => {
+			return {
+				id: test?.lab_id,
+				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
+				year,
+				month,
+				info: test?.info,
+				result: test?.result,
+				test_id: test?.id,
+				rate: test?.rate,
+			};
+		});
+		const drugsG = drugsGiven?.map((drug) => {
+			return {
+				drug_id: drug?.id,
+				rate: drug?.rate,
+				name: drug?.name,
+				quantity: drug?.quantity,
+				price: drug?.price,
+				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
+				year,
+				month,
+			};
+		});
+		if (follow_up_to) {
+			await prisma.followups.create({
+				data: {
+					encounter_id: follow_up_to,
+					year,
+					month,
+				},
+			});
+		}
+		const created = await prisma.encounters.create({
+			data: {
+				patient_id,
+				year,
+				month,
+				care_id: careId,
+				createdById,
+				diagnosis: {
+					connect: diags,
+				},
+				labTest: {
+					createMany: {
+						data: labs,
+					},
+				},
+				drugsGiven: {
+					createMany: {
+						data: drugsG,
+					},
+				},
+				time,
+				enc_date: new Date(enc_date),
+				admitted,
+				outcome,
+				anc: {
+					create: {
+						ega: anc?.ega,
+						fe_no: anc?.fe_no,
+						fe_liq_vol: anc?.fe_liq_vol,
+						fe_abnormality: anc?.fe_abnormality,
+						fe_diagnosis: anc?.fe_diagnosis,
+						fe_live: anc?.fe_live,
+						placenta_pos: anc?.placenta_pos,
+						edd: anc?.edd,
+						date: new Date(anc?.date),
+					},
+				},
+			},
+			include: {
+				patient: true,
+				care: true,
+				drugsGiven: true,
+			},
+		});
+		stock_updates.forEach(async (update) => {
+			await prisma.drugsInventory.update({
+				where: {
+					id: update?.id,
+				},
+				data: {
+					stock_qty: update?.stock_qty,
+				},
+			});
+		});
+		await prisma.prescriptionHist.createMany({
+			data: drugsGiven?.map((d) => {
+				return {
+					drug: d?.name,
+					hosp_no: created.patient.hosp_no,
+					quantity: d?.quantity,
+					rate: d?.rate,
+					price: d?.price,
+					stock_remain: d?.curr_stock,
+					month,
+					date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
+					time,
+					year,
+					given_id: created.drugsGiven.find((g) => g.drug_id == d?.id).id,
+					enc_id: created.id,
+				};
+			}),
+		});
+		if (admitted) {
+			await prisma.admission.create({
+				data: {
+					encounter_id: created.id,
+					admitted_for: admission?.admitted_for,
+					discharged_on: admission?.discharged_on,
+					outcome: admission?.outcome,
+					nok_phone: admission?.nok_phone,
+					ward_matron: admission?.ward_matron,
+					adm_date: new Date(admission?.adm_date),
+				},
+			});
+		}
+
+		res.status(200).json(created);
+	} catch (error) {
+		res.status(500).json(error);
+		console.log(error);
+	}
+});
+router.post("/create/delivery", async (req, res) => {
+	const {
+		careId,
 		month,
 		year,
 		diagnosis,
 		delivery,
+		drugsGiven,
+		labTest,
+		createdById,
+		time,
+		stock_updates,
+		follow_up_to,
+		admitted,
+		admission,
+		enc_date,
+		outcome,
+		patient_id,
+	} = req.body;
+	try {
+		const diags = diagnosis?.map((diag) => {
+			return {
+				id: diag,
+			};
+		});
+		const labs = labTest?.map((test) => {
+			return {
+				id: test?.lab_id,
+				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
+				year,
+				month,
+				info: test?.info,
+				result: test?.result,
+				test_id: test?.id,
+				rate: test?.rate,
+			};
+		});
+		const drugsG = drugsGiven?.map((drug) => {
+			return {
+				drug_id: drug?.id,
+				rate: drug?.rate,
+				name: drug?.name,
+				quantity: drug?.quantity,
+				price: drug?.price,
+				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
+				year,
+				month,
+			};
+		});
+		if (follow_up_to) {
+			await prisma.followups.create({
+				data: {
+					encounter_id: follow_up_to,
+					year,
+					month,
+				},
+			});
+		}
+		const created = await prisma.encounters.create({
+			data: {
+				patient_id,
+				year,
+				month,
+				care_id: careId,
+				createdById,
+				diagnosis: {
+					connect: diags,
+				},
+				labTest: {
+					createMany: {
+						data: labs,
+					},
+				},
+				drugsGiven: {
+					createMany: {
+						data: drugsG,
+					},
+				},
+				time,
+				enc_date: new Date(enc_date),
+				admitted,
+				outcome,
+				delivery: {
+					create: {
+						parity: delivery?.parity,
+						mother_diag: delivery?.mother_diag,
+						labour_duration: delivery?.labour_duration,
+						delivery_type: delivery?.delivery_type,
+						placenta_delivery: delivery?.placenta_delivery,
+						apgar_score: delivery?.apgar_score,
+						baby_outcome: delivery?.baby_outcome,
+						baby_maturity: delivery?.baby_maturity,
+						baby_weight: delivery?.baby_weight,
+						baby_sex: delivery?.baby_sex,
+						midwife: delivery?.midwife,
+						congenital_no: Number(delivery?.congenital_no),
+						mother_outcome: delivery?.mother_outcome,
+						delivery_date: new Date(delivery?.delivery_date),
+						year,
+						month,
+					},
+				},
+			},
+			include: {
+				patient: true,
+				care: true,
+				drugsGiven: true,
+			},
+		});
+		stock_updates.forEach(async (update) => {
+			await prisma.drugsInventory.update({
+				where: {
+					id: update?.id,
+				},
+				data: {
+					stock_qty: update?.stock_qty,
+				},
+			});
+		});
+		await prisma.prescriptionHist.createMany({
+			data: drugsGiven?.map((d) => {
+				return {
+					drug: d?.name,
+					hosp_no: created.patient.hosp_no,
+					quantity: d?.quantity,
+					rate: d?.rate,
+					price: d?.price,
+					stock_remain: d?.curr_stock,
+					month,
+					date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
+					time,
+					year,
+					given_id: created.drugsGiven.find((g) => g.drug_id == d?.id).id,
+					enc_id: created.id,
+				};
+			}),
+		});
+		if (admitted) {
+			await prisma.admission.create({
+				data: {
+					encounter_id: created.id,
+					admitted_for: admission?.admitted_for,
+					discharged_on: admission?.discharged_on,
+					outcome: admission?.outcome,
+					nok_phone: admission?.nok_phone,
+					ward_matron: admission?.ward_matron,
+					adm_date: new Date(admission?.adm_date),
+				},
+			});
+		}
+
+		res.status(200).json(created);
+	} catch (error) {
+		res.status(500).json(error);
+		console.log(error);
+	}
+});
+router.post("/create/operation", async (req, res) => {
+	const {
+		careId,
+		month,
+		year,
+		diagnosis,
 		drugsGiven,
 		operation,
 		labTest,
 		createdById,
 		time,
 		stock_updates,
-		anc,
+		follow_up_to,
+		admitted,
+		admission,
+		enc_date,
+		outcome,
+		patient_id,
+	} = req.body;
+	try {
+		const diags = diagnosis?.map((diag) => {
+			return {
+				id: diag,
+			};
+		});
+		const labs = labTest?.map((test) => {
+			return {
+				id: test?.lab_id,
+				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
+				year,
+				month,
+				info: test?.info,
+				result: test?.result,
+				test_id: test?.id,
+				rate: test?.rate,
+			};
+		});
+		const drugsG = drugsGiven?.map((drug) => {
+			return {
+				drug_id: drug?.id,
+				rate: drug?.rate,
+				name: drug?.name,
+				quantity: drug?.quantity,
+				price: drug?.price,
+				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
+				year,
+				month,
+			};
+		});
+		if (follow_up_to) {
+			await prisma.followups.create({
+				data: {
+					encounter_id: follow_up_to,
+					year,
+					month,
+				},
+			});
+		}
+		const created = await prisma.encounters.create({
+			data: {
+				patient_id,
+				year,
+				month,
+				care_id: careId,
+				createdById,
+				diagnosis: {
+					connect: diags,
+				},
+				labTest: {
+					createMany: {
+						data: labs,
+					},
+				},
+				drugsGiven: {
+					createMany: {
+						data: drugsG,
+					},
+				},
+				time,
+				enc_date: new Date(enc_date),
+				admitted,
+				outcome,
+				operations: {
+					create: {
+						procedureId: operation?.procedureId,
+						proc_date: operation?.proc_date,
+						surgeon: operation?.surgeon,
+						assistant: operation?.assistant,
+						outcome: operation?.outcome,
+						anaesthesia: operation?.anaesthesia,
+						year,
+						month,
+					},
+				},
+			},
+			include: {
+				patient: true,
+				care: true,
+				drugsGiven: true,
+			},
+		});
+		stock_updates.forEach(async (update) => {
+			await prisma.drugsInventory.update({
+				where: {
+					id: update?.id,
+				},
+				data: {
+					stock_qty: update?.stock_qty,
+				},
+			});
+		});
+		await prisma.prescriptionHist.createMany({
+			data: drugsGiven?.map((d) => {
+				return {
+					drug: d?.name,
+					hosp_no: created.patient.hosp_no,
+					quantity: d?.quantity,
+					rate: d?.rate,
+					price: d?.price,
+					stock_remain: d?.curr_stock,
+					month,
+					date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
+					time,
+					year,
+					given_id: created.drugsGiven.find((g) => g.drug_id == d?.id).id,
+					enc_id: created.id,
+				};
+			}),
+		});
+		if (admitted) {
+			await prisma.admission.create({
+				data: {
+					encounter_id: created.id,
+					admitted_for: admission?.admitted_for,
+					discharged_on: admission?.discharged_on,
+					outcome: admission?.outcome,
+					nok_phone: admission?.nok_phone,
+					ward_matron: admission?.ward_matron,
+					adm_date: new Date(admission?.adm_date),
+				},
+			});
+		}
+
+		res.status(200).json(created);
+	} catch (error) {
+		res.status(500).json(error);
+		console.log(error);
+	}
+});
+router.post("/create/immunization", async (req, res) => {
+	const {
+		careId,
+		month,
+		year,
+		diagnosis,
+		drugsGiven,
+		labTest,
+		createdById,
+		time,
+		stock_updates,
 		immunization,
 		follow_up_to,
 		admitted,
@@ -256,7 +712,7 @@ router.post("/", async (req, res) => {
 				month,
 			};
 		});
-		if (follow_up_to !== "" || follow_up_to !== null) {
+		if (follow_up_to) {
 			await prisma.followups.create({
 				data: {
 					encounter_id: follow_up_to,
@@ -270,7 +726,150 @@ router.post("/", async (req, res) => {
 				patient_id,
 				year,
 				month,
-				care_id: care,
+				care_id: careId,
+				createdById,
+				diagnosis: {
+					connect: diags,
+				},
+				labTest: {
+					createMany: {
+						data: labs,
+					},
+				},
+				drugsGiven: {
+					createMany: {
+						data: drugsG,
+					},
+				},
+				time,
+				enc_date: new Date(enc_date),
+				admitted,
+				outcome,
+				immunization: {
+					create: {
+						date: new Date(immunization?.date),
+						next_date: new Date(immunization?.next_date),
+						type: immunization?.type,
+					},
+				},
+			},
+			include: {
+				patient: true,
+				care: true,
+				drugsGiven: true,
+			},
+		});
+		stock_updates.forEach(async (update) => {
+			await prisma.drugsInventory.update({
+				where: {
+					id: update?.id,
+				},
+				data: {
+					stock_qty: update?.stock_qty,
+				},
+			});
+		});
+		await prisma.prescriptionHist.createMany({
+			data: drugsGiven?.map((d) => {
+				return {
+					drug: d?.name,
+					hosp_no: created.patient.hosp_no,
+					quantity: d?.quantity,
+					rate: d?.rate,
+					price: d?.price,
+					stock_remain: d?.curr_stock,
+					month,
+					date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
+					time,
+					year,
+					given_id: created.drugsGiven.find((g) => g.drug_id == d?.id).id,
+					enc_id: created.id,
+				};
+			}),
+		});
+		if (admitted) {
+			await prisma.admission.create({
+				data: {
+					encounter_id: created.id,
+					admitted_for: admission?.admitted_for,
+					discharged_on: admission?.discharged_on,
+					outcome: admission?.outcome,
+					nok_phone: admission?.nok_phone,
+					ward_matron: admission?.ward_matron,
+					adm_date: new Date(admission?.adm_date),
+				},
+			});
+		}
+
+		res.status(200).json(created);
+	} catch (error) {
+		res.status(500).json(error);
+		console.log(error);
+	}
+});
+router.post("/", async (req, res) => {
+	const {
+		careId,
+		month,
+		year,
+		diagnosis,
+		drugsGiven,
+		labTest,
+		createdById,
+		time,
+		stock_updates,
+		follow_up_to,
+		admitted,
+		admission,
+		enc_date,
+		outcome,
+		patient_id,
+	} = req.body;
+	try {
+		const diags = diagnosis?.map((diag) => {
+			return {
+				id: diag,
+			};
+		});
+		const labs = labTest?.map((test) => {
+			return {
+				id: test?.lab_id,
+				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
+				year,
+				month,
+				info: test?.info,
+				result: test?.result,
+				test_id: test?.id,
+				rate: test?.rate,
+			};
+		});
+		const drugsG = drugsGiven?.map((drug) => {
+			return {
+				drug_id: drug?.id,
+				rate: drug?.rate,
+				name: drug?.name,
+				quantity: drug?.quantity,
+				price: drug?.price,
+				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
+				year,
+				month,
+			};
+		});
+		if (follow_up_to) {
+			await prisma.followups.create({
+				data: {
+					encounter_id: follow_up_to,
+					year,
+					month,
+				},
+			});
+		}
+		const created = await prisma.encounters.create({
+			data: {
+				patient_id,
+				year,
+				month,
+				care_id: careId,
 				createdById,
 				diagnosis: {
 					connect: diags,
@@ -334,70 +933,6 @@ router.post("/", async (req, res) => {
 					nok_phone: admission?.nok_phone,
 					ward_matron: admission?.ward_matron,
 					adm_date: new Date(admission?.adm_date),
-				},
-			});
-		}
-		if (anc?.date) {
-			await prisma.anc.create({
-				data: {
-					ega: anc?.ega,
-					fe_no: anc?.fe_no,
-					fe_liq_vol: anc?.fe_liq_vol,
-					fe_abnormality: anc?.fe_abnormality,
-					fe_diagnosis: anc?.fe_diagnosis,
-					fe_live: anc?.fe_live,
-					placenta_pos: anc?.placenta_pos,
-					edd: anc?.edd,
-					date: new Date(anc?.date),
-					encounter_id: created.id,
-				},
-			});
-		}
-		if (delivery?.delivery_date) {
-			await prisma.delivery.create({
-				data: {
-					parity: delivery?.parity,
-					mother_diag: delivery?.mother_diag,
-					labour_duration: delivery?.labour_duration,
-					delivery_type: delivery?.delivery_type,
-					placenta_delivery: delivery?.placenta_delivery,
-					apgar_score: delivery?.apgar_score,
-					baby_outcome: delivery?.baby_outcome,
-					baby_maturity: delivery?.baby_maturity,
-					baby_weight: delivery?.baby_weight,
-					baby_sex: delivery?.baby_sex,
-					midwife: delivery?.midwife,
-					congenital_no: Number(delivery?.congenital_no),
-					mother_outcome: delivery?.mother_outcome,
-					delivery_date: new Date(delivery?.delivery_date),
-					year,
-					month,
-					encounter_id: created.id,
-				},
-			});
-		}
-		if (operation?.procedureId !== "") {
-			await prisma.operations.create({
-				data: {
-					procedureId: operation?.procedureId,
-					proc_date: operation?.proc_date,
-					surgeon: operation?.surgeon,
-					assistant: operation?.assistant,
-					outcome: operation?.outcome,
-					anaesthesia: operation?.anaesthesia,
-					year,
-					month,
-					encounter_id: created.id,
-				},
-			});
-		}
-		if (immunization?.date) {
-			await prisma.immunization.create({
-				data: {
-					date: new Date(immunization?.date),
-					next_date: new Date(immunization?.next_date),
-					type: immunization?.type,
-					encounter_id: created.id,
 				},
 			});
 		}

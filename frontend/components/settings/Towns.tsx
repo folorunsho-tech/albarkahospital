@@ -96,7 +96,7 @@ const Towns = () => {
 				tableLoading={loading}
 			/>
 
-			<Modal opened={opened} onClose={close} title='Edit Test'>
+			<Modal opened={opened} onClose={close} title='Edit Town'>
 				<form
 					className='relative'
 					onSubmit={async (e) => {

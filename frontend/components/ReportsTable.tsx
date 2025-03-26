@@ -72,6 +72,7 @@ const ReportsTable = ({
 							height={120}
 							width={120}
 							alt='Albarka logo'
+							loading='eager'
 						/>
 						<div className='space-y-1 w-full'>
 							<div className='flex items-center w-full justify-between'>

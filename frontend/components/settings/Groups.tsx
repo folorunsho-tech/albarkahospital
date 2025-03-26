@@ -97,7 +97,7 @@ const Groups = () => {
 				tableLoading={loading}
 			/>
 
-			<Modal opened={opened} onClose={close} title='Edit Test'>
+			<Modal opened={opened} onClose={close} title='Edit Group'>
 				<form
 					className='relative'
 					onSubmit={async (e) => {
@@ -112,7 +112,7 @@ const Groups = () => {
 				>
 					<TextInput
 						label='Name'
-						placeholder='groups name...'
+						placeholder='group name...'
 						value={Ename}
 						onChange={(e) => {
 							setEName(e.currentTarget.value);
@@ -124,7 +124,7 @@ const Groups = () => {
 							Cancel
 						</Button>
 						<Button disabled={!Ename} type='submit'>
-							Update Test
+							Update Group
 						</Button>
 					</Group>
 				</form>

@@ -97,7 +97,7 @@ const Care = () => {
 				tableLoading={loading}
 			/>
 
-			<Modal opened={opened} onClose={close} title='Edit Test'>
+			<Modal opened={opened} onClose={close} title='Edit care'>
 				<form
 					className='relative'
 					onSubmit={async (e) => {
@@ -124,7 +124,7 @@ const Care = () => {
 							Cancel
 						</Button>
 						<Button disabled={!Ename} type='submit'>
-							Update Test
+							Update Care
 						</Button>
 					</Group>
 				</form>

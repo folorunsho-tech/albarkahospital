@@ -5,7 +5,13 @@ import { useFetch } from "@/queries";
 import { MultiSelect } from "@mantine/core";
 import { useEffect, useState } from "react";
 
-const Diagnosis = ({ setDiagnosis }: { setDiagnosis: any }) => {
+const Diagnosis = ({
+	setDiagnosis,
+	diagnosis,
+}: {
+	setDiagnosis: any;
+	diagnosis: string[];
+}) => {
 	const { fetch } = useFetch();
 	const [diagnosisL, setDiagnosisL] = useState([]);
 	useEffect(() => {
@@ -29,6 +35,7 @@ const Diagnosis = ({ setDiagnosis }: { setDiagnosis: any }) => {
 			hidePickedOptions
 			clearable
 			className='w-3/4'
+			value={diagnosis}
 			onChange={(value: any) => {
 				setDiagnosis(value);
 			}}

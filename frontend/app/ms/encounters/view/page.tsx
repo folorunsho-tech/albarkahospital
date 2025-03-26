@@ -3,7 +3,7 @@
 import { ArrowLeft, Pencil, Printer } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useFetch } from "@/queries";
-import { Button, NumberFormatter, Table, Text } from "@mantine/core";
+import { Button, NumberFormatter, Pill, Table, Text } from "@mantine/core";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -170,176 +170,191 @@ const View = () => {
 							<label htmlFor='diag' className='font-bold'>
 								Diagnosis
 							</label>
-							<ul id='diag' className='pl-4 flex-wrap flex gap-6 list-decimal'>
-								{queryData?.diagnosis?.map((diag: any) => (
-									<li key={diag?.id}>{diag?.name}</li>
-								))}
-							</ul>
+							{queryData?.diagnosis?.length > 0 ? (
+								<ul id='diag' className='pl-4 mt-3 flex-wrap flex gap-2'>
+									{queryData?.diagnosis?.map((diag: any) => (
+										<Pill key={diag?.id}>{diag?.name}</Pill>
+									))}
+								</ul>
+							) : (
+								<p className='text-center font-light'>Empty</p>
+							)}
 						</div>
 					</div>
-					<div id='delivery' className='flex flex-col gap-2 flex-wrap'>
-						<label htmlFor='del' className='font-bold'>
-							Delivery
-						</label>
-						<div id='del' className='pl-4 flex-wrap flex gap-3'>
-							<Text className='flex gap-1 items-center'>
-								Delivery date:
-								<i className='text-sm'>
-									{queryData?.delivery[0]?.delivery_date
-										? format(queryData?.delivery[0]?.delivery_date, "P")
-										: null}
-								</i>
-							</Text>
-							<Text>
-								Parity: <i>{queryData?.delivery[0]?.parity}</i>
-							</Text>
-							<Text>
-								Labour Duration:{" "}
-								<i>{queryData?.delivery[0]?.labour_duration}</i>
-							</Text>
-							<Text>
-								Placenta deivery:{" "}
-								<i>{queryData?.delivery[0]?.placenta_delivery}</i>
-							</Text>
-							<Text>
-								Delivery Type: <i>{queryData?.delivery[0]?.delivery_type}</i>
-							</Text>
-							<Text>
-								Mother Diagnosis: <i>{queryData?.delivery[0]?.mother_diag}</i>
-							</Text>
-							<Text>
-								Mother Outcome: <i>{queryData?.delivery[0]?.mother_outcome}</i>
-							</Text>
-							<Text>
-								Baby Outcome: <i>{queryData?.delivery[0]?.baby_outcome}</i>
-							</Text>
-							<Text>
-								Baby Weight: <i>{queryData?.delivery[0]?.baby_weight} KG</i>
-							</Text>
-							<Text>
-								Baby Sex: <i>{queryData?.delivery[0]?.baby_sex}</i>
-							</Text>
-							<Text>
-								Baby Activity (APGAR Score):{" "}
-								<i>{queryData?.delivery[0]?.apgar_score}</i>
-							</Text>
-							<Text>
-								Baby Congenital Malform (Image No.):{" "}
-								<i>{queryData?.delivery[0]?.congenital_no}</i>
-							</Text>
-							<Text>
-								Midwife: <i>{queryData?.delivery[0]?.midwife}</i>
-							</Text>
-						</div>
-					</div>
-					<div id='operation' className='flex gap-2 flex-wrap'>
-						<div>
-							<label htmlFor='op' className='font-bold'>
-								Operation
+					{queryData?.care?.name == "Delivery" && (
+						<div id='delivery' className='flex flex-col gap-2 flex-wrap'>
+							<label htmlFor='del' className='font-bold'>
+								Delivery
 							</label>
-							<div id='op' className='pl-4 flex-wrap flex gap-6'>
-								<Text>
-									Operation Type:{" "}
-									<i>{queryData?.operations[0]?.procedure?.name}</i>
-								</Text>
+							<div id='del' className='pl-4 flex-wrap flex gap-3'>
 								<Text className='flex gap-1 items-center'>
-									Operation date:
+									Delivery date:
 									<i className='text-sm'>
-										{queryData?.operations[0]?.proc_date
-											? format(queryData?.operations[0]?.proc_date, "P")
+										{queryData?.delivery[0]?.delivery_date
+											? format(queryData?.delivery[0]?.delivery_date, "P")
 											: null}
 									</i>
 								</Text>
 								<Text>
-									Anaesthesia: <i>{queryData?.operations[0]?.anaesthesia}</i>
+									Parity: <i>{queryData?.delivery[0]?.parity}</i>
 								</Text>
 								<Text>
-									Operation Outcome: <i>{queryData?.operations[0]?.outcome}</i>
+									Labour Duration:{" "}
+									<i>{queryData?.delivery[0]?.labour_duration}</i>
 								</Text>
 								<Text>
-									Surgeon: <i>{queryData?.operations[0]?.surgeon}</i>
+									Placenta deivery:{" "}
+									<i>{queryData?.delivery[0]?.placenta_delivery}</i>
 								</Text>
 								<Text>
-									Assistant: <i>{queryData?.operations[0]?.assistant}</i>
+									Delivery Type: <i>{queryData?.delivery[0]?.delivery_type}</i>
+								</Text>
+								<Text>
+									Mother Diagnosis: <i>{queryData?.delivery[0]?.mother_diag}</i>
+								</Text>
+								<Text>
+									Mother Outcome:{" "}
+									<i>{queryData?.delivery[0]?.mother_outcome}</i>
+								</Text>
+								<Text>
+									Baby Outcome: <i>{queryData?.delivery[0]?.baby_outcome}</i>
+								</Text>
+								<Text>
+									Baby Weight: <i>{queryData?.delivery[0]?.baby_weight} KG</i>
+								</Text>
+								<Text>
+									Baby Sex: <i>{queryData?.delivery[0]?.baby_sex}</i>
+								</Text>
+								<Text>
+									Baby Activity (APGAR Score):{" "}
+									<i>{queryData?.delivery[0]?.apgar_score}</i>
+								</Text>
+								<Text>
+									Baby Congenital Malform (Image No.):{" "}
+									<i>{queryData?.delivery[0]?.congenital_no}</i>
+								</Text>
+								<Text>
+									Midwife: <i>{queryData?.delivery[0]?.midwife}</i>
 								</Text>
 							</div>
 						</div>
-					</div>
-					<div id='Immunization' className='flex gap-2 flex-wrap'>
-						<div>
-							<label htmlFor='imm' className='font-bold'>
-								Immunization
-							</label>
-							<div id='imm' className='pl-4 flex-wrap flex gap-6'>
-								<Text className='flex gap-1 items-center'>
-									Date:
-									<i className='text-sm'>
-										{queryData?.immunization[0]?.date
-											? format(queryData?.immunization[0]?.date, "P")
-											: null}
-									</i>
-								</Text>
-								<Text className='flex gap-1 items-center'>
-									Next Appt Date:
-									<i className='text-sm'>
-										{queryData?.immunization[0]?.next_date
-											? format(queryData?.immunization[0]?.next_date, "P")
-											: null}
-									</i>
-								</Text>
-								<Text>
-									Type: <i>{queryData?.immunization[0]?.type}</i>
-								</Text>
+					)}
+					{queryData?.care?.name == "Operation" && (
+						<div id='operation' className='flex gap-2 flex-wrap'>
+							<div>
+								<label htmlFor='op' className='font-bold'>
+									Operation
+								</label>
+								<div id='op' className='pl-4 flex-wrap flex gap-6'>
+									<Text>
+										Operation Type:{" "}
+										<i>{queryData?.operations[0]?.procedure?.name}</i>
+									</Text>
+									<Text className='flex gap-1 items-center'>
+										Operation date:
+										<i className='text-sm'>
+											{queryData?.operations[0]?.proc_date
+												? format(queryData?.operations[0]?.proc_date, "P")
+												: null}
+										</i>
+									</Text>
+									<Text>
+										Anaesthesia: <i>{queryData?.operations[0]?.anaesthesia}</i>
+									</Text>
+									<Text>
+										Operation Outcome:{" "}
+										<i>{queryData?.operations[0]?.outcome}</i>
+									</Text>
+									<Text>
+										Surgeon: <i>{queryData?.operations[0]?.surgeon}</i>
+									</Text>
+									<Text>
+										Assistant: <i>{queryData?.operations[0]?.assistant}</i>
+									</Text>
+								</div>
 							</div>
 						</div>
-					</div>
-					<div id='ANC' className='flex gap-2 flex-wrap'>
-						<div>
-							<label htmlFor='anc' className='font-bold'>
-								ANC
-							</label>
-							<div id='anc' className='pl-4 flex-wrap flex gap-6'>
-								<Text className='flex gap-1 items-center'>
-									ANC Date:
-									<i className='text-sm'>
-										{queryData?.anc[0]?.date
-											? format(queryData?.anc[0]?.date, "P")
-											: null}
-									</i>
-								</Text>
-								<Text className='flex gap-1 items-center'>
-									EDD:
-									<i className='text-sm'>
-										{queryData?.anc[0]?.edd
-											? format(queryData?.anc[0]?.edd, "P")
-											: null}
-									</i>
-								</Text>
-								<Text>
-									EGA: <i>{queryData?.anc[0]?.ega}</i>
-								</Text>
-								<Text>
-									Foetal Presentation: <i>{queryData?.anc[0]?.fe_diagnosis}</i>
-								</Text>
-								<Text>
-									Foetal No: <i>{queryData?.anc[0]?.fe_no}</i>
-								</Text>
-								<Text>
-									Foetal Live: <i>{queryData?.anc[0]?.fe_live}</i>
-								</Text>
-								<Text>
-									Foetal Abnormallity:{" "}
-									<i>{queryData?.anc[0]?.fe_abnormallity}</i>
-								</Text>
-								<Text>
-									Foetal Liquid Vol.: <i>{queryData?.anc[0]?.fe_liq_vol}</i>
-								</Text>
-								<Text>
-									Placenta Position: <i>{queryData?.anc[0]?.placenta_pos}</i>
-								</Text>
+					)}
+					{queryData?.care?.name == "Immunization" && (
+						<div id='Immunization' className='flex gap-2 flex-wrap'>
+							<div>
+								<label htmlFor='imm' className='font-bold'>
+									Immunization
+								</label>
+								<div id='imm' className='pl-4 flex-wrap flex gap-6'>
+									<Text className='flex gap-1 items-center'>
+										Date:
+										<i className='text-sm'>
+											{queryData?.immunization[0]?.date
+												? format(queryData?.immunization[0]?.date, "P")
+												: null}
+										</i>
+									</Text>
+									<Text className='flex gap-1 items-center'>
+										Next Appt Date:
+										<i className='text-sm'>
+											{queryData?.immunization[0]?.next_date
+												? format(queryData?.immunization[0]?.next_date, "P")
+												: null}
+										</i>
+									</Text>
+									<Text>
+										Type: <i>{queryData?.immunization[0]?.type}</i>
+									</Text>
+								</div>
 							</div>
 						</div>
-					</div>
+					)}
+					{queryData?.care?.name == "ANC" && (
+						<div id='ANC' className='flex gap-2 flex-wrap'>
+							<div>
+								<label htmlFor='anc' className='font-bold'>
+									ANC
+								</label>
+								<div id='anc' className='pl-4 flex-wrap flex gap-6'>
+									<Text className='flex gap-1 items-center'>
+										ANC Date:
+										<i className='text-sm'>
+											{queryData?.anc[0]?.date
+												? format(queryData?.anc[0]?.date, "P")
+												: null}
+										</i>
+									</Text>
+									<Text className='flex gap-1 items-center'>
+										EDD:
+										<i className='text-sm'>
+											{queryData?.anc[0]?.edd
+												? format(queryData?.anc[0]?.edd, "P")
+												: null}
+										</i>
+									</Text>
+									<Text>
+										EGA: <i>{queryData?.anc[0]?.ega}</i>
+									</Text>
+									<Text>
+										Foetal Presentation:{" "}
+										<i>{queryData?.anc[0]?.fe_diagnosis}</i>
+									</Text>
+									<Text>
+										Foetal No: <i>{queryData?.anc[0]?.fe_no}</i>
+									</Text>
+									<Text>
+										Foetal Live: <i>{queryData?.anc[0]?.fe_live}</i>
+									</Text>
+									<Text>
+										Foetal Abnormallity:{" "}
+										<i>{queryData?.anc[0]?.fe_abnormallity}</i>
+									</Text>
+									<Text>
+										Foetal Liquid Vol.: <i>{queryData?.anc[0]?.fe_liq_vol}</i>
+									</Text>
+									<Text>
+										Placenta Position: <i>{queryData?.anc[0]?.placenta_pos}</i>
+									</Text>
+								</div>
+							</div>
+						</div>
+					)}
 					<div id='prescription'>
 						<label htmlFor='drugs' className='font-bold mr-12'>
 							Prescriptions

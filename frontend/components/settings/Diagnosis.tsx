@@ -96,7 +96,7 @@ const Diagnosis = () => {
 				tableLoading={loading}
 			/>
 
-			<Modal opened={opened} onClose={close} title='Edit Test'>
+			<Modal opened={opened} onClose={close} title='Edit Diagnosis'>
 				<form
 					className='relative'
 					onSubmit={async (e) => {
@@ -123,7 +123,7 @@ const Diagnosis = () => {
 							Cancel
 						</Button>
 						<Button disabled={!Ename} type='submit'>
-							Update Test
+							Update Diagnosis
 						</Button>
 					</Group>
 				</form>

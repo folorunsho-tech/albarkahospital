@@ -31,6 +31,7 @@ const Edit = () => {
 	const [patientData, setPatientData] = useState<any>(null);
 	const [cares, setCares] = useState([]);
 	const [care, setCare] = useState("");
+	const [careN, setCareN] = useState("");
 	const [outcome, setOutcome] = useState("");
 	const [enc_date, setDate] = useState<Date | null>(null);
 	const [admission, setAdmission] = useState(null);
@@ -57,6 +58,7 @@ const Edit = () => {
 		setDate(new Date(found?.enc_date));
 		setCares(sorted);
 		setCare(found?.care?.id);
+		setCareN(found?.care?.name);
 		setOutcome(found?.outcome);
 		setAdmission(found?.admission);
 	};
@@ -178,28 +180,39 @@ const Edit = () => {
 						>
 							Lab tests
 						</Tabs.Tab>
-						<Tabs.Tab
-							value='delivery'
-							leftSection={<Cross style={iconStyle} />}
-						>
-							Delivery
-						</Tabs.Tab>
-						<Tabs.Tab
-							value='operation'
-							leftSection={<Scissors style={iconStyle} />}
-						>
-							Operation
-						</Tabs.Tab>
+						{careN == "Delivery" && (
+							<Tabs.Tab
+								value='delivery'
+								leftSection={<Cross style={iconStyle} />}
+							>
+								Delivery
+							</Tabs.Tab>
+						)}
+						{careN == "Operation" && (
+							<Tabs.Tab
+								value='operation'
+								leftSection={<Scissors style={iconStyle} />}
+							>
+								Operation
+							</Tabs.Tab>
+						)}
 
-						<Tabs.Tab
-							value='immunization'
-							leftSection={<Syringe style={iconStyle} />}
-						>
-							Immunization
-						</Tabs.Tab>
-						<Tabs.Tab value='anc' leftSection={<IconWoman style={iconStyle} />}>
-							Antinatal Care
-						</Tabs.Tab>
+						{careN == "Immunization" && (
+							<Tabs.Tab
+								value='immunization'
+								leftSection={<Syringe style={iconStyle} />}
+							>
+								Immunization
+							</Tabs.Tab>
+						)}
+						{careN == "ANC" && (
+							<Tabs.Tab
+								value='anc'
+								leftSection={<IconWoman style={iconStyle} />}
+							>
+								Antinatal Care
+							</Tabs.Tab>
+						)}
 					</Tabs.List>
 					<Tabs.Panel value='diagnosis'>
 						<Diagnosis enc_id={id} />

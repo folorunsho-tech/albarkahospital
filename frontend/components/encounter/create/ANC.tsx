@@ -43,9 +43,8 @@ const ANC = ({ setANC }: { setANC: any }) => {
 				placeholder='anc date'
 				className='w-44'
 				onChange={setDate}
-				allowDeselect
-				clearable
-				closeOnChange={false}
+				required
+				withAsterisk
 			/>
 			<DatePickerInput
 				label='EDD Date'
@@ -53,6 +52,8 @@ const ANC = ({ setANC }: { setANC: any }) => {
 				placeholder='edd date'
 				className='w-44'
 				onChange={setEDate}
+				required
+				withAsterisk
 			/>
 			<Select
 				label='ANC EGA'
