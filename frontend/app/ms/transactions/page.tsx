@@ -3,87 +3,33 @@
 import DataLoader from "@/components/DataLoader";
 import PaginatedTable from "@/components/PaginatedTable";
 import { usePostNormal } from "@/queries";
-import { ActionIcon, Button, Menu, rem, Table } from "@mantine/core";
+import { ActionIcon, Button, rem, Table } from "@mantine/core";
 import { format } from "date-fns";
-import { CircleEllipsis, Eye, Pencil, Printer, X } from "lucide-react";
+import { Eye } from "lucide-react";
 import Link from "next/link";
-import { useRef, useState } from "react";
-import { useReactToPrint } from "react-to-print";
+import { useState } from "react";
 
 const Payments = () => {
 	const { post, loading } = usePostNormal();
 	const [queryData, setQueryData] = useState<any[]>([]);
 	const [sortedData, setSortedData] = useState<any[]>([]);
-	const [printData, setPrintData] = useState<any[]>(queryData);
-	const contentRef = useRef<HTMLDivElement>(null);
-	const reactToPrintFn = useReactToPrint({
-		contentRef,
-		bodyClass: "print",
-		documentTitle: "transactions-list",
-	});
+
 	const rows = sortedData?.map((row, i: number) => (
 		<Table.Tr key={row?.id}>
 			<Table.Td>{i + 1}</Table.Td>
-			<Table.Td>{row?.name}</Table.Td>
 			<Table.Td>{row?.hosp_no}</Table.Td>
-			<Table.Td>{row?.groups?.name}</Table.Td>
-			<Table.Td>{row?.sex}</Table.Td>
-			<Table.Td>{row?.age}</Table.Td>
-			<Table.Td>{row?.address}</Table.Td>
+			<Table.Td>{row?.name}</Table.Td>
 			<Table.Td>{row?.phone_no}</Table.Td>
-			<Table.Td>{format(new Date(row?.reg_date), "dd/MM/yyyy")}</Table.Td>
+			<Table.Td>{row?.address}</Table.Td>
+			<Table.Td>{format(new Date(row?.date), "Pp")}</Table.Td>
 			<Table.Td>
-				<Menu shadow='md' width={200}>
-					<Menu.Target>
-						<ActionIcon variant='subtle'>
-							<CircleEllipsis />
-						</ActionIcon>
-					</Menu.Target>
-					<Menu.Dropdown>
-						<Link href={`transactions/view/?id=${row?.id}`}>
-							<Menu.Item
-								leftSection={
-									<Eye style={{ width: rem(14), height: rem(14) }} />
-								}
-								color='blue'
-							>
-								View
-							</Menu.Item>
-						</Link>
-						<Link href={`transactions/edit/?id=${row?.id}`}>
-							<Menu.Item
-								color='teal'
-								leftSection={
-									<Pencil style={{ width: rem(14), height: rem(14) }} />
-								}
-							>
-								Edit
-							</Menu.Item>
-						</Link>
-						<Menu.Item
-							color='red'
-							leftSection={<X style={{ width: rem(14), height: rem(14) }} />}
-						>
-							Cancel / Reverse
-						</Menu.Item>
-					</Menu.Dropdown>
-				</Menu>
+				<ActionIcon component={Link} href={`${row?.id}`} variant='subtle'>
+					<Eye style={{ width: rem(14), height: rem(14) }} />
+				</ActionIcon>
 			</Table.Td>
 		</Table.Tr>
 	));
-	const printRows = printData?.map((row, i: number) => (
-		<Table.Tr key={row?.id}>
-			<Table.Td>{i + 1}</Table.Td>
-			<Table.Td>{row?.name}</Table.Td>
-			<Table.Td>{row?.hosp_no}</Table.Td>
-			<Table.Td>{row?.groups?.name}</Table.Td>
-			<Table.Td>{row?.sex}</Table.Td>
-			<Table.Td>{row?.age}</Table.Td>
-			<Table.Td>{row?.address}</Table.Td>
-			<Table.Td>{row?.phone_no}</Table.Td>
-			<Table.Td>{format(new Date(row?.reg_date), "dd/MM/yyyy")}</Table.Td>
-		</Table.Tr>
-	));
+
 	return (
 		<main className='space-y-6'>
 			<div className='flex items-end justify-between w-full'>
@@ -93,16 +39,14 @@ const Payments = () => {
 					link='/transaction'
 				/> */}
 				<div className='flex gap-3 items-end'>
-					<Button
-						leftSection={<Printer />}
-						onClick={() => {
-							reactToPrintFn();
-						}}
-					>
-						Print
+					<Button color='teal' href='transactions/payment' component={Link}>
+						Make a new transaction
 					</Button>
-					<Button>
-						<Link href='transactions/create'>Make a new transaction</Link>
+					<Button color='orange' href='transactions/payment' component={Link}>
+						Make a balance transaction
+					</Button>
+					<Button color='red' href='transactions/payment' component={Link}>
+						Make a reversal
 					</Button>
 				</div>
 			</div>
@@ -128,21 +72,6 @@ const Payments = () => {
 				setSortedData={setSortedData}
 				tableLoading={loading}
 				depth='groups'
-				ref={contentRef}
-				printHeaders={[
-					"S/N",
-					"Name",
-					"Hosp No",
-					"Group",
-					"Sex",
-					"Age",
-					"Address",
-					"Phone No",
-					"Reg date",
-				]}
-				printRows={printRows}
-				tableReport='Patients Registration record'
-				setPrintData={setPrintData}
 			/>
 		</main>
 	);

@@ -63,7 +63,6 @@ model Patients {
   groups       Groups?       @relation(fields: [group_id], references: [id])
   townId       String?
   town         Town?         @relation(fields: [townId], references: [id])
-  Reciept      Reciept[]
 }
 
 model Encounters {
@@ -222,11 +221,11 @@ model LabTest {
 }
 
 model Transaction {
-  id          Int       @id @default(autoincrement())
+  id          String    @id
   items       TnxItem[]
+  number      Int
   total       Int
   balance     Int
-  date        DateTime  @default(now())
   year        Int
   month       String
   status      String
@@ -242,40 +241,49 @@ model Transaction {
 
 model TnxItem {
   id            String      @id @default(uuid())
-  transactionId Int
+  transactionId String
   transaction   Transaction @relation(fields: [transactionId], references: [id])
-  name          String
+  feeId         String
+  fee           Fees        @relation(fields: [feeId], references: [id])
   price         Int
   paid          Int
-  method        String
-  type          String      @default("payment")
-  date          DateTime    @default(now())
+  balance       Int
   year          Int?
   month         String?
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
-  recieptId     String?
-  reciept       Reciept?    @relation(fields: [recieptId], references: [id])
+  payments      Payment[]
+}
+
+model Payment {
+  id        String   @id @default(uuid())
+  itemId    String
+  tnxItem   TnxItem  @relation(fields: [itemId], references: [id])
+  name      String
+  price     Int
+  paid      Int
+  method    String
+  type      String   @default("payment")
+  year      Int?
+  month     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Reciept {
   id          String      @id
-  items       TnxItem[]
-  tnxId       Int
+  items       Json
+  tnxId       String
   transaction Transaction @relation(fields: [tnxId], references: [id])
   number      Int
   total       Int
-  date        DateTime    @default(now())
   year        Int
   month       String
   status      String
-  createdBy   String?
-  updatedById String?
-  updatedBy   Accounts?   @relation(fields: [updatedById], references: [id])
+  createdById String?
+  createdBy   Accounts?   @relation(fields: [createdById], references: [id])
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
-  patientId   String?
-  patient     Patients?   @relation(fields: [patientId], references: [id])
 }
 
 model DrugsInventory {
@@ -376,10 +384,11 @@ model Procedures {
 }
 
 model Fees {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   name      String?
   amount    Int?
-  createdAt DateTime @default(now())
+  createdAt DateTime  @default(now())
+  tnxItems  TnxItem[]
 }
 
 model Care {
