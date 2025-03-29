@@ -18,7 +18,6 @@ const Create = () => {
 	const { fetch } = useFetch();
 	const [patientData, setPatientData] = useState<any>(null);
 	const [cares, setCares] = useState([]);
-
 	const [care, setCare] = useState("");
 	const [careId, setCareId] = useState("");
 	const [follow_up_to, setFollowUPTo] = useState<string | null>(null);
@@ -50,7 +49,6 @@ const Create = () => {
 		};
 		getAll();
 	}, []);
-	useEffect(() => {}, [patientData]);
 
 	const getUI = () => {
 		if (patientData && careId) {

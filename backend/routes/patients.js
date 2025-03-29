@@ -4,8 +4,7 @@ import { Router } from "express";
 import prisma from "../config/prisma.js";
 
 const router = Router();
-export const curYear = String(new Date().getFullYear());
-export const curMonthNo = new Date().getMonth();
+
 router.get("/groups", async (req, res) => {
 	try {
 		const found = await prisma.groups.findMany();
@@ -68,9 +67,9 @@ router.post("/transactions", async (req, res) => {
 	const { id } = req.body;
 
 	try {
-		const found = await prisma.transactions.findMany({
+		const found = await prisma.transaction.findMany({
 			where: {
-				patient_id: id,
+				patientId: id,
 			},
 			include: {
 				_count: {
@@ -183,6 +182,8 @@ router.post("/", async (req, res) => {
 					reg_date: new Date(
 						new Date(req.body.reg_date).setUTCHours(0, 0, 0, 0, 0)
 					),
+					year: curYear,
+					month: curMonth,
 				},
 				include: {
 					groups: true,

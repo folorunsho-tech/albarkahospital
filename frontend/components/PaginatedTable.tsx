@@ -91,7 +91,7 @@ const PaginatedTable = ({
 		const chunked = chunk(sortedData, chunkAmnt);
 		setTotal(chunked?.length);
 		setSortedData(chunked[activePage - 1]);
-		if (setPrintData) {
+		if (printRows) {
 			setPrintData(sortedData);
 		}
 	}, []);
@@ -99,7 +99,7 @@ const PaginatedTable = ({
 		const chunked = chunk(data, chunkAmnt);
 		setTotal(chunked?.length);
 		setSortedData(chunked[activePage - 1]);
-		if (setPrintData) {
+		if (printHeaders?.length) {
 			setPrintData(data);
 		}
 	}, [tableLoading]);

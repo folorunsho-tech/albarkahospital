@@ -33,36 +33,25 @@ const Payments = () => {
 	return (
 		<main className='space-y-6'>
 			<div className='flex items-end justify-between w-full'>
-				{/* <DataLoader
+				<DataLoader
 					post={post}
 					setQueryData={setQueryData}
-					link='/transaction'
-				/> */}
+					link='/transactions'
+				/>
 				<div className='flex gap-3 items-end'>
 					<Button color='teal' href='transactions/payment' component={Link}>
-						Make a new transaction
+						New transaction
 					</Button>
-					<Button color='orange' href='transactions/payment' component={Link}>
-						Make a balance transaction
+					<Button color='orange' href='transactions/balance' component={Link}>
+						Balance transaction
 					</Button>
-					<Button color='red' href='transactions/payment' component={Link}>
-						Make a reversal
+					<Button color='red' href='transactions/reversal' component={Link}>
+						Reversal
 					</Button>
 				</div>
 			</div>
 			<PaginatedTable
-				headers={[
-					"S/N",
-					"Name",
-					"Hosp No",
-					"Group",
-					"Sex",
-					"Age",
-					"Address",
-					"Phone No",
-					"Reg date",
-					"Actions",
-				]}
+				headers={["S/N", "Name", "Hosp No", "Address", "Phone No", "Action"]}
 				placeholder='Search by name or hospital no'
 				sortedData={sortedData}
 				rows={rows}
@@ -71,7 +60,7 @@ const Payments = () => {
 				data={queryData}
 				setSortedData={setSortedData}
 				tableLoading={loading}
-				depth='groups'
+				depth='patient'
 			/>
 		</main>
 	);

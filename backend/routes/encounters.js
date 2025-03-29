@@ -2,6 +2,7 @@ import { Router } from "express";
 // import { PrismaClient } from "@prisma/client";
 // const prisma = new PrismaClient();
 import prisma from "../config/prisma.js";
+import { curMonth, curYear } from "../config/ynm.js";
 
 const router = Router();
 // import { nanoid } from "nanoid";
@@ -210,8 +211,6 @@ router.get("/:id/followup", async (req, res) => {
 router.post("/create/anc", async (req, res) => {
 	const {
 		careId,
-		month,
-		year,
 		diagnosis,
 		drugsGiven,
 		labTest,
@@ -236,8 +235,8 @@ router.post("/create/anc", async (req, res) => {
 			return {
 				id: test?.lab_id,
 				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 				info: test?.info,
 				result: test?.result,
 				test_id: test?.id,
@@ -252,24 +251,24 @@ router.post("/create/anc", async (req, res) => {
 				quantity: drug?.quantity,
 				price: drug?.price,
 				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 			};
 		});
 		if (follow_up_to) {
 			await prisma.followups.create({
 				data: {
 					encounter_id: follow_up_to,
-					year,
-					month,
+					year: curYear,
+					month: curMonth,
 				},
 			});
 		}
 		const created = await prisma.encounters.create({
 			data: {
 				patient_id,
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 				care_id: careId,
 				createdById,
 				diagnosis: {
@@ -328,10 +327,11 @@ router.post("/create/anc", async (req, res) => {
 					rate: d?.rate,
 					price: d?.price,
 					stock_remain: d?.curr_stock,
-					month,
+					year: curYear,
+					month: curMonth,
 					date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
 					time,
-					year,
+
 					given_id: created.drugsGiven.find((g) => g.drug_id == d?.id).id,
 					enc_id: created.id,
 				};
@@ -354,14 +354,11 @@ router.post("/create/anc", async (req, res) => {
 		res.status(200).json(created);
 	} catch (error) {
 		res.status(500).json(error);
-		console.log(error);
 	}
 });
 router.post("/create/delivery", async (req, res) => {
 	const {
 		careId,
-		month,
-		year,
 		diagnosis,
 		delivery,
 		drugsGiven,
@@ -386,8 +383,8 @@ router.post("/create/delivery", async (req, res) => {
 			return {
 				id: test?.lab_id,
 				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 				info: test?.info,
 				result: test?.result,
 				test_id: test?.id,
@@ -402,24 +399,24 @@ router.post("/create/delivery", async (req, res) => {
 				quantity: drug?.quantity,
 				price: drug?.price,
 				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 			};
 		});
 		if (follow_up_to) {
 			await prisma.followups.create({
 				data: {
 					encounter_id: follow_up_to,
-					year,
-					month,
+					year: curYear,
+					month: curMonth,
 				},
 			});
 		}
 		const created = await prisma.encounters.create({
 			data: {
 				patient_id,
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 				care_id: careId,
 				createdById,
 				diagnosis: {
@@ -455,8 +452,8 @@ router.post("/create/delivery", async (req, res) => {
 						congenital_no: Number(delivery?.congenital_no),
 						mother_outcome: delivery?.mother_outcome,
 						delivery_date: new Date(delivery?.delivery_date),
-						year,
-						month,
+						year: curYear,
+						month: curMonth,
 					},
 				},
 			},
@@ -485,10 +482,11 @@ router.post("/create/delivery", async (req, res) => {
 					rate: d?.rate,
 					price: d?.price,
 					stock_remain: d?.curr_stock,
-					month,
+
 					date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
 					time,
-					year,
+					year: curYear,
+					month: curMonth,
 					given_id: created.drugsGiven.find((g) => g.drug_id == d?.id).id,
 					enc_id: created.id,
 				};
@@ -511,14 +509,11 @@ router.post("/create/delivery", async (req, res) => {
 		res.status(200).json(created);
 	} catch (error) {
 		res.status(500).json(error);
-		console.log(error);
 	}
 });
 router.post("/create/operation", async (req, res) => {
 	const {
 		careId,
-		month,
-		year,
 		diagnosis,
 		drugsGiven,
 		operation,
@@ -543,8 +538,8 @@ router.post("/create/operation", async (req, res) => {
 			return {
 				id: test?.lab_id,
 				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 				info: test?.info,
 				result: test?.result,
 				test_id: test?.id,
@@ -559,24 +554,24 @@ router.post("/create/operation", async (req, res) => {
 				quantity: drug?.quantity,
 				price: drug?.price,
 				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 			};
 		});
 		if (follow_up_to) {
 			await prisma.followups.create({
 				data: {
 					encounter_id: follow_up_to,
-					year,
-					month,
+					year: curYear,
+					month: curMonth,
 				},
 			});
 		}
 		const created = await prisma.encounters.create({
 			data: {
 				patient_id,
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 				care_id: careId,
 				createdById,
 				diagnosis: {
@@ -604,8 +599,8 @@ router.post("/create/operation", async (req, res) => {
 						assistant: operation?.assistant,
 						outcome: operation?.outcome,
 						anaesthesia: operation?.anaesthesia,
-						year,
-						month,
+						year: curYear,
+						month: curMonth,
 					},
 				},
 			},
@@ -634,10 +629,10 @@ router.post("/create/operation", async (req, res) => {
 					rate: d?.rate,
 					price: d?.price,
 					stock_remain: d?.curr_stock,
-					month,
+					year: curYear,
+					month: curMonth,
 					date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
 					time,
-					year,
 					given_id: created.drugsGiven.find((g) => g.drug_id == d?.id).id,
 					enc_id: created.id,
 				};
@@ -660,14 +655,11 @@ router.post("/create/operation", async (req, res) => {
 		res.status(200).json(created);
 	} catch (error) {
 		res.status(500).json(error);
-		console.log(error);
 	}
 });
 router.post("/create/immunization", async (req, res) => {
 	const {
 		careId,
-		month,
-		year,
 		diagnosis,
 		drugsGiven,
 		labTest,
@@ -692,8 +684,8 @@ router.post("/create/immunization", async (req, res) => {
 			return {
 				id: test?.lab_id,
 				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 				info: test?.info,
 				result: test?.result,
 				test_id: test?.id,
@@ -708,16 +700,16 @@ router.post("/create/immunization", async (req, res) => {
 				quantity: drug?.quantity,
 				price: drug?.price,
 				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 			};
 		});
 		if (follow_up_to) {
 			await prisma.followups.create({
 				data: {
 					encounter_id: follow_up_to,
-					year,
-					month,
+					year: curYear,
+					month: curMonth,
 				},
 			});
 		}
@@ -778,10 +770,11 @@ router.post("/create/immunization", async (req, res) => {
 					rate: d?.rate,
 					price: d?.price,
 					stock_remain: d?.curr_stock,
-					month,
+
 					date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
 					time,
-					year,
+					year: curYear,
+					month: curMonth,
 					given_id: created.drugsGiven.find((g) => g.drug_id == d?.id).id,
 					enc_id: created.id,
 				};
@@ -804,14 +797,11 @@ router.post("/create/immunization", async (req, res) => {
 		res.status(200).json(created);
 	} catch (error) {
 		res.status(500).json(error);
-		console.log(error);
 	}
 });
 router.post("/", async (req, res) => {
 	const {
 		careId,
-		month,
-		year,
 		diagnosis,
 		drugsGiven,
 		labTest,
@@ -835,8 +825,8 @@ router.post("/", async (req, res) => {
 			return {
 				id: test?.lab_id,
 				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 				info: test?.info,
 				result: test?.result,
 				test_id: test?.id,
@@ -851,24 +841,24 @@ router.post("/", async (req, res) => {
 				quantity: drug?.quantity,
 				price: drug?.price,
 				date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 			};
 		});
 		if (follow_up_to) {
 			await prisma.followups.create({
 				data: {
 					encounter_id: follow_up_to,
-					year,
-					month,
+					year: curYear,
+					month: curMonth,
 				},
 			});
 		}
 		const created = await prisma.encounters.create({
 			data: {
 				patient_id,
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 				care_id: careId,
 				createdById,
 				diagnosis: {
@@ -914,10 +904,10 @@ router.post("/", async (req, res) => {
 					rate: d?.rate,
 					price: d?.price,
 					stock_remain: d?.curr_stock,
-					month,
+					year: curYear,
 					date: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
 					time,
-					year,
+					month: curMonth,
 					given_id: created.drugsGiven.find((g) => g.drug_id == d?.id).id,
 					enc_id: created.id,
 				};
@@ -940,7 +930,6 @@ router.post("/", async (req, res) => {
 		res.status(200).json(created);
 	} catch (error) {
 		res.status(500).json(error);
-		console.log(error);
 	}
 });
 router.post("/edit/operation/:id", async (req, res) => {
