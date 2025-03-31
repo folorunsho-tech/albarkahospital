@@ -223,7 +223,6 @@ model LabTest {
 model Transaction {
   id          String    @id
   items       TnxItem[]
-  number      Int
   total       Int
   balance     Int
   year        Int
@@ -278,7 +277,6 @@ model Reciept {
   items       Json
   tnxId       String
   transaction Transaction @relation(fields: [tnxId], references: [id])
-  number      Int
   total       Int
   year        Int
   month       String

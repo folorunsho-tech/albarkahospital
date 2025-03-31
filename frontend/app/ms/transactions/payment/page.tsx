@@ -17,7 +17,7 @@ import {
 import { useReactToPrint } from "react-to-print";
 import { useFetch, usePost } from "@/queries";
 import PatientSearch from "@/components/PatientSearch";
-import { IconPrinter, IconX } from "@tabler/icons-react";
+import { IconReceipt, IconX } from "@tabler/icons-react";
 import { format } from "date-fns";
 import Image from "next/image";
 const page = () => {
@@ -101,6 +101,11 @@ const page = () => {
 		};
 		getAll();
 	}, []);
+	useEffect(() => {
+		setPrice("");
+		setPaid("");
+		setMethod(null);
+	}, [feeId]);
 	return (
 		<main className='space-y-4'>
 			{reciept && (
@@ -308,9 +313,6 @@ const page = () => {
 									paid: totalPrice - totalBalance,
 									items,
 									status: status?.label,
-									number: Number(
-										new Date().getFullYear().toString().substring(2)
-									),
 									patientId: patientData?.id,
 								});
 								const rec = data?.reciepts[0];
@@ -364,6 +366,7 @@ const page = () => {
 							<Select
 								label='Method'
 								placeholder='method'
+								disabled={!paid}
 								value={method}
 								data={["Cash", "Bank TRF", "POS", "MD Collect"]}
 								className='w-32'
@@ -403,13 +406,26 @@ const page = () => {
 							</Button>
 							<ActionIcon
 								size={35}
-								// disabled={!reciept}
+								disabled={!reciept}
 								onClick={() => {
 									reactToPrintFn();
 								}}
 							>
-								<IconPrinter />
+								<IconReceipt />
 							</ActionIcon>
+							<Button
+								color='red'
+								onClick={() => {
+									setFeeId(null);
+									setFee(null);
+									setPrice("");
+									setPaid("");
+									setMethod(null);
+									setItems([]);
+								}}
+							>
+								Reset
+							</Button>
 						</form>
 
 						<ScrollArea h={700}>

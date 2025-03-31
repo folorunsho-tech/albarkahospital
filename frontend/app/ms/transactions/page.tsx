@@ -3,7 +3,7 @@
 import DataLoader from "@/components/DataLoader";
 import PaginatedTable from "@/components/PaginatedTable";
 import { usePostNormal } from "@/queries";
-import { ActionIcon, Button, rem, Table } from "@mantine/core";
+import { ActionIcon, Button, NumberFormatter, rem, Table } from "@mantine/core";
 import { format } from "date-fns";
 import { Eye } from "lucide-react";
 import Link from "next/link";
@@ -17,19 +17,32 @@ const Payments = () => {
 	const rows = sortedData?.map((row, i: number) => (
 		<Table.Tr key={row?.id}>
 			<Table.Td>{i + 1}</Table.Td>
-			<Table.Td>{row?.hosp_no}</Table.Td>
-			<Table.Td>{row?.name}</Table.Td>
-			<Table.Td>{row?.phone_no}</Table.Td>
-			<Table.Td>{row?.address}</Table.Td>
-			<Table.Td>{format(new Date(row?.date), "Pp")}</Table.Td>
+			<Table.Td>{row?.id}</Table.Td>
+			<Table.Td>{format(new Date(row?.createdAt), "Pp")}</Table.Td>
+			<Table.Td>{row?.patient?.hosp_no}</Table.Td>
+			<Table.Td>{row?.patient?.name}</Table.Td>
 			<Table.Td>
-				<ActionIcon component={Link} href={`${row?.id}`} variant='subtle'>
+				<NumberFormatter value={row?.total} prefix='NGN ' thousandSeparator />
+			</Table.Td>
+			<Table.Td>
+				<NumberFormatter
+					value={Number(row?.total) - Number(row?.balance)}
+					prefix='NGN '
+					thousandSeparator
+				/>
+			</Table.Td>
+			<Table.Td>
+				<NumberFormatter value={row?.balance} prefix='NGN ' thousandSeparator />
+			</Table.Td>
+			<Table.Td>{row?._count?.items}</Table.Td>
+			<Table.Td>{row?.status}</Table.Td>
+			<Table.Td>
+				<ActionIcon component={Link} href={`transactions/${row?.id}`}>
 					<Eye style={{ width: rem(14), height: rem(14) }} />
 				</ActionIcon>
 			</Table.Td>
 		</Table.Tr>
 	));
-
 	return (
 		<main className='space-y-6'>
 			<div className='flex items-end justify-between w-full'>
@@ -43,7 +56,7 @@ const Payments = () => {
 						New transaction
 					</Button>
 					<Button color='orange' href='transactions/balance' component={Link}>
-						Balance transaction
+						Balance payment
 					</Button>
 					<Button color='red' href='transactions/reversal' component={Link}>
 						Reversal
@@ -51,8 +64,20 @@ const Payments = () => {
 				</div>
 			</div>
 			<PaginatedTable
-				headers={["S/N", "Name", "Hosp No", "Address", "Phone No", "Action"]}
-				placeholder='Search by name or hospital no'
+				headers={[
+					"S/N",
+					"Tnx Id",
+					"Date",
+					"Hosp No",
+					"Name",
+					"Total",
+					"Paid",
+					"Balance",
+					"Items",
+					"Status",
+					"Action",
+				]}
+				placeholder='Search by transaction Id'
 				sortedData={sortedData}
 				rows={rows}
 				showSearch={true}
@@ -60,7 +85,7 @@ const Payments = () => {
 				data={queryData}
 				setSortedData={setSortedData}
 				tableLoading={loading}
-				depth='patient'
+				depth=''
 			/>
 		</main>
 	);

@@ -2,7 +2,17 @@ import { Router } from "express";
 import prisma from "../config/prisma.js";
 import { nanoid } from "nanoid";
 import { curMonth, curYear } from "../config/ynm.js";
+import { generator, Rgenerator } from "../config/tnxIdGen.js";
 const router = Router();
+
+router.get("/id", async (req, res) => {
+	try {
+		const id = await Rgenerator("2503013");
+		res.status(200).json(id);
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
 
 router.get("/", async (req, res) => {
 	try {
@@ -39,8 +49,7 @@ router.get("/:id", async (req, res) => {
 	}
 });
 router.post("/create", async (req, res) => {
-	const { total, balance, items, status, number, patientId, createdById } =
-		req.body;
+	const { total, balance, items, status, patientId, createdById } = req.body;
 	const Items = items.map((item) => {
 		return {
 			id: nanoid(8),
@@ -77,16 +86,15 @@ router.post("/create", async (req, res) => {
 			method: item?.method,
 		};
 	});
-
+	const id = await generator(curYear, curMonth);
 	try {
 		const created = await prisma.transaction.create({
 			data: {
-				id: "2503015",
+				id,
 				total,
 				status,
 				balance,
 				patientId,
-				number,
 				items: {
 					createMany: {
 						data: tnxItems,
@@ -101,12 +109,11 @@ router.post("/create", async (req, res) => {
 				month: curMonth,
 				reciepts: {
 					create: {
-						id: `2503015${1}`,
+						id: `${id}${1}`,
 						items: JSON.stringify(Items),
 						year: curYear,
 						month: curMonth,
 						status,
-						number: 1,
 						total,
 						createdById,
 					},
@@ -165,8 +172,16 @@ router.post("/:criteria", async (req, res) => {
 					year: value,
 				},
 				include: {
-					items: true,
-					patient: true,
+					_count: {
+						select: {
+							items: true,
+						},
+					},
+					patient: {
+						include: {
+							town: true,
+						},
+					},
 				},
 				orderBy: {
 					updatedAt: "desc",
@@ -181,8 +196,16 @@ router.post("/:criteria", async (req, res) => {
 					month: value?.month,
 				},
 				include: {
-					items: true,
-					patient: true,
+					_count: {
+						select: {
+							items: true,
+						},
+					},
+					patient: {
+						include: {
+							town: true,
+						},
+					},
 				},
 				orderBy: {
 					updatedAt: "desc",
@@ -207,8 +230,16 @@ router.post("/:criteria", async (req, res) => {
 					],
 				},
 				include: {
-					items: true,
-					patient: true,
+					_count: {
+						select: {
+							items: true,
+						},
+					},
+					patient: {
+						include: {
+							town: true,
+						},
+					},
 				},
 				orderBy: {
 					updatedAt: "desc",
@@ -232,8 +263,16 @@ router.post("/:criteria", async (req, res) => {
 					],
 				},
 				include: {
-					items: true,
-					patient: true,
+					_count: {
+						select: {
+							items: true,
+						},
+					},
+					patient: {
+						include: {
+							town: true,
+						},
+					},
 				},
 				orderBy: {
 					updatedAt: "desc",

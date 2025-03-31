@@ -87,13 +87,13 @@ const NavMenu = () => {
 			</nav>
 			<Group className='bg-gray-200 cursor-pointer'>
 				<Text
-					size='md'
+					size='sm'
 					fw={500}
 					px={12}
 					pt={12}
 					style={{ textDecoration: "underline" }}
 				>
-					{user?.username}
+					{user?.username} - {new Date().toLocaleDateString()}
 				</Text>
 
 				<button

@@ -11,7 +11,7 @@ const showNotification = (status: number) => {
 	if (status == 200) {
 		notifications.show({
 			title: "Success !!!",
-			message: "Sucessfull",
+			message: "Operation sucessfull",
 			color: "green",
 		});
 	} else if (status == 400) {
@@ -23,7 +23,7 @@ const showNotification = (status: number) => {
 	} else if (status == 404) {
 		notifications.show({
 			title: "Error !!!",
-			message: "Error encountered",
+			message: "Data not Found",
 			color: "red",
 		});
 	} else {

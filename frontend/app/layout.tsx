@@ -45,7 +45,7 @@ export default function RootLayout({
 					<MantineProvider>
 						<Notifications
 							autoClose={3000}
-							className='absolute '
+							className='absolute top-0 '
 							style={{ zIndex: 1000 }}
 						/>
 						<ModalsProvider>
