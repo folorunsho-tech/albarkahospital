@@ -16,10 +16,10 @@ import {
 } from "@mantine/core";
 import { useReactToPrint } from "react-to-print";
 import { useFetch, usePost } from "@/queries";
-import PatientSearch from "@/components/PatientSearch";
 import { IconReceipt, IconX } from "@tabler/icons-react";
 import { format } from "date-fns";
 import Image from "next/image";
+import PatientSearch from "@/components/PatientSearch";
 const page = () => {
 	const { fetch } = useFetch();
 	const { post, loading } = usePost();
@@ -69,9 +69,9 @@ const page = () => {
 	const rPay = reciept?.items?.reduce((prev: any, curr: { paid: number }) => {
 		return Number(prev) + Number(curr.paid);
 	}, 0);
-	const rBalance = reciept?.items?.reduce(
-		(prev: any, curr: { balance: number }) => {
-			return prev + curr.balance;
+	const rAmount = reciept?.items?.reduce(
+		(prev: any, curr: { price: number }) => {
+			return prev + curr.price;
 		},
 		0
 	);
@@ -144,7 +144,7 @@ const page = () => {
 									Tnx Date:
 								</h2>
 								<p className='underline pl-1.5'>
-									{/* {format(new Date(reciept?.createdAt), "PPPpp")} */}
+									{format(new Date(reciept?.createdAt), "PPPpp")}
 								</p>
 							</div>
 							<div className='flex items-center'>
@@ -187,9 +187,8 @@ const page = () => {
 								<Table.Tr>
 									<Table.Th>S/N</Table.Th>
 									<Table.Th>Name</Table.Th>
-									<Table.Th>Price</Table.Th>
+									<Table.Th>Amount</Table.Th>
 									<Table.Th>Paid</Table.Th>
-									<Table.Th>Balance</Table.Th>
 									<Table.Th>Method</Table.Th>
 								</Table.Tr>
 							</Table.Thead>
@@ -212,13 +211,6 @@ const page = () => {
 												thousandSeparator
 											/>
 										</Table.Td>
-										<Table.Td>
-											<NumberFormatter
-												prefix='NGN '
-												value={Number(item?.balance)}
-												thousandSeparator
-											/>
-										</Table.Td>
 										<Table.Td>{item?.method}</Table.Td>
 									</Table.Tr>
 								))}
@@ -230,7 +222,7 @@ const page = () => {
 									<Table.Td>
 										<NumberFormatter
 											prefix='NGN '
-											value={reciept?.total}
+											value={rAmount}
 											thousandSeparator
 										/>
 									</Table.Td>
@@ -241,13 +233,7 @@ const page = () => {
 											thousandSeparator
 										/>
 									</Table.Td>
-									<Table.Td>
-										<NumberFormatter
-											prefix='NGN '
-											value={rBalance}
-											thousandSeparator
-										/>
-									</Table.Td>
+									<Table.Td></Table.Td>
 								</Table.Tr>
 							</Table.Tfoot>
 						</Table>

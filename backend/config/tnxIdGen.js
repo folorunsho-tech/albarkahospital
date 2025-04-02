@@ -24,18 +24,22 @@ export const generator = async (year, month) => {
 	}
 };
 export const Rgenerator = async (id) => {
-	const Ids = await prisma.reciept.findMany({
+	const Ids = await prisma.transaction.findUnique({
 		where: {
-			tnxId: id,
+			id,
 		},
 		select: {
-			id: true,
-			tnxId: true,
-		},
-		orderBy: {
-			id: "desc",
+			reciepts: {
+				select: {
+					id: true,
+					tnxId: true,
+				},
+				orderBy: {
+					id: "desc",
+				},
+			},
 		},
 	});
-	const lastId = Ids[0].id;
+	const lastId = Ids.reciepts[0]?.id;
 	return String(Number(lastId) + 1);
 };

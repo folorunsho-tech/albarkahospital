@@ -14,16 +14,6 @@ import { CookiesProvider } from "next-client-cookies/server";
 import { Metadata } from "next";
 dayjs.extend(customParseFormat);
 
-const geistSans = Geist({
-	variable: "--font-geist-sans",
-	subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-	variable: "--font-geist-mono",
-	subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
 	title: "Albarka Hospital Wawa",
 	description: "Albarka hospital MS created by Folorunsho Ibrahim @tacheyon",
@@ -38,9 +28,7 @@ export default function RootLayout({
 		<html lang='en' suppressHydrationWarning={true}>
 			<link rel='icon' type='image/svg+xml' href='/hospital.svg' />
 
-			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-			>
+			<body className={` antialiased`}>
 				<CookiesProvider>
 					<MantineProvider>
 						<Notifications

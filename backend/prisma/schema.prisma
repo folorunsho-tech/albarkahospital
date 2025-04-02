@@ -248,6 +248,7 @@ model TnxItem {
   price         Int
   paid          Int
   balance       Int
+  active        Boolean     @default(true)
   year          Int?
   month         String?
   createdAt     DateTime    @default(now())
@@ -262,7 +263,6 @@ model Payment {
   itemId      String
   tnxItem     TnxItem      @relation(fields: [itemId], references: [id])
   name        String
-  price       Int
   paid        Int
   method      String
   type        String       @default("payment")
@@ -277,7 +277,6 @@ model Reciept {
   items       Json
   tnxId       String
   transaction Transaction @relation(fields: [tnxId], references: [id])
-  total       Int
   year        Int
   month       String
   status      String

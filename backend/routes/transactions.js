@@ -7,7 +7,7 @@ const router = Router();
 
 router.get("/id", async (req, res) => {
 	try {
-		const id = await Rgenerator("2503013");
+		const id = await Rgenerator("2504001");
 		res.status(200).json(id);
 	} catch (error) {
 		res.status(500).json(error);
@@ -31,13 +31,18 @@ router.get("/", async (req, res) => {
 	}
 });
 router.get("/:id", async (req, res) => {
+	const id = req.params.id.substring(0, 7);
 	try {
-		const found = await prisma.transaction.findMany({
+		const found = await prisma.transaction.findUnique({
 			where: {
-				id: req.params.id,
+				id,
 			},
 			include: {
-				items: true,
+				items: {
+					include: {
+						fee: true,
+					},
+				},
 				reciepts: true,
 				patient: true,
 				updatedBy: true,
@@ -46,6 +51,119 @@ router.get("/:id", async (req, res) => {
 		res.status(200).json(found);
 	} catch (error) {
 		res.status(500).json(error);
+		console.log(error);
+	}
+});
+router.post("/balance/:id", async (req, res) => {
+	const { balance, items, status, updatedById } = req.body;
+	const id = req.params.id.substring(0, 7);
+	const Items = items.map((item) => {
+		return {
+			id: nanoid(8),
+			paid: item?.paid,
+			price: item?.price,
+			balance: item?.balance,
+			name: item?.name,
+			method: item?.method,
+		};
+	});
+	const tnxItems = items.map((item) => {
+		return {
+			id: item?.id,
+			paid: item?.mpaid,
+			balance: item?.balance,
+		};
+	});
+	const payments = items.map((item) => {
+		return {
+			id: nanoid(8),
+			itemId: item?.id,
+			paid: item?.paid,
+			year: curYear,
+			month: curMonth,
+			name: item?.name,
+			method: item?.method,
+			type: "balance",
+		};
+	});
+	const recieptId = await Rgenerator(id);
+	try {
+		tnxItems.forEach(async (i) => {
+			await prisma.tnxItem.update({
+				where: {
+					id: i?.id,
+				},
+				data: {
+					paid: i?.paid,
+					balance: i?.balance,
+				},
+			});
+		});
+
+		const updated = await prisma.transaction.update({
+			where: {
+				id,
+			},
+			data: {
+				status,
+				balance,
+				payments: {
+					createMany: {
+						data: payments,
+					},
+				},
+				reciepts: {
+					create: {
+						id: recieptId,
+						items: JSON.stringify(Items),
+						year: curYear,
+						month: curMonth,
+						status,
+						createdById: updatedById,
+					},
+				},
+				updatedById,
+			},
+			select: {
+				reciepts: {
+					include: {
+						createdBy: {
+							select: {
+								username: true,
+							},
+						},
+						transaction: {
+							select: {
+								patient: {
+									select: {
+										name: true,
+										hosp_no: true,
+										phone_no: true,
+										town: {
+											select: {
+												name: true,
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					orderBy: {
+						createdAt: "desc",
+					},
+				},
+				_count: {
+					select: {
+						items: true,
+					},
+				},
+			},
+		});
+		res.status(200).json(updated);
+	} catch (error) {
+		res.status(500).json(error);
+		console.log(error);
 	}
 });
 router.post("/create", async (req, res) => {
@@ -78,7 +196,6 @@ router.post("/create", async (req, res) => {
 		return {
 			id: nanoid(8),
 			itemId: item?.id,
-			price: item?.price,
 			paid: item?.paid,
 			year: curYear,
 			month: curMonth,
@@ -114,7 +231,6 @@ router.post("/create", async (req, res) => {
 						year: curYear,
 						month: curMonth,
 						status,
-						total,
 						createdById,
 					},
 				},
