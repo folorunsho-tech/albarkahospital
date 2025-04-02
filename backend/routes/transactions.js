@@ -45,7 +45,11 @@ router.get("/:id", async (req, res) => {
 				},
 				reciepts: true,
 				patient: true,
-				updatedBy: true,
+				updatedBy: {
+					select: {
+						username: true,
+					},
+				},
 			},
 		});
 		res.status(200).json(found);
@@ -159,6 +163,103 @@ router.post("/balance/:id", async (req, res) => {
 					},
 				},
 			},
+		});
+		res.status(200).json(updated);
+	} catch (error) {
+		res.status(500).json(error);
+		console.log(error);
+	}
+});
+router.post("/reversal/:id", async (req, res) => {
+	const { status, toReverse, updatedById } = req.body;
+	const id = req.params.id.substring(0, 7);
+	const payments = toReverse.map((item) => {
+		return {
+			id: nanoid(8),
+			itemId: item?.id,
+			paid: item?.paid,
+			year: curYear,
+			month: curMonth,
+			name: item?.name,
+			method: "",
+			type: "reversal",
+		};
+	});
+	// const recieptId = await Rgenerator(id);
+	try {
+		toReverse.forEach(async (i) => {
+			await prisma.tnxItem.update({
+				where: {
+					id: i?.id,
+				},
+				data: {
+					paid: i?.paid,
+					balance: i?.balance,
+					active: i?.active,
+					price: i?.price,
+				},
+			});
+		});
+
+		const updated = await prisma.transaction.update({
+			where: {
+				id,
+			},
+			data: {
+				status,
+
+				payments: {
+					createMany: {
+						data: payments,
+					},
+				},
+				updatedById,
+				// reciepts: {
+				// 	create: {
+				// 		id: recieptId,
+				// 		items: JSON.stringify(Items),
+				// 		year: curYear,
+				// 		month: curMonth,
+				// 		status,
+				// 		createdById: updatedById,
+				// 	},
+				// },
+			},
+			// select: {
+			// 	reciepts: {
+			// 		include: {
+			// 			createdBy: {
+			// 				select: {
+			// 					username: true,
+			// 				},
+			// 			},
+			// 			transaction: {
+			// 				select: {
+			// 					patient: {
+			// 						select: {
+			// 							name: true,
+			// 							hosp_no: true,
+			// 							phone_no: true,
+			// 							town: {
+			// 								select: {
+			// 									name: true,
+			// 								},
+			// 							},
+			// 						},
+			// 					},
+			// 				},
+			// 			},
+			// 		},
+			// 		orderBy: {
+			// 			createdAt: "desc",
+			// 		},
+			// 	},
+			// 	_count: {
+			// 		select: {
+			// 			items: true,
+			// 		},
+			// 	},
+			// },
 		});
 		res.status(200).json(updated);
 	} catch (error) {

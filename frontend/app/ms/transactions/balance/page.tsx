@@ -307,12 +307,9 @@ const page = () => {
 							const rec = data?.reciepts[0];
 
 							setReciept({ ...rec, items: JSON.parse(rec?.items) });
-
-							// console.log({
-							// 	balance: itemBalance - totalPay,
-							// 	status: status?.label,
-							// 	items,
-							// });
+							setItems([]);
+							const { data: t } = await fetch(`/transactions/${id}`);
+							setTnx(t);
 						}}
 					>
 						<TextInput
@@ -358,6 +355,7 @@ const page = () => {
 						<Button
 							disabled={!(paid && method)}
 							onClick={() => {
+								const filtered = items.filter((i) => i.id !== item?.id);
 								setItems([
 									{
 										name: item?.fee?.name,
@@ -369,6 +367,7 @@ const page = () => {
 											Number(item?.price) - Number(item?.paid) - Number(paid),
 										id: item?.id,
 									},
+									...filtered,
 								]);
 								setPaid("");
 								setMethod(null);
