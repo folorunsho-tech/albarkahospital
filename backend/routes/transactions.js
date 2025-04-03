@@ -30,6 +30,85 @@ router.get("/", async (req, res) => {
 		res.status(500).json(error);
 	}
 });
+router.get("/payments/:id", async (req, res) => {
+	const id = req.params.id;
+	try {
+		const found = await prisma.payment.findMany({
+			where: {
+				tnxId: id,
+			},
+			include: {
+				createdBy: {
+					select: {
+						username: true,
+					},
+				},
+			},
+		});
+		res.status(200).json(found);
+	} catch (error) {
+		res.status(500).json(error);
+		console.log(error);
+	}
+});
+router.get("/reciepts/:id", async (req, res) => {
+	const id = req.params.id;
+	try {
+		const found = await prisma.reciept.findMany({
+			where: {
+				tnxId: id,
+			},
+			include: {
+				createdBy: {
+					select: {
+						username: true,
+					},
+				},
+				transaction: {
+					select: {
+						patient: {
+							include: {
+								town: true,
+							},
+						},
+					},
+				},
+			},
+		});
+		res.status(200).json(found);
+	} catch (error) {
+		res.status(500).json(error);
+		console.log(error);
+	}
+});
+router.get("/info/:id", async (req, res) => {
+	const id = req.params.id;
+	try {
+		const found = await prisma.transaction.findUnique({
+			where: {
+				id,
+			},
+			include: {
+				items: {
+					include: {
+						fee: true,
+					},
+				},
+
+				patient: true,
+				updatedBy: {
+					select: {
+						username: true,
+					},
+				},
+			},
+		});
+		res.status(200).json(found);
+	} catch (error) {
+		res.status(500).json(error);
+		console.log(error);
+	}
+});
 router.get("/:id", async (req, res) => {
 	const id = req.params.id.substring(0, 7);
 	try {
@@ -193,10 +272,7 @@ router.post("/reversal/:id", async (req, res) => {
 					id: i?.id,
 				},
 				data: {
-					paid: i?.paid,
-					balance: i?.balance,
 					active: i?.active,
-					price: i?.price,
 				},
 			});
 		});

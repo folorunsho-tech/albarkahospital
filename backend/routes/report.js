@@ -1411,6 +1411,249 @@ router.post("/diagnosis/:id", async (req, res) => {
 // DIAGNOSIS END
 
 // TRANSACTIONS
-
+router.post("/debtors/:criteria", async (req, res) => {
+	const { value } = req.body;
+	const criteria = req.params.criteria;
+	try {
+		if (criteria == "year") {
+			const found = await prisma.tnxItem.findMany({
+				where: {
+					year: value,
+					active: true,
+					balance: {
+						gt: 0,
+					},
+				},
+				include: {
+					transaction: {
+						select: {
+							patient: true,
+						},
+					},
+					fee: true,
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+			res.status(200).json(found);
+		} else if (criteria == "yearnmonth") {
+			const found = await prisma.tnxItem.findMany({
+				where: {
+					year: value?.year,
+					month: value?.month,
+					active: true,
+					balance: {
+						gt: 0,
+					},
+				},
+				include: {
+					transaction: {
+						select: {
+							patient: true,
+						},
+					},
+					fee: true,
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+			res.status(200).json(found);
+		} else if (criteria == "date") {
+			const found = await prisma.tnxItem.findMany({
+				where: {
+					AND: [
+						{
+							updatedAt: {
+								gte: new Date(new Date(value).setUTCHours(0, 0, 0, 0, 0)),
+							},
+						},
+						{
+							updatedAt: {
+								lte: new Date(new Date(value).setUTCHours(23, 0, 0, 0, 0)),
+							},
+						},
+						{ active: true },
+						{
+							balance: {
+								gt: 0,
+							},
+						},
+					],
+				},
+				include: {
+					transaction: {
+						select: {
+							patient: true,
+						},
+					},
+					fee: true,
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+			res.status(200).json(found);
+		} else if (criteria == "range") {
+			const found = await prisma.tnxItem.findMany({
+				where: {
+					AND: [
+						{
+							updatedAt: {
+								gte: new Date(new Date(value?.from).setUTCHours(0, 0, 0, 0, 0)),
+							},
+						},
+						{
+							updatedAt: {
+								lte: new Date(new Date(value?.to).setUTCHours(23, 0, 0, 0, 0)),
+							},
+						},
+						{ active: true },
+						{
+							balance: {
+								gt: 0,
+							},
+						},
+					],
+				},
+				include: {
+					transaction: {
+						select: {
+							patient: true,
+						},
+					},
+					fee: true,
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+			res.status(200).json(found);
+		}
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
+router.post("/payments/:criteria", async (req, res) => {
+	const { value } = req.body;
+	const criteria = req.params.criteria;
+	try {
+		if (criteria == "year") {
+			const found = await prisma.payment.findMany({
+				where: {
+					year: value,
+				},
+				include: {
+					transaction: {
+						select: {
+							patient: true,
+						},
+					},
+					createdBy: {
+						select: {
+							username: true,
+						},
+					},
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+			res.status(200).json(found);
+		} else if (criteria == "yearnmonth") {
+			const found = await prisma.payment.findMany({
+				where: {
+					year: value?.year,
+					month: value?.month,
+				},
+				include: {
+					transaction: {
+						select: {
+							patient: true,
+						},
+					},
+					createdBy: {
+						select: {
+							username: true,
+						},
+					},
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+			res.status(200).json(found);
+		} else if (criteria == "date") {
+			const found = await prisma.payment.findMany({
+				where: {
+					AND: [
+						{
+							updatedAt: {
+								gte: new Date(new Date(value).setUTCHours(0, 0, 0, 0, 0)),
+							},
+						},
+						{
+							updatedAt: {
+								lte: new Date(new Date(value).setUTCHours(23, 0, 0, 0, 0)),
+							},
+						},
+					],
+				},
+				include: {
+					transaction: {
+						select: {
+							patient: true,
+						},
+					},
+					createdBy: {
+						select: {
+							username: true,
+						},
+					},
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+			res.status(200).json(found);
+		} else if (criteria == "range") {
+			const found = await prisma.payment.findMany({
+				where: {
+					AND: [
+						{
+							updatedAt: {
+								gte: new Date(new Date(value?.from).setUTCHours(0, 0, 0, 0, 0)),
+							},
+						},
+						{
+							updatedAt: {
+								lte: new Date(new Date(value?.to).setUTCHours(23, 0, 0, 0, 0)),
+							},
+						},
+					],
+				},
+				include: {
+					transaction: {
+						select: {
+							patient: true,
+						},
+					},
+					createdBy: {
+						select: {
+							username: true,
+						},
+					},
+				},
+				orderBy: {
+					updatedAt: "desc",
+				},
+			});
+			res.status(200).json(found);
+		}
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
 // TRANSACTIONS END
 export default router;

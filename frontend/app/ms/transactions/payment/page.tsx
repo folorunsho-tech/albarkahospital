@@ -176,7 +176,7 @@ const page = () => {
 								</p>
 							</div>
 							<div className='flex items-center '>
-								<h2 className='text-sm font-extrabold font-serif '>Cashier</h2>
+								<h2 className='text-sm font-extrabold font-serif '>Cashier:</h2>
 								<p className='underline pl-1.5'>
 									{reciept?.createdBy?.username}
 								</p>

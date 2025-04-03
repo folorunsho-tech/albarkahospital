@@ -29,7 +29,8 @@ model Accounts {
   stocksHistory  StocksHistory[]
   drugPurchases  DrugPurchases[]
   transactions   Transaction[]
-  Reciept        Reciept[]
+  reciepts       Reciept[]
+  payments       Payment[]
 }
 
 model AuthHistory {
@@ -264,7 +265,9 @@ model Payment {
   tnxItem     TnxItem      @relation(fields: [itemId], references: [id])
   name        String
   paid        Int
-  method      String
+  method      String?
+  createdById String?
+  createdBy   Accounts?    @relation(fields: [createdById], references: [id])
   type        String       @default("payment")
   year        Int?
   month       String?

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useFetch } from "@/queries";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Info, Receipt } from "lucide-react";
 import Link from "next/link";
 import {
 	Button,
@@ -9,11 +9,16 @@ import {
 	LoadingOverlay,
 	NumberFormatter,
 	Table,
+	Tabs,
 	Text,
 	TextInput,
 } from "@mantine/core";
 
 import { useParams } from "next/navigation";
+import { IconReportMoney } from "@tabler/icons-react";
+import InfoC from "@/components/transactions/Info";
+import Payments from "@/components/transactions/Payments";
+import Receipts from "@/components/transactions/Receipts";
 const page = () => {
 	const { id } = useParams<{ id: string }>();
 	const { fetch, loading } = useFetch();
@@ -79,7 +84,28 @@ const page = () => {
 					</Button>
 				</div>
 			</header>
-			<section></section>
+			<Tabs defaultValue='info' keepMounted={false}>
+				<Tabs.List className='mb-4'>
+					<Tabs.Tab value='info' leftSection={<Info />}>
+						Info
+					</Tabs.Tab>
+					<Tabs.Tab value='payments' leftSection={<IconReportMoney />}>
+						Payments
+					</Tabs.Tab>
+					<Tabs.Tab value='reciepts' leftSection={<Receipt />}>
+						Receipts
+					</Tabs.Tab>
+				</Tabs.List>
+				<Tabs.Panel value='info'>
+					<InfoC tnx={tnx} />
+				</Tabs.Panel>
+				<Tabs.Panel value='payments'>
+					<Payments id={id} />
+				</Tabs.Panel>
+				<Tabs.Panel value='reciepts'>
+					<Receipts id={id} />
+				</Tabs.Panel>
+			</Tabs>
 			<LoadingOverlay visible={loading} />
 		</main>
 	);

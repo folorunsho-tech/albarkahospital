@@ -129,9 +129,7 @@ const page = () => {
 							return {
 								id: item?.id,
 								active: false,
-								balance: -item?.price,
 								paid: -item?.paid,
-								price: -item?.price,
 								name: item?.fee?.name,
 							};
 						});
