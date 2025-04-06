@@ -32,6 +32,7 @@ const Patients = () => {
 			<Table.Td>{row?.age}</Table.Td>
 			<Table.Td>{row?.town?.name}</Table.Td>
 			<Table.Td>{row?.phone_no}</Table.Td>
+			<Table.Td>{row?.religion}</Table.Td>
 			<Table.Td>{format(new Date(row?.reg_date), "dd/MM/yyyy")}</Table.Td>
 			<Table.Td>
 				<Menu shadow='md' width={200}>
@@ -76,6 +77,7 @@ const Patients = () => {
 			<Table.Td>{row?.age}</Table.Td>
 			<Table.Td>{row?.town?.name}</Table.Td>
 			<Table.Td>{row?.phone_no}</Table.Td>
+			<Table.Td>{row?.religion}</Table.Td>
 			<Table.Td>{format(new Date(row?.reg_date), "dd/MM/yyyy")}</Table.Td>
 		</Table.Tr>
 	));
@@ -109,6 +111,7 @@ const Patients = () => {
 					"Age",
 					"Address",
 					"Phone No",
+					"Religion",
 					"Reg date",
 					"Actions",
 				]}
@@ -131,6 +134,7 @@ const Patients = () => {
 					"Age",
 					"Address",
 					"Phone No",
+					"Religion",
 					"Reg date",
 				]}
 				printRows={printRows}

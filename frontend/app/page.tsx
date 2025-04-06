@@ -16,7 +16,7 @@ import { IconX, IconServerOff } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { userContext } from "@/context/User";
 const Login = () => {
-	const { setUser } = useContext(userContext);
+	const { setAuthId } = useContext(userContext);
 	const { post, loading } = usePostNormal();
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -39,12 +39,9 @@ const Login = () => {
 					e.preventDefault();
 					const res = await post("/auth/login", { username, password });
 					if (res?.status === 200) {
-						bake_cookie("albarkahospitalms", {
-							...res?.data?.user,
-							authId: res?.data?.authId,
-						});
-						const read = read_cookie("albarkahospitalms");
-						setUser(read);
+						bake_cookie("albarkahospitalms", res.data);
+						const read: any = read_cookie("albarkahospitalms");
+						setAuthId(read?.authId);
 
 						notifications.show({
 							id: "AuthLogin",
@@ -59,7 +56,7 @@ const Login = () => {
 							color: "teal",
 							loading: true,
 						});
-					} else if (res?.status === 404) {
+					} else if (res?.status === 404 || res?.status === 401) {
 						notifications.show({
 							id: "AuthInvalid",
 							withCloseButton: true,

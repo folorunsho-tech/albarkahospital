@@ -2,15 +2,16 @@
 "use client";
 
 import PaginatedTable from "../PaginatedTable";
-import { Button, NumberFormatter, Table } from "@mantine/core";
+import { ActionIcon, Button, NumberFormatter, rem, Table } from "@mantine/core";
 import { format } from "date-fns";
-import { Printer } from "lucide-react";
+import { Eye, Printer } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useReactToPrint } from "react-to-print";
-import { usePostNormal } from "@/queries";
+import { useFetch } from "@/queries";
+import Link from "next/link";
 
 const Transactions = ({ hosp_no, id }: { hosp_no: string; id: string }) => {
-	const { post, loading, data } = usePostNormal();
+	const { fetch, loading, data } = useFetch();
 	const [queryData, setQueryData] = useState<any[]>(data);
 	const [sortedData, setSortedData] = useState<any[]>([]);
 	const contentRef = useRef<HTMLDivElement>(null);
@@ -19,27 +20,53 @@ const Transactions = ({ hosp_no, id }: { hosp_no: string; id: string }) => {
 		bodyClass: "print",
 		documentTitle: `${hosp_no} - transactions-list`,
 	});
+	const getStatus = (status: string | any) => {
+		if (status == "Fully Paid") {
+			return "bg-green-500 text-white";
+		} else if (status == "Partly Paid") {
+			return "bg-orange-500 text-white";
+		} else if (status == "Partly Reversed") {
+			return "bg-pink-500 text-white";
+		} else if (status == "Fully Reversed") {
+			return "bg-red-500 text-white";
+		}
+	};
 	const rows = sortedData?.map((row, i: number) => (
 		<Table.Tr key={row?.id}>
 			<Table.Td>{i + 1}</Table.Td>
+			<Table.Td>{row?.id}</Table.Td>
+			<Table.Td>{format(new Date(row?.createdAt), "Pp")}</Table.Td>
+			<Table.Td>{row?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.patient?.name}</Table.Td>
-			<Table.Td>{row?.hosp_no}</Table.Td>
+			<Table.Td>
+				<NumberFormatter value={row?.total} prefix='NGN ' thousandSeparator />
+			</Table.Td>
+			<Table.Td>
+				<NumberFormatter
+					value={
+						row?.status == "Fully Reversed"
+							? -(Number(row?.total) - Number(row?.balance))
+							: Number(row?.total) - Number(row?.balance)
+					}
+					prefix='NGN '
+					thousandSeparator
+				/>
+			</Table.Td>
+			<Table.Td>
+				<NumberFormatter value={row?.balance} prefix='NGN ' thousandSeparator />
+			</Table.Td>
 			<Table.Td>{row?._count?.items}</Table.Td>
+			<Table.Td className={getStatus(row?.status)}>{row?.status}</Table.Td>
 			<Table.Td>
-				<NumberFormatter prefix='N ' value={row?.amount} thousandSeparator />
+				<ActionIcon component={Link} href={`/ms/transactions/${row?.id}`}>
+					<Eye style={{ width: rem(14), height: rem(14) }} />
+				</ActionIcon>
 			</Table.Td>
-			<Table.Td>
-				<NumberFormatter prefix='N ' value={row?.paid} thousandSeparator />
-			</Table.Td>
-
-			<Table.Td>{row?.method}</Table.Td>
-			<Table.Td>{row?.status}</Table.Td>
-			<Table.Td>{format(new Date(row?.date), "dd/MM/yyyy")}</Table.Td>
 		</Table.Tr>
 	));
 	useEffect(() => {
 		const getAll = async () => {
-			const { data: found } = await post(`/patients/transactions`, { id });
+			const { data: found } = await fetch(`/patients/transactions/${id}`);
 			setQueryData(found);
 		};
 		getAll();
@@ -59,38 +86,26 @@ const Transactions = ({ hosp_no, id }: { hosp_no: string; id: string }) => {
 			<PaginatedTable
 				headers={[
 					"S/N",
-					"Name",
-					"Hosp No",
-					"Item Count",
-					"Amount",
-					"Paid",
-					"Method",
-					"Status",
+					"Tnx Id",
 					"Date",
+					"Hosp No",
+					"Name",
+					"Total",
+					"Paid",
+					"Balance",
+					"Items",
+					"Status",
+					"Action",
 				]}
-				placeholder='Search by hospital no'
+				placeholder='Search by transaction Id'
 				sortedData={sortedData}
 				rows={rows}
-				showSearch={false}
+				showSearch={true}
 				showPagination={true}
 				data={queryData}
 				setSortedData={setSortedData}
-				depth='patient'
-				ref={contentRef}
 				tableLoading={loading}
-				printHeaders={[
-					"S/N",
-					"Name",
-					"Hosp No",
-					"Item Count",
-					"Amount",
-					"Paid",
-					"Method",
-					"Status",
-					"Date",
-				]}
-				printRows={rows}
-				tableReport='Patients Transactions record'
+				depth=''
 			/>
 		</main>
 	);

@@ -1,7 +1,6 @@
 import { Router } from "express";
-// import { PrismaClient } from "@prisma/client";
-// const prisma = new PrismaClient();
 import prisma from "../config/prisma.js";
+import { curMonth, curYear } from "../config/ynm.js";
 
 const router = Router();
 
@@ -24,7 +23,7 @@ router.post("/no", async (req, res) => {
 				hosp_no: true,
 			},
 			orderBy: {
-				hosp_no: "desc",
+				createdAt: "desc",
 			},
 		});
 		const gotten = found[0];
@@ -63,13 +62,11 @@ router.post("/many", async (req, res) => {
 		res.status(500).json(error);
 	}
 });
-router.post("/transactions", async (req, res) => {
-	const { id } = req.body;
-
+router.get("/transactions/:id", async (req, res) => {
 	try {
 		const found = await prisma.transaction.findMany({
 			where: {
-				patientId: id,
+				patientId: req.params.id,
 			},
 			include: {
 				_count: {
@@ -77,6 +74,7 @@ router.post("/transactions", async (req, res) => {
 						items: true,
 					},
 				},
+				patient: true,
 			},
 		});
 		res.status(200).json(found);

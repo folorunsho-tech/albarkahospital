@@ -1,6 +1,4 @@
 import express from "express";
-// import { PrismaClient } from "@prisma/client";
-// const prisma = new PrismaClient();
 import prisma from "../config/prisma.js";
 const router = express.Router();
 // DRUGS
@@ -1557,7 +1555,7 @@ router.post("/payments/:criteria", async (req, res) => {
 					},
 				},
 				orderBy: {
-					updatedAt: "desc",
+					createdAt: "desc",
 				},
 			});
 			res.status(200).json(found);
@@ -1580,7 +1578,7 @@ router.post("/payments/:criteria", async (req, res) => {
 					},
 				},
 				orderBy: {
-					updatedAt: "desc",
+					createdAt: "desc",
 				},
 			});
 			res.status(200).json(found);
@@ -1589,12 +1587,12 @@ router.post("/payments/:criteria", async (req, res) => {
 				where: {
 					AND: [
 						{
-							updatedAt: {
+							createdAt: {
 								gte: new Date(new Date(value).setUTCHours(0, 0, 0, 0, 0)),
 							},
 						},
 						{
-							updatedAt: {
+							createdAt: {
 								lte: new Date(new Date(value).setUTCHours(23, 0, 0, 0, 0)),
 							},
 						},
@@ -1613,7 +1611,7 @@ router.post("/payments/:criteria", async (req, res) => {
 					},
 				},
 				orderBy: {
-					updatedAt: "desc",
+					createdAt: "desc",
 				},
 			});
 			res.status(200).json(found);
@@ -1622,12 +1620,12 @@ router.post("/payments/:criteria", async (req, res) => {
 				where: {
 					AND: [
 						{
-							updatedAt: {
+							createdAt: {
 								gte: new Date(new Date(value?.from).setUTCHours(0, 0, 0, 0, 0)),
 							},
 						},
 						{
-							updatedAt: {
+							createdAt: {
 								lte: new Date(new Date(value?.to).setUTCHours(23, 0, 0, 0, 0)),
 							},
 						},
@@ -1646,7 +1644,7 @@ router.post("/payments/:criteria", async (req, res) => {
 					},
 				},
 				orderBy: {
-					updatedAt: "desc",
+					createdAt: "desc",
 				},
 			});
 			res.status(200).json(found);

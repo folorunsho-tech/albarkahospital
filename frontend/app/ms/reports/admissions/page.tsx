@@ -84,6 +84,7 @@ const page = () => {
 					placeholder='date'
 					className='w-44'
 					value={value}
+					defaultDate={new Date()}
 					onChange={(value) => {
 						setValue(value);
 					}}

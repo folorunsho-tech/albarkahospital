@@ -88,14 +88,7 @@ const page = () => {
 				/>
 
 				<Group mt={20}>
-					<Button
-						onClick={() => {
-							close();
-							setDrug(null);
-							setAdded(0);
-						}}
-						color='black'
-					>
+					<Button href='/ms/drugs' component={Link} color='black'>
 						Cancel
 					</Button>
 					<Button disabled={!added} color='teal' type='submit'>

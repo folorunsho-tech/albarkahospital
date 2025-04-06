@@ -22,11 +22,12 @@ const Create = () => {
 	const { post, loading } = usePost();
 	const [groupsList, setGroupsList] = useState([]);
 	const [townsList, setTownsList] = useState([]);
-	const [group_id, setGroupId] = useState("cm5fk55fk0009uqyoyc55c44n");
-	const [sex, setSex] = useState("");
+	const [group_id, setGroupId] = useState<any>("");
+	const [sex, setSex] = useState<any>("");
 	const [age, setAge] = useState<string | null>("");
 	const [hosp_no, setHospNo] = useState("");
-	const [religion, setReligion] = useState("");
+	const [no, setNo] = useState<null | number>(null);
+	const [religion, setReligion] = useState<any>("");
 	const [townId, setTownId] = useState<any>("");
 	const [reg_date, setRegDate] = useState<any>(new Date());
 	const ages = [
@@ -152,7 +153,9 @@ const Create = () => {
 
 	const getHospNo = async () => {
 		const { data: hosp } = await hospF("/patients/no");
+		const no = Number(hosp?.split("/")[1]);
 		setHospNo(hosp);
+		setNo(no);
 	};
 	useEffect(() => {
 		const getAll = async () => {
@@ -184,9 +187,17 @@ const Create = () => {
 			group_id,
 			reg_date,
 			religion,
-			townId,age
+			townId,
+			age,
+			no,
 		});
 		form.reset();
+		setTownId(null);
+		setGroupId(null);
+		setSex(null);
+		setAge(null);
+		setNo(null);
+		setReligion(null);
 		getHospNo();
 	};
 
@@ -226,6 +237,7 @@ const Create = () => {
 					label='Sex'
 					placeholder='Select patient sex'
 					data={["Male", "Female"]}
+					required
 					allowDeselect={false}
 					value={sex}
 					onChange={(value: any) => {
@@ -237,8 +249,11 @@ const Create = () => {
 					placeholder='hospital card no...'
 					required
 					value={hosp_no}
+					error={Number(no) ? "" : "Hosp No is not correct"}
 					onChange={(e) => {
+						const splitted = Number(e.currentTarget.value.split("/")[1]);
 						setHospNo(e.currentTarget.value);
+						setNo(splitted);
 					}}
 				/>
 				<Select
@@ -265,6 +280,7 @@ const Create = () => {
 					placeholder='age...'
 					data={ages}
 					value={age}
+					searchable
 					onChange={(value) => {
 						setAge(value);
 					}}
@@ -294,7 +310,7 @@ const Create = () => {
 					onChange={(value: any) => {
 						setGroupId(value);
 					}}
-					// required
+					required
 					searchable
 					nothingFoundMessage='Nothing found...'
 				/>

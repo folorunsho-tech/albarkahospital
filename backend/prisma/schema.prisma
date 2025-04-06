@@ -44,6 +44,7 @@ model AuthHistory {
 model Patients {
   id           String        @id @default(cuid())
   hosp_no      String
+  no           Int?
   year         Int?
   month        String?
   name         String?

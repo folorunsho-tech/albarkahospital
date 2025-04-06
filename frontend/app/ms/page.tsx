@@ -7,7 +7,13 @@ const Home = () => {
 	const { user } = React.useContext(userContext);
 	return (
 		<section className='bg-white p-3 rounded-md flex flex-col items-center h-2/3 gap-6'>
-			<Image src='/hospital.svg' alt='Hospital logo' width={150} height={150} />
+			<Image
+				src='/hospital.svg'
+				alt='Hospital logo'
+				width={150}
+				height={150}
+				loading='eager'
+			/>
 			<h2 className='text-5xl text-center'>
 				Albarka Hospital Wawa, Niger state
 			</h2>

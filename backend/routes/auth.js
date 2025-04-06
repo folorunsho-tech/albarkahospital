@@ -1,7 +1,6 @@
 const { createHash } = await import("node:crypto");
 import { Router } from "express";
-// import { PrismaClient } from "@prisma/client";
-// const prisma = new PrismaClient();
+import jwt from "jsonwebtoken";
 import prisma from "../config/prisma.js";
 
 const router = Router();
@@ -21,6 +20,7 @@ router.post("/login", async (req, res) => {
 		if (!user) {
 			res.status(404).json("Invalid Credentials");
 		} else {
+			const token = jwt.sign({ userId: user.id }, process.env.SECRET);
 			const authHist = await prisma.authHistory.create({
 				data: {
 					accountId: user.id,
@@ -45,7 +45,7 @@ router.post("/login", async (req, res) => {
 					},
 				},
 			});
-			res.status(200).json({ user, authId: authHist?.id });
+			res.status(200).json({ token, authId: authHist?.id, userId: user.id });
 		}
 	} catch (error) {
 		res.status(500).status(error);
@@ -53,6 +53,7 @@ router.post("/login", async (req, res) => {
 });
 router.post("/logout", async (req, res) => {
 	const { id } = req.body;
+
 	try {
 		await prisma.authHistory.update({
 			where: {

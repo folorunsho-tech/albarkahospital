@@ -44,6 +44,9 @@ router.get("/payments/:id", async (req, res) => {
 					},
 				},
 			},
+			orderBy: {
+				updatedAt: "desc",
+			},
 		});
 		res.status(200).json(found);
 	} catch (error) {
@@ -73,6 +76,9 @@ router.get("/reciepts/:id", async (req, res) => {
 						},
 					},
 				},
+			},
+			orderBy: {
+				updatedAt: "desc",
 			},
 		});
 		res.status(200).json(found);
@@ -167,6 +173,7 @@ router.post("/balance/:id", async (req, res) => {
 			name: item?.name,
 			method: item?.method,
 			type: "balance",
+			createdById: updatedById,
 		};
 	});
 	const recieptId = await Rgenerator(id);
@@ -206,6 +213,7 @@ router.post("/balance/:id", async (req, res) => {
 					},
 				},
 				updatedById,
+				updatedAt: new Date(),
 			},
 			select: {
 				reciepts: {
@@ -262,6 +270,7 @@ router.post("/reversal/:id", async (req, res) => {
 			name: item?.name,
 			method: "",
 			type: "reversal",
+			createdById: updatedById,
 		};
 	});
 	// const recieptId = await Rgenerator(id);
@@ -290,6 +299,7 @@ router.post("/reversal/:id", async (req, res) => {
 					},
 				},
 				updatedById,
+				updatedAt: new Date(),
 				// reciepts: {
 				// 	create: {
 				// 		id: recieptId,
@@ -378,6 +388,7 @@ router.post("/create", async (req, res) => {
 			month: curMonth,
 			name: item?.name,
 			method: item?.method,
+			createdById,
 		};
 	});
 	const id = await generator(curYear, curMonth);

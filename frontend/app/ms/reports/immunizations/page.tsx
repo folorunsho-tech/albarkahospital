@@ -24,8 +24,14 @@ const page = () => {
 			<Table.Td>{row?.encounter?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.encounter?.patient?.name}</Table.Td>
 			<Table.Td>{row?.type}</Table.Td>
-			<Table.Td>{new Date(row?.date).toLocaleDateString()}</Table.Td>
-			<Table.Td>{new Date(row?.next_date).toLocaleDateString()}</Table.Td>
+			<Table.Td>
+				{row?.date !== null ? new Date(row?.date).toLocaleDateString() : ""}
+			</Table.Td>
+			<Table.Td>
+				{row?.next_date !== null
+					? new Date(row?.next_date).toLocaleDateString()
+					: ""}
+			</Table.Td>
 		</Table.Tr>
 	));
 	const printRows = sortedData?.map((row, i) => (
@@ -36,8 +42,14 @@ const page = () => {
 			<Table.Td>{row?.encounter?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.encounter?.patient?.name}</Table.Td>
 			<Table.Td>{row?.type}</Table.Td>
-			<Table.Td>{new Date(row?.date).toLocaleDateString()}</Table.Td>
-			<Table.Td>{new Date(row?.next_date).toLocaleDateString()}</Table.Td>
+			<Table.Td>
+				{row?.date !== null ? new Date(row?.date).toLocaleDateString() : ""}
+			</Table.Td>
+			<Table.Td>
+				{row?.next_date !== null
+					? new Date(row?.next_date).toLocaleDateString()
+					: ""}
+			</Table.Td>
 		</Table.Tr>
 	));
 	const getValuesUI = () => {

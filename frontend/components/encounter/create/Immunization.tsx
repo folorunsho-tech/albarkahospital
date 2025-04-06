@@ -42,7 +42,7 @@ const Immunization = ({ setImmunization }: { setImmunization: any }) => {
 				placeholder='next date'
 				className='w-44'
 				onChange={setNDate}
-				required
+				clearable
 			/>
 		</main>
 	);

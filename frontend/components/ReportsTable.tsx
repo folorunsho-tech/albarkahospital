@@ -23,7 +23,6 @@ const ReportsTable = ({
 	data,
 	setSortedData,
 	sortedData,
-	placeholder,
 	tableLoading,
 	printHeaders,
 	printRows,

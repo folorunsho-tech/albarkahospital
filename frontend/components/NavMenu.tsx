@@ -28,7 +28,7 @@ const NavMenu = () => {
 	const url = usePathname();
 	const currPath = url.split("/");
 	const router = useRouter();
-	const { permissions: menu, user } = useContext(userContext);
+	const { permissions: menu, authId, user } = useContext(userContext);
 	const getIcon = (name: string) => {
 		if (name == "transactions") {
 			return <ReceiptText />;
@@ -57,6 +57,7 @@ const NavMenu = () => {
 						alt='Hospital logo'
 						width={40}
 						height={40}
+						loading='eager'
 					/>
 					<h2 className='font-semibold text-md text-white'>AHW</h2>
 				</div>
@@ -99,8 +100,8 @@ const NavMenu = () => {
 				<button
 					className='flex cursor-pointer justify-between items-center w-full p-2 bg-red-500 text-white font-semibold hover:bg-red-400 transition duration-300'
 					onClick={async () => {
+						await axios.post("/auth/logout", { id: authId });
 						delete_cookie("albarkahospitalms");
-						await axios.post("/auth/logout", { id: user?.authId });
 						router.push("/");
 					}}
 				>

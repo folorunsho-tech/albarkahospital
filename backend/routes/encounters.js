@@ -1,6 +1,4 @@
 import { Router } from "express";
-// import { PrismaClient } from "@prisma/client";
-// const prisma = new PrismaClient();
 import prisma from "../config/prisma.js";
 import { curMonth, curYear } from "../config/ynm.js";
 
@@ -716,8 +714,8 @@ router.post("/create/immunization", async (req, res) => {
 		const created = await prisma.encounters.create({
 			data: {
 				patient_id,
-				year,
-				month,
+				year: curYear,
+				month: curMonth,
 				care_id: careId,
 				createdById,
 				diagnosis: {
@@ -797,6 +795,7 @@ router.post("/create/immunization", async (req, res) => {
 		res.status(200).json(created);
 	} catch (error) {
 		res.status(500).json(error);
+		console.log(error);
 	}
 });
 router.post("/", async (req, res) => {

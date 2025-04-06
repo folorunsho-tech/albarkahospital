@@ -42,32 +42,6 @@ const Backup = () => {
 		}
 	};
 
-	// 	if (status == 200) {
-	// 		notifications.show({
-	// 			id: "RestoredSucc",
-	// 			withCloseButton: true,
-	// 			autoClose: 1000,
-	// 			withBorder: true,
-	// 			className: "w-max absolute top-0  left-0",
-	// 			title: "Success !!!",
-	// 			message: "Successfully restored Database !!!",
-	// 			color: "green",
-	// 			icon: <IconCheck />,
-	// 		});
-	// 	} else {
-	// 		notifications.show({
-	// 			id: "RestoredErr",
-	// 			withCloseButton: true,
-	// 			autoClose: 1000,
-	// 			withBorder: true,
-	// 			className: "w-max absolute top-0  left-0",
-	// 			title: "Error!!!",
-	// 			message: "Error restoring Database !!!",
-	// 			color: "red",
-	// 			icon: <IconX />,
-	// 		});
-	// 	}
-	// };
 	return (
 		<section className='py-2'>
 			<Tabs
