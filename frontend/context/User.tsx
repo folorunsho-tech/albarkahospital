@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useFetchSingle } from "@/queries";
@@ -13,6 +12,8 @@ const userContext = createContext<{
 	setUser: any;
 	setPerm: any;
 	setAuthId: any;
+	setToken: any;
+	token: null | string;
 }>({
 	user: null,
 	authId: null,
@@ -20,15 +21,18 @@ const userContext = createContext<{
 	setUser: () => {},
 	setPerm: () => {},
 	setAuthId: () => {},
+	setToken: () => {},
+	token: null,
 });
 const UserProvider = ({ children }: { children: ReactNode }) => {
 	const router = useRouter();
 	const { fetch } = useFetchSingle();
 	const [user, setUser] = useState<any>(null);
+	const [token, setToken] = useState<null | string>(null);
 	const [authId, setAuthId] = useState<any>(null);
 	const [permissions, setPerm] = useState<any[]>([]);
 	const getData = async (id: string) => {
-		const { data } = await fetch(`/accounts/${id}/basic`);
+		const { data } = await fetch(`/auth/${id}/basic`);
 		setUser(data);
 		setPerm(JSON.parse(data?.menu));
 	};
@@ -41,11 +45,20 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 			const parsed = gotten ? JSON.parse(gotten) : null;
 			getData(parsed?.userId);
 		}
-	}, [authId]);
+	}, [authId, token]);
 
 	return (
 		<userContext.Provider
-			value={{ user, setUser, permissions, setPerm, authId, setAuthId }}
+			value={{
+				user,
+				setUser,
+				permissions,
+				setPerm,
+				authId,
+				setAuthId,
+				token,
+				setToken,
+			}}
 		>
 			{children}
 		</userContext.Provider>

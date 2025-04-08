@@ -51,6 +51,18 @@ router.post("/login", async (req, res) => {
 		res.status(500).status(error);
 	}
 });
+router.get("/:account_id/basic", async (req, res) => {
+	try {
+		const found = await prisma.accounts.findUnique({
+			where: {
+				id: req.params.account_id,
+			},
+		});
+		res.status(200).json(found);
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
 router.post("/logout", async (req, res) => {
 	const { id } = req.body;
 

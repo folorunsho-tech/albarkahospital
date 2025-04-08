@@ -16,7 +16,7 @@ import { IconX, IconServerOff } from "@tabler/icons-react";
 import { useRouter } from "next/navigation";
 import { userContext } from "@/context/User";
 const Login = () => {
-	const { setAuthId } = useContext(userContext);
+	const { setAuthId, setToken } = useContext(userContext);
 	const { post, loading } = usePostNormal();
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
@@ -41,8 +41,8 @@ const Login = () => {
 					if (res?.status === 200) {
 						bake_cookie("albarkahospitalms", res.data);
 						const read: any = read_cookie("albarkahospitalms");
+						setToken(read?.token);
 						setAuthId(read?.authId);
-
 						notifications.show({
 							id: "AuthLogin",
 							withCloseButton: false,

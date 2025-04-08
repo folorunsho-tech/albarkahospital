@@ -20,6 +20,12 @@ const showNotification = (status: number) => {
 			message: "Data alredy exist",
 			color: "orange",
 		});
+	} else if (status == 401) {
+		notifications.show({
+			title: "Error !!!",
+			message: "Access Denied",
+			color: "red",
+		});
 	} else if (status == 404) {
 		notifications.show({
 			title: "Error !!!",
@@ -36,11 +42,16 @@ const showNotification = (status: number) => {
 };
 
 export const useFetch = () => {
+	const { token } = React.useContext(userContext);
 	const [loading, setLoading] = useState(false);
 	const [data, setData] = useState([]);
 	const fetch = async (url: string) => {
 		setLoading(true);
-		const getquery = await axios.get(url);
+		const getquery = await axios.get(url, {
+			headers: {
+				Authorization: token,
+			},
+		});
 		setData(getquery.data);
 		setLoading(false);
 		return {
@@ -53,11 +64,16 @@ export const useFetch = () => {
 	return { loading, fetch, data };
 };
 export const useFetchSingle = () => {
+	const { token } = React.useContext(userContext);
 	const [loading, setLoading] = useState(false);
 	const [data, setData] = useState({});
 	const fetch = async (url: string) => {
 		setLoading(true);
-		const getquery = await axios.get(url);
+		const getquery = await axios.get(url, {
+			headers: {
+				Authorization: token,
+			},
+		});
 		setData(getquery.data);
 		setLoading(false);
 		return {
@@ -70,13 +86,22 @@ export const useFetchSingle = () => {
 	return { loading, fetch, data };
 };
 export const useHospNo = () => {
+	const { token } = React.useContext(userContext);
 	const [loading, setLoading] = useState(false);
 	const fetch = async (url: string) => {
 		setLoading(true);
-		const getquery = await axios.post(url, {
-			year: curYear,
-			month: curMonth,
-		});
+		const getquery = await axios.post(
+			url,
+			{
+				year: curYear,
+				month: curMonth,
+			},
+			{
+				headers: {
+					Authorization: token,
+				},
+			}
+		);
 		setLoading(false);
 		return {
 			data: getquery.data,
@@ -89,14 +114,22 @@ export const useHospNo = () => {
 };
 
 export const usePostNormal = () => {
+	const { token } = React.useContext(userContext);
 	const [loading, setLoading] = useState(false);
 	const [data, setData] = useState([]);
 	const post = async (url: string, postData: any) => {
 		setLoading(true);
-		const postquery = await axios.post(url, {
-			...postData,
-			// time: format(new Date(), "PPpp").split(",")[2].trim(),
-		});
+		const postquery = await axios.post(
+			url,
+			{
+				...postData,
+			},
+			{
+				headers: {
+					Authorization: token,
+				},
+			}
+		);
 		setData(postquery.data);
 		setLoading(false);
 
@@ -109,15 +142,23 @@ export const usePostNormal = () => {
 	return { loading, post, data };
 };
 export const usePost = () => {
-	const { user } = React.useContext(userContext);
+	const { user, token } = React.useContext(userContext);
 	const [loading, setLoading] = useState(false);
 	const [data, setData] = useState([]);
 	const post = async (url: string, postData: any) => {
 		setLoading(true);
-		const postquery = await axios.post(url, {
-			...postData,
-			createdById: user?.id,
-		});
+		const postquery = await axios.post(
+			url,
+			{
+				...postData,
+				createdById: user?.id,
+			},
+			{
+				headers: {
+					Authorization: token,
+				},
+			}
+		);
 		setData(postquery.data);
 		setLoading(false);
 		showNotification(postquery.status);
@@ -130,16 +171,24 @@ export const usePost = () => {
 	return { loading, post, data };
 };
 export const usePostT = () => {
-	const { user } = React.useContext(userContext);
+	const { user, token } = React.useContext(userContext);
 	const [loading, setLoading] = useState(false);
 	const [data, setData] = useState([]);
 	const post = async (url: string, postData: any) => {
 		setLoading(true);
-		const postquery = await axios.post(url, {
-			...postData,
-			createdById: user?.id,
-			time: format(new Date(), "PPpp").split(",")[2].trim(),
-		});
+		const postquery = await axios.post(
+			url,
+			{
+				...postData,
+				createdById: user?.id,
+				time: format(new Date(), "PPpp").split(",")[2].trim(),
+			},
+			{
+				headers: {
+					Authorization: token,
+				},
+			}
+		);
 		setData(postquery.data);
 		setLoading(false);
 		showNotification(postquery.status);
@@ -152,16 +201,24 @@ export const usePostT = () => {
 	return { loading, post, data };
 };
 export const useEditT = () => {
-	const { user } = React.useContext(userContext);
+	const { user, token } = React.useContext(userContext);
 	const [loading, setLoading] = useState(false);
 	const [data, setData] = useState([]);
 	const edit = async (url: string, postData: any) => {
 		setLoading(true);
-		const postquery = await axios.post(url, {
-			...postData,
-			updatedById: user?.id,
-			time: format(new Date(), "PPpp").split(",")[2].trim(),
-		});
+		const postquery = await axios.post(
+			url,
+			{
+				...postData,
+				updatedById: user?.id,
+				time: format(new Date(), "PPpp").split(",")[2].trim(),
+			},
+			{
+				headers: {
+					Authorization: token,
+				},
+			}
+		);
 		setData(postquery.data);
 		setLoading(false);
 		showNotification(postquery.status);
@@ -175,15 +232,23 @@ export const useEditT = () => {
 	return { loading, edit, data };
 };
 export const useEdit = () => {
-	const { user } = React.useContext(userContext);
+	const { user, token } = React.useContext(userContext);
 	const [loading, setLoading] = useState(false);
 	const [data, setData] = useState([]);
 	const edit = async (url: string, postData: any) => {
 		setLoading(true);
-		const postquery = await axios.post(url, {
-			...postData,
-			updatedById: user?.id,
-		});
+		const postquery = await axios.post(
+			url,
+			{
+				...postData,
+				updatedById: user?.id,
+			},
+			{
+				headers: {
+					Authorization: token,
+				},
+			}
+		);
 		setData(postquery.data);
 		setLoading(false);
 		showNotification(postquery.status);
