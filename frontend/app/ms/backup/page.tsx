@@ -8,7 +8,7 @@ import {
 	IconX,
 	IconCheck,
 } from "@tabler/icons-react";
-import { axiosInstance as axios } from "@/lib/config";
+import axios from "@/lib/config";
 import { notifications } from "@mantine/notifications";
 const Backup = () => {
 	const [backingUp, setbackingUp] = React.useState(false);

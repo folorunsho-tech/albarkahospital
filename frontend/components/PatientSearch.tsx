@@ -3,7 +3,7 @@
 import { userContext } from "@/context/User";
 import { useEffect, useRef, useState, useContext } from "react";
 import { Combobox, Loader, TextInput, useCombobox } from "@mantine/core";
-import { axiosInstance as axios } from "@/lib/config";
+import axios from "@/lib/config";
 
 function getAsyncData(
 	searchQuery: string,

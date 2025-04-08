@@ -27,7 +27,7 @@ const PaginatedTable = ({
 	showPagination = true,
 	headers,
 	rows,
-	data,
+	data = [],
 	setSortedData,
 	sortedData,
 	placeholder,
@@ -71,7 +71,7 @@ const PaginatedTable = ({
 
 		return filtered;
 	}
-	const mappedData = data.map((mDtata) => {
+	const mappedData = data?.map((mDtata) => {
 		return {
 			...mDtata,
 			...mDtata[depth],

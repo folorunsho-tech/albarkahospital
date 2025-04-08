@@ -2,7 +2,7 @@
 "use client";
 import { AppShell } from "@mantine/core";
 import NavMenu from "@/components/NavMenu";
-
+import React from "react";
 export default function RootLayout({
 	children,
 }: Readonly<{

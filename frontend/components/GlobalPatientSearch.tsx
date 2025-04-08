@@ -3,7 +3,7 @@
 
 import { useRef, useState, useContext } from "react";
 import { Combobox, Loader, TextInput, useCombobox } from "@mantine/core";
-import { axiosInstance as axios } from "@/lib/config";
+import axios from "@/lib/config";
 import { IconSearch } from "@tabler/icons-react";
 import Link from "next/link";
 import { userContext } from "@/context/User";

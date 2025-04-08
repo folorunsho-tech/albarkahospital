@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Geist, Geist_Mono } from "next/font/google";
+
 import "./globals.css";
 import "@mantine/core/styles.css";
 import "@mantine/dates/styles.css";

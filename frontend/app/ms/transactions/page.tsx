@@ -28,7 +28,7 @@ const Payments = () => {
 		<Table.Tr key={row?.id}>
 			<Table.Td>{i + 1}</Table.Td>
 			<Table.Td>{row?.id}</Table.Td>
-			<Table.Td>{format(new Date(row?.createdAt), "Pp")}</Table.Td>
+			<Table.Td>{format(new Date(row?.createdAt), "dd/MM/yyyy, p")}</Table.Td>
 			<Table.Td>{row?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.patient?.name}</Table.Td>
 			<Table.Td>

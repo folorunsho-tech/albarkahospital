@@ -45,7 +45,7 @@ const UserProvider = ({ children }: { children: ReactNode }) => {
 			const parsed = gotten ? JSON.parse(gotten) : null;
 			getData(parsed?.userId);
 			setToken(parsed?.token);
-			setAuthId(parsed?.userId);
+			setAuthId(parsed?.authId);
 		}
 	}, [authId, token, gotten]);
 

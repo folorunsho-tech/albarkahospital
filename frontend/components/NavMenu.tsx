@@ -12,7 +12,7 @@ import {
 } from "@mantine/core";
 import { delete_cookie } from "sfcookies";
 import { ChevronRight, HomeIcon } from "lucide-react";
-import { axiosInstance as axios } from "@/lib/config";
+import axios from "@/lib/config";
 import {
 	Pill,
 	Contact,
@@ -49,7 +49,7 @@ const NavMenu = () => {
 		}
 	};
 	return (
-		<ScrollAreaAutosize>
+		<ScrollAreaAutosize mah={"100vh"} className='h-full'>
 			<nav className='flex flex-col bg-indigo-600 h-full w-full'>
 				<div className='px-2 py-2 flex gap-2 items-center'>
 					<Image

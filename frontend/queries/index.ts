@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState } from "react";
-import { axiosInstance as axios } from "@/lib/config";
+import axios from "@/lib/config";
 import { userContext } from "@/context/User";
 import React from "react";
 import { notifications } from "@mantine/notifications";
