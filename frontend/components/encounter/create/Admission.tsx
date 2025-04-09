@@ -18,7 +18,7 @@ const Admission = ({ setAdmission }: { setAdmission: any }) => {
 		});
 	}, [adm_date, nok_phone, admitted_for, discharged_on, ward_matron]);
 	return (
-		<main className='flex flex-wrap gap-4'>
+		<div className='flex flex-wrap gap-4'>
 			<DatePickerInput
 				value={adm_date}
 				onChange={setAdmDate}
@@ -64,7 +64,7 @@ const Admission = ({ setAdmission }: { setAdmission: any }) => {
 					setMatron(e.currentTarget.value);
 				}}
 			/>
-		</main>
+		</div>
 	);
 };
 

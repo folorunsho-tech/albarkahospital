@@ -7,16 +7,18 @@ import {
 	Button,
 	Group,
 	LoadingOverlay,
+	NumberInput,
 	ScrollArea,
 	Select,
+	TextInput,
 } from "@mantine/core";
 import { months } from "@/lib/ynm";
 import { useRouter } from "next/navigation";
-import Admission from "../create/Admission";
 import Diagnosis from "../create/Diagnosis";
 import DrugsGiven from "../create/DrugsGiven";
 import Labtest from "../create/Labtest";
 import { format } from "date-fns";
+import { DatePickerInput } from "@mantine/dates";
 
 const Others = ({
 	careId,
@@ -31,12 +33,15 @@ const Others = ({
 }) => {
 	const { post, loading } = usePostT();
 	const [drugsGiven, setDrugsGiven] = useState<any[]>([]);
-	const [admission, setAdmission] = useState(null);
 	const [labTest, setLabTest] = useState([]);
 	const [diagnosis, setDiagnosis] = useState([]);
 	const [outcome, setOutcome] = useState<null | string>(null);
 	const [posted, setPosted] = useState(false);
-
+	const [adm_date, setAdmDate] = useState<any>(null);
+	const [discharged_on, setDischargedOn] = useState<any>(null);
+	const [nok_phone, setNokPhone] = useState<any>("");
+	const [ward_matron, setMatron] = useState<any>("");
+	const [admitted_for, setAdmittedFor] = useState<number | string>("");
 	const router = useRouter();
 
 	const handleSubmit = async () => {
@@ -52,7 +57,13 @@ const Others = ({
 			enc_date,
 			outcome,
 			follow_up_to,
-			admission,
+			admission: {
+				adm_date,
+				nok_phone,
+				admitted_for,
+				discharged_on,
+				ward_matron,
+			},
 			admitted: outcome == "Admitted" ? true : false,
 			stock_updates: drugsGiven.map((drug) => {
 				return {
@@ -113,7 +124,53 @@ const Others = ({
 					{outcome == "Admitted" && (
 						<div className='flex flex-col gap-2'>
 							<label className='font-bold underline'>Admission</label>
-							<Admission setAdmission={setAdmission} />
+							<div className='flex flex-wrap gap-4'>
+								<DatePickerInput
+									value={adm_date}
+									onChange={setAdmDate}
+									label='Admission date'
+									placeholder='adm date'
+									className='w-44'
+									allowDeselect
+									clearable
+									closeOnChange={false}
+								/>
+								<TextInput
+									label='NOK Phone'
+									placeholder='phone number'
+									value={nok_phone}
+									onChange={(e) => {
+										setNokPhone(e.currentTarget.value);
+									}}
+								/>
+								<NumberInput
+									label='Days of Admission'
+									placeholder='Days of Admission'
+									value={admitted_for}
+									suffix=' Days'
+									onChange={(value) => {
+										setAdmittedFor(value);
+									}}
+								/>
+								<DatePickerInput
+									value={discharged_on}
+									onChange={setDischargedOn}
+									label='Date of Discharge'
+									placeholder='Discharged date'
+									className='w-44'
+									allowDeselect
+									clearable
+									closeOnChange={false}
+								/>
+								<TextInput
+									label='Ward Matron'
+									placeholder='Ward Matron'
+									value={ward_matron}
+									onChange={(e) => {
+										setMatron(e.currentTarget.value);
+									}}
+								/>
+							</div>
 						</div>
 					)}
 				</section>

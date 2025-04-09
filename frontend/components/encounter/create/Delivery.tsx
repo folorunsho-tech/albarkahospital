@@ -63,7 +63,7 @@ const Delivery = ({
 	]);
 
 	return (
-		<main className='flex gap-4 flex-wrap'>
+		<div className='flex gap-4 flex-wrap'>
 			<DatePickerInput
 				label='Delivery date'
 				placeholder='Delivery date...'
@@ -206,7 +206,7 @@ const Delivery = ({
 					setMidWife(e.currentTarget.value);
 				}}
 			/>
-		</main>
+		</div>
 	);
 };
 
