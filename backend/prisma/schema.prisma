@@ -290,6 +290,16 @@ model Reciept {
   updatedAt   DateTime    @updatedAt
 }
 
+model Snapshot {
+  id        String   @id @default(uuid())
+  type      String?
+  data      Json?
+  year      Int?
+  month     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model DrugsInventory {
   id            String          @id @default(uuid())
   drug          String?

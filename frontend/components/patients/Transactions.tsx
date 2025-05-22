@@ -73,7 +73,7 @@ const Transactions = ({ hosp_no, id }: { hosp_no: string; id: string }) => {
 	}, []);
 	return (
 		<main className='space-y-4 mt-3'>
-			<div className='flex gap-3 items-end'>
+			{/* <div className='flex gap-3 items-end'>
 				<Button
 					leftSection={<Printer />}
 					onClick={() => {
@@ -82,7 +82,7 @@ const Transactions = ({ hosp_no, id }: { hosp_no: string; id: string }) => {
 				>
 					Print
 				</Button>
-			</div>
+			</div> */}
 			<PaginatedTable
 				headers={[
 					"S/N",
@@ -106,6 +106,7 @@ const Transactions = ({ hosp_no, id }: { hosp_no: string; id: string }) => {
 				setSortedData={setSortedData}
 				tableLoading={loading}
 				depth=''
+				// ref={contentRef}
 			/>
 		</main>
 	);

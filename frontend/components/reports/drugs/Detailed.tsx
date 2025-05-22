@@ -117,7 +117,7 @@ const Detailed = () => {
 				/>
 
 				<Text size='md' fw={600}>
-					Drugs report detailed
+					Prescriptions report detailed
 				</Text>
 			</div>
 
@@ -150,7 +150,9 @@ const Detailed = () => {
 				printRows={printRows}
 				filters={filters}
 				loaded={loaded}
-				tableReport={`Drugs report detailed for ${filter}`}
+				tableReport={`Prescriptions report detailed for ${
+					filter || "all drugs"
+				}`}
 				tableFoot={
 					<Table.Tr className='tableFoot'>
 						<Table.Td></Table.Td>

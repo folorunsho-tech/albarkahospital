@@ -101,6 +101,7 @@ router.post("/", async (req, res) => {
 				year: new Date().getFullYear(),
 				updatedAt: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
 				name: created.drug,
+				type: "gain",
 			},
 		});
 		res.status(200).json({ created, drugHist });

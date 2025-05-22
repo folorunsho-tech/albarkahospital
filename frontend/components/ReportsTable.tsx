@@ -1,19 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-import { ReactElement, ReactNode, useEffect, useRef, useState } from "react";
+import { ReactElement, ReactNode, useEffect, useRef } from "react";
 import { useReactToPrint } from "react-to-print";
 
 import {
 	ScrollArea,
 	Table,
-	TextInput,
 	Text,
-	keys,
 	LoadingOverlay,
 	Box,
 	Button,
 } from "@mantine/core";
-import { Printer, Search } from "lucide-react";
+import { Printer } from "lucide-react";
 import { format } from "date-fns";
 import Image from "next/image";
 

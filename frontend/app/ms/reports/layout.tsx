@@ -8,7 +8,7 @@ const Layout = ({ children }: { children: ReactNode }) => {
 
 	return (
 		<main>
-			<nav className='flex  items-center bg-teal-700 text-white navs rounded-r-full mb-3'>
+			<nav className='flex items-center bg-teal-700 text-white navs rounded-r-full mb-3 '>
 				<NavLink
 					variant='filled'
 					color='teal'
@@ -40,8 +40,8 @@ const Layout = ({ children }: { children: ReactNode }) => {
 					variant='filled'
 					color='teal'
 					component={Link}
-					href='/ms/reports/drugs'
-					label='Drugs'
+					href='/ms/reports/prescriptions'
+					label='Prescriptions'
 					className='rounded-r-full'
 					active={`/ms/reports/drugs` == url}
 				/>
@@ -89,6 +89,15 @@ const Layout = ({ children }: { children: ReactNode }) => {
 					label='Immunizations'
 					className='rounded-r-full'
 					active={`/ms/reports/immunizations` == url}
+				/>
+				<NavLink
+					variant='filled'
+					color='teal'
+					component={Link}
+					href='/ms/reports/drugs_summary'
+					label='Drugs Summary'
+					className='rounded-r-full text-xs'
+					active={`/ms/reports/drugs_summary` == url}
 				/>
 			</nav>
 			{children}

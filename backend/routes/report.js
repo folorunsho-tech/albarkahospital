@@ -882,6 +882,7 @@ router.post("/admissions/:criteria", async (req, res) => {
 					encounter: {
 						include: {
 							patient: true,
+							diagnosis: true,
 						},
 					},
 				},
@@ -903,6 +904,7 @@ router.post("/admissions/:criteria", async (req, res) => {
 					encounter: {
 						include: {
 							patient: true,
+							diagnosis: true,
 						},
 					},
 				},
@@ -932,6 +934,7 @@ router.post("/admissions/:criteria", async (req, res) => {
 					encounter: {
 						include: {
 							patient: true,
+							diagnosis: true,
 						},
 					},
 				},
@@ -961,6 +964,7 @@ router.post("/admissions/:criteria", async (req, res) => {
 					encounter: {
 						include: {
 							patient: true,
+							diagnosis: true,
 						},
 					},
 				},

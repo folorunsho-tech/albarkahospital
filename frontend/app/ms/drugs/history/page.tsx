@@ -29,6 +29,7 @@ const Drughistory = () => {
 			<Table.Td>
 				<NumberFormatter value={row?.stock_qty} thousandSeparator />
 			</Table.Td>
+			<Table.Td>{row?.type}</Table.Td>
 			<Table.Td>
 				<NumberFormatter value={row?.added} thousandSeparator />
 			</Table.Td>
@@ -44,6 +45,7 @@ const Drughistory = () => {
 			<Table.Td>
 				<NumberFormatter value={row?.stock_qty} thousandSeparator />
 			</Table.Td>
+			<Table.Td>{row?.type}</Table.Td>
 			<Table.Td>
 				<NumberFormatter value={row?.added} thousandSeparator />
 			</Table.Td>
@@ -82,7 +84,14 @@ const Drughistory = () => {
 			</div>
 
 			<PaginatedTable
-				headers={["S/N", "Name", "Stock Quantity", "Amount added", "Date"]}
+				headers={[
+					"S/N",
+					"Name",
+					"Stock Quantity",
+					"Type",
+					"Amount added",
+					"Date",
+				]}
 				sortedData={sortedData}
 				rows={rows}
 				showSearch={true}
@@ -91,7 +100,14 @@ const Drughistory = () => {
 				setSortedData={setSortedData}
 				tableLoading={loading}
 				ref={contentRef}
-				printHeaders={["S/N", "Name", "Quantity", "Amount added", "Date"]}
+				printHeaders={[
+					"S/N",
+					"Name",
+					"Quantity",
+					"Type",
+					"Amount added",
+					"Date",
+				]}
 				printRows={printRows}
 				tableReport='Drugs Stock record'
 				placeholder='Search by drug name'

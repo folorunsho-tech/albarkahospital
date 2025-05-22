@@ -57,7 +57,7 @@ const Summary = () => {
 				/>
 
 				<Text size='md' fw={600}>
-					Drugs report summary
+					Prescriptions report summary
 				</Text>
 			</div>
 
@@ -70,7 +70,7 @@ const Summary = () => {
 				tableLoading={loading}
 				rows={rows}
 				printRows={printRows}
-				tableReport='Drugs report summary'
+				tableReport='Prescriptions report summary'
 				loaded={loaded}
 			/>
 		</main>

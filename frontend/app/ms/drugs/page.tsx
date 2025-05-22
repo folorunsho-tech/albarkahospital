@@ -94,7 +94,7 @@ const DrugsInventory = () => {
 				</Group>
 			</section>
 			<section className='flex items-end justify-between w-full'>
-				<form
+				{/* <form
 					className='flex gap-4  items-end'
 					onSubmit={async (e) => {
 						e.preventDefault();
@@ -140,10 +140,10 @@ const DrugsInventory = () => {
 					<Button disabled={!drug} type='submit'>
 						Add to inventory
 					</Button>
-				</form>
+				</form> */}
 				<div className='flex items-center gap-2'>
 					<Button href='drugs/stock' color='teal' component={Link}>
-						Update stock
+						Add to stock
 					</Button>
 					<Button href='drugs/loss' color='red' component={Link}>
 						Add loss
