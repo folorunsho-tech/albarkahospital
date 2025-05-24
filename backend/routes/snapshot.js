@@ -123,17 +123,22 @@ router.get("/create/drugs", async (req, res) => {
 		res.status(500).json({ error: "Internal Server Error" });
 	}
 });
-router.post("/report/drugs", async (req, res) => {
+router.get("/report/drugs/:criteria", async (req, res) => {
+	const splitted = req.params.criteria.split("n");
+	const year = parseInt(splitted[0]);
+	const month = String(splitted[1]);
 	try {
-		// Check if a snapshot for the current month and year already exists
-		const existingSnapshot = await prisma.snapshot.findFirst({
+		const found = await prisma.snapshot.findFirst({
 			where: {
-				month: curMonth,
-				year: curYear,
+				month: month,
+				year: year,
 				type: "drugs",
 			},
 		});
-		res.status(200).json(existingSnapshot);
+		if (!found) {
+			return res.status(404).json({ error: "Snapshot not found" });
+		}
+		res.status(200).json(found);
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ error: "Internal Server Error" });

@@ -9,15 +9,16 @@ import {
 	LoadingOverlay,
 	Box,
 	Button,
+	Select,
 } from "@mantine/core";
-import { usePostNormal, useFetch } from "@/queries";
+import { useFetch } from "@/queries";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { useReactToPrint } from "react-to-print";
 import { format } from "date-fns";
 import { Printer } from "lucide-react";
+import { curMonth, curYear, months, nyears } from "@/lib/ynm";
 const page = () => {
-	const { post } = usePostNormal();
 	const { fetch, loading } = useFetch();
 	const [queryData, setQueryData] = useState<{
 		id: string;
@@ -33,11 +34,13 @@ const page = () => {
 		createdAt: Date | string;
 		updatedAt: Date | string;
 	} | null>(null);
+	const [month, setMonth] = useState<string | null>(curMonth);
+	const [year, setYear] = useState<string | null>(curYear);
 	const contentRef = useRef<HTMLDivElement>(null);
 	const reactToPrintFn = useReactToPrint({
 		contentRef,
 		bodyClass: "print",
-		documentTitle: "Monthly Drugs Report",
+		documentTitle: `Monthly Drugs Report for ${month} - ${year}`,
 	});
 
 	const rows = queryData?.data?.map((row, i) => (
@@ -94,25 +97,42 @@ const page = () => {
 			</Table.Td>
 		</Table.Tr>
 	));
+
 	useEffect(() => {
 		const fetchData = async () => {
-			const { data } = await fetch("/snapshot/create/drugs");
+			const { data } = await fetch(`/snapshot/report/drugs/${year}n${month}`);
 			setQueryData(data);
 		};
 		fetchData();
-	}, []);
+	}, [month]);
 	return (
 		<main className='space-y-6'>
 			<div className='flex justify-between items-end'>
-				{/* <DataLoader
-					link='/snapshot/drugs'
-					post={post}
-					setQueryData={setQueryData}
-					setLoaded={setLoaded}
-				/> */}
+				<div className='flex gap-3 items-center'>
+					<Select
+						label='Year'
+						placeholder='Select a year'
+						value={year}
+						data={nyears}
+						allowDeselect={false}
+						onChange={(value) => {
+							setYear(value);
+						}}
+					/>
+					<Select
+						label='Month'
+						placeholder='Select a month'
+						value={month}
+						data={months}
+						allowDeselect={false}
+						onChange={(value) => {
+							setMonth(value);
+						}}
+					/>
+				</div>
 
 				<Text size='md' fw={600}>
-					Monthly Drugs Report
+					Monthly Drugs Report for {month} - {year}
 				</Text>
 			</div>
 
@@ -139,7 +159,7 @@ const page = () => {
 									E-mail: hospitalalbarka@gmail.com
 								</p>
 								<p className='text-sm font-extrabold bg-black text-white p-1 px-2 text-center uppercase'>
-									Monthly Drugs Report
+									Monthly Drugs Report for {month} - {year}
 								</p>
 							</div>
 						</div>

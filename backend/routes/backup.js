@@ -3,7 +3,7 @@ import mysqldump from "mysqldump";
 const router = express.Router();
 
 router.get("/download", (req, res) => {
-	const filePath = "../db/backup/hospital-backup.sql";
+	const filePath = "./backup/hospital-backup.sql";
 	res.download(
 		filePath,
 		"hospital-backup.sql", // Remember to include file extension
@@ -29,7 +29,7 @@ router.post("/generate", async (req, res) => {
 				database: process.env.DB_NAME,
 				charset: "utf8",
 			},
-			dumpToFile: "../db/backup/hospital-backup.sql",
+			dumpToFile: "./backup/hospital-backup.sql",
 			dump: {
 				schema: {
 					table: {

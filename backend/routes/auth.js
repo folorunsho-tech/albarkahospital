@@ -36,7 +36,7 @@ router.post("/login", async (req, res) => {
 					database: process.env.DB_NAME,
 					charset: "utf8",
 				},
-				dumpToFile: "../db/backup/hospital-backup.sql",
+				dumpToFile: "./backup/hospital-backup.sql",
 				dump: {
 					schema: {
 						table: {
@@ -48,6 +48,7 @@ router.post("/login", async (req, res) => {
 			res.status(200).json({ token, authId: authHist?.id, userId: user.id });
 		}
 	} catch (error) {
+		console.log(error);
 		res.status(500).status(error);
 	}
 });
@@ -84,7 +85,7 @@ router.post("/logout", async (req, res) => {
 				database: process.env.DB_NAME,
 				charset: "utf8",
 			},
-			dumpToFile: "../db/backup/hospital-backup.sql",
+			dumpToFile: "./backup/hospital-backup.sql",
 			dump: {
 				schema: {
 					table: {
@@ -95,6 +96,7 @@ router.post("/logout", async (req, res) => {
 		});
 		res.status(200).json("User logged out");
 	} catch (error) {
+		console.log(error);
 		res.status(500).json(error);
 	}
 });
