@@ -1305,6 +1305,42 @@ VALUES
     '2025-05-24 09:14:57.181',
     '2025-05-24 10:10:58.052'
   );
+INSERT INTO
+  `authhistory` (`id`, `accountId`, `loggedInAt`, `loggedOutAt`)
+VALUES
+  (
+    'cmb2si5dw0001lm0i3k49vgp2',
+    '8e945d62-8991-420a-82f1-9a6c3740329d',
+    '2025-05-24 22:17:04.194',
+    NULL
+  );
+INSERT INTO
+  `authhistory` (`id`, `accountId`, `loggedInAt`, `loggedOutAt`)
+VALUES
+  (
+    'cmb3mi3tk0001lm0iw5qmk2c4',
+    '8e945d62-8991-420a-82f1-9a6c3740329d',
+    '2025-05-25 12:16:50.644',
+    NULL
+  );
+INSERT INTO
+  `authhistory` (`id`, `accountId`, `loggedInAt`, `loggedOutAt`)
+VALUES
+  (
+    'cmb3mkz7r0001nz0i7zwvlr0j',
+    '8e945d62-8991-420a-82f1-9a6c3740329d',
+    '2025-05-25 12:19:04.646',
+    NULL
+  );
+INSERT INTO
+  `authhistory` (`id`, `accountId`, `loggedInAt`, `loggedOutAt`)
+VALUES
+  (
+    'cmb3oi2m00001uqco8d5qx19f',
+    '8e945d62-8991-420a-82f1-9a6c3740329d',
+    '2025-05-25 13:12:48.307',
+    NULL
+  );
 
 # ------------------------------------------------------------
 # DATA DUMP FOR TABLE: care
@@ -9918,7 +9954,7 @@ VALUES
     2025,
     'May',
     '2025-05-22 20:57:40.683',
-    '2025-05-24 21:00:00.360'
+    '2025-05-25 13:00:00.379'
   );
 
 # ------------------------------------------------------------
