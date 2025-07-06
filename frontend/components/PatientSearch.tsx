@@ -14,23 +14,33 @@ function getAsyncData(
 		signal.addEventListener("abort", () => {
 			reject(new Error("Request aborted"));
 		});
-		axios
-			.post(
-				"/patients/search",
-				{ value: searchQuery },
-				{
-					headers: {
-						Authorization: token,
-					},
-				}
-			)
-			.then((result: any) => {
-				resolve(result.data);
-			});
+		if (searchQuery !== "") {
+			axios
+				.post(
+					"/patients/search",
+					{ value: searchQuery },
+					{
+						headers: {
+							Authorization: token,
+						},
+					}
+				)
+				.then((result: any) => {
+					resolve(result.data);
+				});
+		} else {
+			return resolve([]); // Return an empty array if searchQuery is empty
+		}
 	});
 }
 
-export default function PatientSearch({ setPatient }: { setPatient: any }) {
+export default function PatientSearch({
+	setPatient,
+	cleared = false,
+}: {
+	setPatient: any;
+	cleared?: boolean;
+}) {
 	const { token } = useContext(userContext);
 	const combobox = useCombobox({
 		onDropdownClose: () => combobox.resetSelectedOption(),
@@ -67,6 +77,11 @@ export default function PatientSearch({ setPatient }: { setPatient: any }) {
 			setPatient(null);
 		}
 	}, [value]);
+	useEffect(() => {
+		if (cleared) {
+			setValue("");
+		}
+	}, [cleared]);
 	return (
 		<Combobox
 			onOptionSubmit={(optionValue) => {
@@ -100,7 +115,7 @@ export default function PatientSearch({ setPatient }: { setPatient: any }) {
 					}}
 					onBlur={() => combobox.closeDropdown()}
 					rightSection={loading && <Loader size={18} />}
-					className='w-[15rem]'
+					className='w-[25rem]'
 				/>
 			</Combobox.Target>
 

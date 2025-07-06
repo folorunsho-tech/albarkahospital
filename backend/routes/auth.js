@@ -36,7 +36,7 @@ router.post("/login", async (req, res) => {
 					database: process.env.DB_NAME,
 					charset: "utf8",
 				},
-				dumpToFile: "../db/hospital-backup.sql",
+				dumpToFile: "./backup/hospital-backup.sql",
 				dump: {
 					schema: {
 						table: {
@@ -85,7 +85,7 @@ router.post("/logout", async (req, res) => {
 				database: process.env.DB_NAME,
 				charset: "utf8",
 			},
-			dumpToFile: "../db/hospital-backup.sql",
+			dumpToFile: "./backup/hospital-backup.sql",
 			dump: {
 				schema: {
 					table: {

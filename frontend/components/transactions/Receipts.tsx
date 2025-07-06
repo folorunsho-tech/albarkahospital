@@ -8,6 +8,7 @@ import {
 	Drawer,
 	Table,
 	ActionIcon,
+	Text,
 } from "@mantine/core";
 import { format } from "date-fns";
 import { useReactToPrint } from "react-to-print";
@@ -15,6 +16,7 @@ import Image from "next/image";
 import { IconReceipt } from "@tabler/icons-react";
 import { useDisclosure } from "@mantine/hooks";
 import { Eye } from "lucide-react";
+import convert from "@/lib/numberConvert";
 
 const Receipts = ({ id }: { id: string }) => {
 	const { loading, fetch, data } = useFetch();
@@ -229,6 +231,36 @@ const Receipts = ({ id }: { id: string }) => {
 								</Table.Tr>
 							</Table.Tfoot>
 						</Table>
+						<div className='flex justify-between items-center px-2 py-2'>
+							<Text fw={600}>
+								Total amount paid:
+								<b className='text-sm pl-2'>
+									<NumberFormatter
+										prefix='NGN '
+										value={items?.reduce(
+											(prev: any, curr: { price: number }) => {
+												return prev + curr.price;
+											},
+											0
+										)}
+										thousandSeparator
+									/>
+								</b>
+							</Text>
+							<Text fw={600}>
+								Total amount paid in words:
+								<i className='text-sm pl-2 capitalize'>
+									{convert(
+										Number(
+											items?.reduce((prev: any, curr: { price: number }) => {
+												return prev + curr.price;
+											}, 0)
+										)
+									)}{" "}
+									Naira
+								</i>
+							</Text>
+						</div>
 					</div>
 				)}
 			</Drawer>

@@ -22,7 +22,7 @@ body {
 	@apply m-2
 }
 .printable {
-	@apply border-collapse ;
+	@apply border;
 }
 .printable th {
 	@apply  border border-black bg-gray-200;

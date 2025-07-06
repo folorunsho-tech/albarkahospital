@@ -1,9 +1,10 @@
 "use client";
-import { LoadingOverlay, NumberFormatter, Table } from "@mantine/core";
+import { LoadingOverlay, NumberFormatter, Table, Text } from "@mantine/core";
 import { format } from "date-fns";
 import { useEffect, useState } from "react";
 import { useFetch } from "@/queries";
 import Image from "next/image";
+import convert from "@/lib/numberConvert";
 const Info = ({ tnx }: { tnx: any }) => {
 	const { fetch } = useFetch();
 	const [createdBy, setCreatedBy] = useState<any>(null);
@@ -161,6 +162,24 @@ const Info = ({ tnx }: { tnx: any }) => {
 						</Table.Tr>
 					</Table.Tfoot>
 				</Table>
+				<div className='flex justify-between items-center px-2 py-2'>
+					<Text fw={600}>
+						Total amount paid:
+						<b className='text-sm pl-2'>
+							<NumberFormatter
+								prefix='NGN '
+								value={totalPay}
+								thousandSeparator
+							/>
+						</b>
+					</Text>
+					<Text fw={600}>
+						Total amount paid in words:
+						<i className='text-sm pl-2 capitalize'>
+							{convert(Number(totalPay))} Naira
+						</i>
+					</Text>
+				</div>
 			</div>
 
 			<LoadingOverlay visible={!tnx} />

@@ -1,8 +1,7 @@
-import { Router } from "express";
 import prisma from "../config/prisma.js";
-const router = Router();
 import { curMonth, curYear } from "../config/ynm.js";
-router.get("/create/drugs", async (req, res) => {
+
+export const createShot = async (req, res, next) => {
 	try {
 		const drugs = await prisma.drugsInventory.findMany({
 			where: {
@@ -97,7 +96,7 @@ router.get("/create/drugs", async (req, res) => {
 		});
 		if (existingSnapshot) {
 			// Update the existing snapshot
-			const updatedSnapshot = await prisma.snapshot.update({
+			await prisma.snapshot.update({
 				where: {
 					id: existingSnapshot.id,
 				},
@@ -105,10 +104,10 @@ router.get("/create/drugs", async (req, res) => {
 					data: final,
 				},
 			});
-			res.status(200).json(updatedSnapshot);
+			res.status(200);
 		} else {
 			// Create a new snapshot
-			const newSnapshot = await prisma.snapshot.create({
+			await prisma.snapshot.create({
 				data: {
 					month: curMonth,
 					year: curYear,
@@ -116,32 +115,11 @@ router.get("/create/drugs", async (req, res) => {
 					data: final,
 				},
 			});
-			res.status(200).json(newSnapshot);
+			res.status(200);
 		}
+		next();
 	} catch (error) {
 		console.log(error);
 		res.status(500).json({ error: "Internal Server Error" });
 	}
-});
-router.get("/report/drugs/:criteria", async (req, res) => {
-	const splitted = req.params.criteria.split("n");
-	const year = parseInt(splitted[0]);
-	const month = String(splitted[1]);
-	try {
-		const found = await prisma.snapshot.findFirst({
-			where: {
-				month: month,
-				year: year,
-				type: "drugs",
-			},
-		});
-		if (!found) {
-			return res.status(404).json({ error: "Snapshot not found" });
-		}
-		res.status(200).json(found);
-	} catch (error) {
-		console.log(error);
-		res.status(500).json({ error: "Internal Server Error" });
-	}
-});
-export default router;
+};

@@ -18,7 +18,12 @@ import { useEdit, useFetch } from "@/queries";
 import { IconPencil, IconReceipt, IconX } from "@tabler/icons-react";
 import { format } from "date-fns";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
+import convert from "@/lib/numberConvert";
+
 const page = () => {
+	const tnxId = useSearchParams().get("tnxId");
+
 	const { fetch, loading: Floading } = useFetch();
 	const { edit, loading } = useEdit();
 	const [reciept, setReciept] = useState<any | null>(null);
@@ -28,7 +33,7 @@ const page = () => {
 	} | null>(null);
 	const [method, setMethod] = useState<string | null>(null);
 	const [paid, setPaid] = useState<string | number>("");
-	const [id, setId] = useState("");
+	const [id, setId] = useState(tnxId || "");
 	const [tnx, setTnx] = useState<any | null>(null);
 	const [item, setItem] = useState<any | null>(null);
 	const [items, setItems] = useState<
@@ -102,6 +107,13 @@ const page = () => {
 	useEffect(() => {
 		getStatus(tnx?.status);
 	}, [tnx]);
+	const loadTnx = async () => {
+		setItem(null);
+		setReciept(null);
+		setItems([]);
+		const { data } = await fetch(`/transactions/${id}`);
+		setTnx(data);
+	};
 	useEffect(() => {
 		if (totalPrice > 0 && totalPay < totalPrice) {
 			setStatus({
@@ -117,6 +129,11 @@ const page = () => {
 			});
 		}
 	}, [items.length, totalBalance]);
+	useEffect(() => {
+		if (tnxId) {
+			loadTnx();
+		}
+	}, [tnxId]);
 	return (
 		<main className='space-y-4'>
 			{reciept && (
@@ -249,6 +266,24 @@ const page = () => {
 								</Table.Tr>
 							</Table.Tfoot>
 						</Table>
+						<div className='flex justify-between items-center px-2 py-2'>
+							<Text fw={600}>
+								Total amount paid:
+								<b className='text-sm pl-2'>
+									<NumberFormatter
+										prefix='NGN '
+										value={rPay}
+										thousandSeparator
+									/>
+								</b>
+							</Text>
+							<Text fw={600}>
+								Total amount paid in words:
+								<i className='text-sm pl-2 capitalize'>
+									{convert(Number(rPay))} Naira
+								</i>
+							</Text>
+						</div>
 					</div>
 				</section>
 			)}
@@ -281,16 +316,7 @@ const page = () => {
 							setId(e.currentTarget.value);
 						}}
 					/>
-					<Button
-						disabled={!id}
-						onClick={async () => {
-							setItem(null);
-							setReciept(null);
-							setItems([]);
-							const { data } = await fetch(`/transactions/${id}`);
-							setTnx(data);
-						}}
-					>
+					<Button disabled={!id} onClick={loadTnx}>
 						load transaction
 					</Button>
 				</div>

@@ -307,5 +307,44 @@ router.post("/:criteria", async (req, res) => {
 		res.status(500).json(error);
 	}
 });
-
+router.get("/prevtnx/:patientId", async (req, res) => {
+	try {
+		const prevTnx = await prisma.tnxItem.findMany({
+			where: {
+				transaction: {
+					patientId: req.params.patientId,
+				},
+			},
+			include: {
+				fee: true,
+			},
+		});
+		res.status(200).json(prevTnx);
+	} catch (error) {
+		res.status(500).json(error);
+		console.log(error);
+	}
+});
+router.get("/outstanding/:patientId", async (req, res) => {
+	try {
+		const outstandingFees = await prisma.tnxItem.findMany({
+			where: {
+				transaction: {
+					patientId: req.params.patientId,
+				},
+				balance: {
+					gt: 0,
+				},
+				active: true,
+			},
+			include: {
+				fee: true,
+			},
+		});
+		res.status(200).json(outstandingFees);
+	} catch (error) {
+		res.status(500).json(error);
+		console.log(error);
+	}
+});
 export default router;

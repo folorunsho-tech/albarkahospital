@@ -26,7 +26,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang='en' suppressHydrationWarning={true}>
-			<link rel='icon' type='image/svg+xml' href='/hospital.svg' />
+			<link rel='icon' type='image/svg+xml' href='/favicon.svg' />
 
 			<body className={` antialiased`}>
 				<CookiesProvider>

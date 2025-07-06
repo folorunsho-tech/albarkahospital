@@ -10,6 +10,7 @@ import Link from "next/link";
 import { format } from "date-fns";
 import { useReactToPrint } from "react-to-print";
 import Image from "next/image";
+import convert from "@/lib/numberConvert";
 
 const View = () => {
 	const searchParams = useSearchParams();
@@ -492,6 +493,24 @@ const View = () => {
 									</Table.Tr>
 								</Table.Tfoot>
 							</Table>
+							<div className='flex justify-between items-center px-2 py-2'>
+								<Text fw={600}>
+									Total amount paid:
+									<b className='text-sm pl-2'>
+										<NumberFormatter
+											prefix='NGN '
+											value={total}
+											thousandSeparator
+										/>
+									</b>
+								</Text>
+								<Text fw={600}>
+									Total amount paid in words:
+									<i className='text-sm pl-2 capitalize'>
+										{convert(Number(total))} Naira
+									</i>
+								</Text>
+							</div>
 						</div>
 					</section>
 					<div id='labs' className='flex gap-2 flex-wrap'>

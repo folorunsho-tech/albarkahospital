@@ -5,6 +5,7 @@ import Link from "next/link";
 import {
 	ActionIcon,
 	Button,
+	Drawer,
 	LoadingOverlay,
 	NumberFormatter,
 	NumberInput,
@@ -16,11 +17,16 @@ import {
 } from "@mantine/core";
 import { useReactToPrint } from "react-to-print";
 import { useFetch, usePost } from "@/queries";
-import { IconReceipt, IconX } from "@tabler/icons-react";
+import { IconExternalLink, IconReceipt, IconX } from "@tabler/icons-react";
 import { format } from "date-fns";
 import Image from "next/image";
 import PatientSearch from "@/components/PatientSearch";
+import ReportsTable from "@/components/ReportsTable";
+import { useDisclosure } from "@mantine/hooks";
+import convert from "@/lib/numberConvert";
 const page = () => {
+	const [opened, { open, close }] = useDisclosure(false);
+	const [tnxOpened, { open: openTnx, close: closeTnx }] = useDisclosure(false);
 	const { fetch } = useFetch();
 	const { post, loading } = usePost();
 	const [fee, setFee] = useState<{
@@ -38,7 +44,10 @@ const page = () => {
 	const [paid, setPaid] = useState<string | number>("");
 	const [fees, setFees] = useState<{ value: string; label: string }[]>([]);
 	const [patientData, setPatientData] = useState<any>(null);
+	const [outstanding, setOutstanding] = useState<any[]>([]);
+	const [prevTnx, setPrevTnx] = useState<any[]>([]);
 
+	const [cleared, setCleared] = useState<boolean>(false);
 	const [items, setItems] = useState<
 		{
 			name: string | undefined;
@@ -75,6 +84,14 @@ const page = () => {
 		},
 		0
 	);
+	const reset = () => {
+		setFeeId(null);
+		setFee(null);
+		setPrice("");
+		setPaid("");
+		setMethod(null);
+		setItems([]);
+	};
 	useEffect(() => {
 		if (totalBalance == 0) {
 			setStatus({
@@ -106,6 +123,19 @@ const page = () => {
 		setPaid("");
 		setMethod(null);
 	}, [feeId]);
+	const setData = async () => {
+		const { data } = await fetch(`/patients/outstanding/${patientData?.id}`);
+		const { data: prevtnx } = await fetch(
+			`/patients/prevtnx/${patientData?.id}`
+		);
+		setPrevTnx(prevtnx);
+		setOutstanding(data);
+	};
+	useEffect(() => {
+		if (patientData) {
+			setData();
+		}
+	}, [patientData]);
 	return (
 		<main className='space-y-4'>
 			{reciept && (
@@ -237,6 +267,24 @@ const page = () => {
 								</Table.Tr>
 							</Table.Tfoot>
 						</Table>
+						<div className='flex justify-between items-center px-2 py-2'>
+							<Text fw={600}>
+								Total amount paid:
+								<b className='text-sm pl-2'>
+									<NumberFormatter
+										prefix='NGN '
+										value={rPay}
+										thousandSeparator
+									/>
+								</b>
+							</Text>
+							<Text fw={600}>
+								Total amount paid in words:
+								<i className='text-sm pl-2 capitalize'>
+									{convert(Number(rPay))} Naira
+								</i>
+							</Text>
+						</div>
 					</div>
 				</section>
 			)}
@@ -249,18 +297,24 @@ const page = () => {
 					Go back
 				</Link>
 				<Text size='xl'>Initiate a transaction</Text>
-				{patientData && (
+				<div className='flex gap-3 items-end'>
+					<Button color={"orange"} onClick={openTnx}>
+						{prevTnx.length} Previous tnx
+					</Button>
+					<Button color={outstanding.length ? "red" : "green"} onClick={open}>
+						{outstanding.length} Outstanding tnx
+					</Button>
 					<div className='flex flex-col gap-1 w-max pointer-events-none'>
 						<label htmlFor='status'>Transaction status</label>
 						<Button id='status' color={status?.color}>
 							{status?.label}
 						</Button>
 					</div>
-				)}
+				</div>
 			</header>
 			<section className='space-y-4'>
 				<div className='flex gap-2 justify-between'>
-					<PatientSearch setPatient={setPatientData} />
+					<PatientSearch setPatient={setPatientData} cleared={cleared} />
 					<TextInput
 						disabled
 						label='Hosp No'
@@ -287,227 +341,364 @@ const page = () => {
 					/>
 				</div>
 
-				{patientData ? (
-					<>
-						<form
-							className='flex flex-wrap gap-2 items-end'
-							onSubmit={async (e) => {
-								e.preventDefault();
-								const { data } = await post("/transactions/create", {
-									total: totalPrice,
-									balance: totalBalance,
-									paid: totalPrice - totalBalance,
-									items,
-									status: status?.label,
-									patientId: patientData?.id,
-								});
-								const rec = data?.reciepts[0];
+				<>
+					<form
+						className='flex flex-wrap gap-2 items-end'
+						onSubmit={async (e) => {
+							e.preventDefault();
+							const { data } = await post("/transactions/create", {
+								total: totalPrice,
+								balance: totalBalance,
+								paid: totalPrice - totalBalance,
+								items,
+								status: status?.label,
+								patientId: patientData?.id,
+							});
+							const rec = data?.reciepts[0];
 
-								setReciept({ ...rec, items: JSON.parse(rec?.items) });
+							setReciept({ ...rec, items: JSON.parse(rec?.items) });
+							reset();
+							setData();
+						}}
+					>
+						<Select
+							label='Item'
+							placeholder='Select an Item'
+							data={fees}
+							value={feeId}
+							clearable
+							searchable
+							className='w-40'
+							onChange={(value: any) => {
+								setFeeId(value);
+								const found: any = fees.find(
+									(f: { value: string; label: string }) => f?.value == value
+								);
+								setFee(found);
+							}}
+						/>
+						<NumberInput
+							label='Price'
+							placeholder='item price'
+							thousandSeparator
+							value={price}
+							min={0}
+							prefix='NGN '
+							disabled={!fee}
+							className='w-32'
+							onChange={(value) => {
+								setPrice(value);
+							}}
+						/>
+						<NumberInput
+							label='Paid'
+							placeholder='amount paid'
+							thousandSeparator
+							value={paid}
+							min={0}
+							prefix='NGN '
+							disabled={!price}
+							max={Number(price)}
+							className='w-32'
+							onChange={(value) => {
+								setPaid(value);
+							}}
+						/>
+						<Select
+							label='Method'
+							placeholder='method'
+							disabled={!paid}
+							value={method}
+							data={["Cash", "Bank TRF", "POS", "MD Collect"]}
+							className='w-32'
+							onChange={(value) => {
+								setMethod(value);
+							}}
+						/>
+						<Button
+							disabled={!(paid && method)}
+							onClick={() => {
+								const filtered = items.filter(
+									(item) => item.name !== fee?.label
+								);
+								setItems([
+									{
+										name: fee?.label,
+										method,
+										price,
+										paid,
+										balance: Number(price) - Number(paid),
+										feeId,
+									},
+									...filtered,
+								]);
+								setFeeId(null);
+								setFee(null);
+								setPrice("");
+								setPaid("");
+								setMethod(null);
 							}}
 						>
-							<Select
-								label='Item'
-								placeholder='Select an Item'
-								data={fees}
-								value={feeId}
-								clearable
-								searchable
-								className='w-40'
-								onChange={(value: any) => {
-									setFeeId(value);
-									const found: any = fees.find(
-										(f: { value: string; label: string }) => f?.value == value
-									);
-									setFee(found);
-								}}
-							/>
-							<NumberInput
-								label='Price'
-								placeholder='item price'
-								thousandSeparator
-								value={price}
-								min={0}
-								prefix='NGN '
-								disabled={!fee}
-								className='w-32'
-								onChange={(value) => {
-									setPrice(value);
-								}}
-							/>
-							<NumberInput
-								label='Paid'
-								placeholder='amount paid'
-								thousandSeparator
-								value={paid}
-								min={0}
-								prefix='NGN '
-								disabled={!price}
-								max={Number(price)}
-								className='w-32'
-								onChange={(value) => {
-									setPaid(value);
-								}}
-							/>
-							<Select
-								label='Method'
-								placeholder='method'
-								disabled={!paid}
-								value={method}
-								data={["Cash", "Bank TRF", "POS", "MD Collect"]}
-								className='w-32'
-								onChange={(value) => {
-									setMethod(value);
-								}}
-							/>
-							<Button
-								disabled={!(paid && method)}
-								onClick={() => {
-									const filtered = items.filter(
-										(item) => item.name !== fee?.label
-									);
-									setItems([
-										{
-											name: fee?.label,
-											method,
-											price,
-											paid,
-											balance: Number(price) - Number(paid),
-											feeId,
-										},
-										...filtered,
-									]);
-									setFeeId(null);
-									setFee(null);
-									setPrice("");
-									setPaid("");
-									setMethod(null);
-								}}
-							>
-								Add to List
-							</Button>
+							Add to List
+						</Button>
 
-							<Button type='submit' color='teal' disabled={items.length == 0}>
-								Complete transaction
-							</Button>
-							<ActionIcon
-								size={35}
-								disabled={!reciept}
-								onClick={() => {
-									reactToPrintFn();
-								}}
-							>
-								<IconReceipt />
-							</ActionIcon>
-							<Button
-								color='red'
-								onClick={() => {
-									setFeeId(null);
-									setFee(null);
-									setPrice("");
-									setPaid("");
-									setMethod(null);
-									setItems([]);
-								}}
-							>
-								Reset
-							</Button>
-						</form>
+						<Button type='submit' color='teal' disabled={items.length == 0}>
+							Complete transaction
+						</Button>
+						<ActionIcon
+							size={35}
+							disabled={!reciept}
+							onClick={() => {
+								reactToPrintFn();
+							}}
+						>
+							<IconReceipt />
+						</ActionIcon>
+						<Button color='red' onClick={reset}>
+							Reset
+						</Button>
+					</form>
 
-						<ScrollArea h={700}>
-							<Table>
-								<Table.Thead>
-									<Table.Tr>
-										<Table.Th>S/N</Table.Th>
-										<Table.Th>Name</Table.Th>
-										<Table.Th>Price</Table.Th>
-										<Table.Th>Paid</Table.Th>
-										<Table.Th>Balance</Table.Th>
-										<Table.Th>Method</Table.Th>
-										<Table.Th></Table.Th>
+					<ScrollArea h={700}>
+						<Table>
+							<Table.Thead>
+								<Table.Tr>
+									<Table.Th>S/N</Table.Th>
+									<Table.Th>Name</Table.Th>
+									<Table.Th>Price</Table.Th>
+									<Table.Th>Paid</Table.Th>
+									<Table.Th>Balance</Table.Th>
+									<Table.Th>Method</Table.Th>
+									<Table.Th></Table.Th>
+								</Table.Tr>
+							</Table.Thead>
+							<Table.Tbody>
+								{items.map((item: any, i: number) => (
+									<Table.Tr key={i + 1}>
+										<Table.Td>{i + 1}</Table.Td>
+										<Table.Td>{item?.name}</Table.Td>
+										<Table.Td>
+											<NumberFormatter
+												prefix='NGN '
+												value={Number(item?.price)}
+												thousandSeparator
+											/>
+										</Table.Td>
+										<Table.Td>
+											<NumberFormatter
+												prefix='NGN '
+												value={Number(item?.paid)}
+												thousandSeparator
+											/>
+										</Table.Td>
+										<Table.Td>
+											<NumberFormatter
+												prefix='NGN '
+												value={Number(item?.balance)}
+												thousandSeparator
+											/>
+										</Table.Td>
+										<Table.Td>{item?.method}</Table.Td>
+										<Table.Td>
+											<ActionIcon
+												color='red'
+												onClick={() => {
+													const filtered = items.filter(
+														(i) => item.name !== i?.name
+													);
+													setItems(filtered);
+												}}
+											>
+												<IconX />
+											</ActionIcon>
+										</Table.Td>
 									</Table.Tr>
-								</Table.Thead>
-								<Table.Tbody>
-									{items.map((item: any, i: number) => (
-										<Table.Tr key={i + 1}>
-											<Table.Td>{i + 1}</Table.Td>
-											<Table.Td>{item?.name}</Table.Td>
-											<Table.Td>
-												<NumberFormatter
-													prefix='NGN '
-													value={Number(item?.price)}
-													thousandSeparator
-												/>
-											</Table.Td>
-											<Table.Td>
-												<NumberFormatter
-													prefix='NGN '
-													value={Number(item?.paid)}
-													thousandSeparator
-												/>
-											</Table.Td>
-											<Table.Td>
-												<NumberFormatter
-													prefix='NGN '
-													value={Number(item?.balance)}
-													thousandSeparator
-												/>
-											</Table.Td>
-											<Table.Td>{item?.method}</Table.Td>
-											<Table.Td>
-												<ActionIcon
-													color='red'
-													onClick={() => {
-														const filtered = items.filter(
-															(i) => item.name !== i?.name
-														);
-														setItems(filtered);
-													}}
-												>
-													<IconX />
-												</ActionIcon>
-											</Table.Td>
-										</Table.Tr>
-									))}
-								</Table.Tbody>
-								<Table.Tfoot className='bg-gray-300 font-bold'>
-									<Table.Tr>
-										<Table.Td></Table.Td>
-										<Table.Td>Total: </Table.Td>
-										<Table.Td>
-											<NumberFormatter
-												prefix='NGN '
-												value={totalPrice}
-												thousandSeparator
-											/>
-										</Table.Td>
-										<Table.Td>
-											<NumberFormatter
-												prefix='NGN '
-												value={totalPay}
-												thousandSeparator
-											/>
-										</Table.Td>
-										<Table.Td>
-											<NumberFormatter
-												prefix='NGN '
-												value={totalBalance}
-												thousandSeparator
-											/>
-										</Table.Td>
-										<Table.Td></Table.Td>
-									</Table.Tr>
-								</Table.Tfoot>
-							</Table>
-						</ScrollArea>
-					</>
-				) : (
-					<h2 className='text-center font-semibold text-lg'>
-						Search for or select patient to continue{" "}
-					</h2>
-				)}
+								))}
+							</Table.Tbody>
+							<Table.Tfoot className='bg-gray-300 font-bold'>
+								<Table.Tr>
+									<Table.Td></Table.Td>
+									<Table.Td>Total: </Table.Td>
+									<Table.Td>
+										<NumberFormatter
+											prefix='NGN '
+											value={totalPrice}
+											thousandSeparator
+										/>
+									</Table.Td>
+									<Table.Td>
+										<NumberFormatter
+											prefix='NGN '
+											value={totalPay}
+											thousandSeparator
+										/>
+									</Table.Td>
+									<Table.Td>
+										<NumberFormatter
+											prefix='NGN '
+											value={totalBalance}
+											thousandSeparator
+										/>
+									</Table.Td>
+									<Table.Td></Table.Td>
+								</Table.Tr>
+							</Table.Tfoot>
+						</Table>
+					</ScrollArea>
+				</>
+
 				<LoadingOverlay visible={loading} />
 			</section>
+			<Drawer
+				opened={tnxOpened}
+				onClose={closeTnx}
+				offset={8}
+				position='right'
+				title={
+					<div className='flex items-center gap-2'>
+						<Text className='text-lg'>
+							Previous tnx for {patientData?.hosp_no} - {patientData?.name}
+						</Text>
+					</div>
+				}
+				size='2xl'
+			>
+				<ReportsTable
+					headers={[
+						"Date",
+						"Tnx Id",
+						"Year",
+						"Month",
+						"Fee",
+						"Amount",
+						"Paid",
+						"Balance",
+					]}
+					sortedData={prevTnx}
+					data={prevTnx}
+					showPrint={false}
+					rows={prevTnx?.map((row) => (
+						<Table.Tr key={row?.id}>
+							<Table.Td>
+								{new Date(row?.updatedAt).toLocaleDateString()}
+							</Table.Td>
+							<Table.Td>{row?.transactionId}</Table.Td>
+							<Table.Td>{row?.year}</Table.Td>
+							<Table.Td>{row?.month}</Table.Td>
+							<Table.Td>{row?.fee?.name}</Table.Td>
+							<Table.Td>
+								<NumberFormatter
+									prefix='NGN '
+									value={row?.price}
+									thousandSeparator
+								/>
+							</Table.Td>
+							<Table.Td>
+								<NumberFormatter
+									prefix='NGN '
+									value={row?.paid}
+									thousandSeparator
+								/>
+							</Table.Td>
+							<Table.Td>
+								<NumberFormatter
+									prefix='NGN '
+									value={row?.balance}
+									thousandSeparator
+								/>
+							</Table.Td>
+							<Table.Td>
+								<Button
+									color='green'
+									component={Link}
+									target='_blank'
+									href={`/ms/transactions/${row?.transactionId}`}
+								>
+									<IconExternalLink />
+								</Button>
+							</Table.Td>
+						</Table.Tr>
+					))}
+				/>
+			</Drawer>
+			<Drawer
+				opened={opened}
+				onClose={close}
+				offset={8}
+				position='right'
+				title={
+					<div className='flex items-center gap-2'>
+						<Text className='text-lg'>
+							Outstanding tnx for {patientData?.hosp_no} - {patientData?.name}
+						</Text>
+					</div>
+				}
+				size='2xl'
+			>
+				<ReportsTable
+					headers={[
+						"Date",
+						"Tnx Id",
+						"Year",
+						"Month",
+						"Fee",
+						"Amount",
+						"Paid",
+						"Balance",
+					]}
+					sortedData={outstanding}
+					data={outstanding}
+					showPrint={false}
+					rows={outstanding?.map((row) => (
+						<Table.Tr key={row?.id}>
+							<Table.Td>
+								{new Date(row?.updatedAt).toLocaleDateString()}
+							</Table.Td>
+							<Table.Td>{row?.transactionId}</Table.Td>
+							<Table.Td>{row?.year}</Table.Td>
+							<Table.Td>{row?.month}</Table.Td>
+							<Table.Td>{row?.fee?.name}</Table.Td>
+							<Table.Td>
+								<NumberFormatter
+									prefix='NGN '
+									value={row?.price}
+									thousandSeparator
+								/>
+							</Table.Td>
+							<Table.Td>
+								<NumberFormatter
+									prefix='NGN '
+									value={row?.paid}
+									thousandSeparator
+								/>
+							</Table.Td>
+							<Table.Td>
+								<NumberFormatter
+									prefix='NGN '
+									value={row?.balance}
+									thousandSeparator
+								/>
+							</Table.Td>
+							<Table.Td>
+								<Button
+									color='green'
+									component={Link}
+									target='_blank'
+									rightSection={<IconExternalLink />}
+									onClick={() => {
+										setCleared(true);
+										close();
+										setOutstanding([]);
+									}}
+									href={`/ms/transactions/balance?tnxId=${row?.transactionId}`}
+								>
+									Pay Balance
+								</Button>
+							</Table.Td>
+						</Table.Tr>
+					))}
+				/>
+			</Drawer>
 		</main>
 	);
 };
