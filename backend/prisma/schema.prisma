@@ -302,7 +302,6 @@ model Snapshot {
 
 model DrugsInventory {
   id            String          @id @default(uuid())
-  drug          String?
   stock_qty     Int             @default(0)
   added         Int?            @default(0)
   rate          Int?            @default(0)
@@ -314,6 +313,8 @@ model DrugsInventory {
   givenHistory  DrugsGiven[]
   stockHistory  StocksHistory[]
   drugPurchases DrugPurchases[]
+  drugId String @unique
+  drug Drugs? @relation(fields: [drugId],references: [id])
 }
 
 model prescriptionHist {
@@ -369,6 +370,13 @@ model DrugPurchases {
   createdBy   Accounts?       @relation(fields: [createdById], references: [id])
 }
 
+model Drugs {
+  id         String       @id @default(cuid())
+  name       String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
+  inventory DrugsInventory?
+}
 model Diagnosis {
   id         String       @id @default(cuid())
   name       String?

@@ -24,7 +24,7 @@ const page = () => {
 		const sorted = data?.map((d: any) => {
 			return {
 				value: d?.id,
-				label: d?.drug,
+				label: d?.drug?.name,
 			};
 		});
 		setMapped(sorted);

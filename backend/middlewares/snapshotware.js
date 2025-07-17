@@ -56,12 +56,14 @@ export const createShot = async (req, res, next) => {
 			},
 
 			orderBy: {
-				drug: "asc",
+				drug: {
+					name: "asc",
+				},
 			},
 		});
 		const final = drugs.map((drug) => {
 			return {
-				name: drug.drug,
+				name: drug.drug.name,
 				curr_stock: drug.stock_qty,
 				totalSLoss: drug.stockHistory.reduce((acc, stock) => {
 					if (stock.type === "loss") {

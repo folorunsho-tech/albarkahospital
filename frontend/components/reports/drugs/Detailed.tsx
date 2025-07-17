@@ -79,8 +79,8 @@ const Detailed = () => {
 	useEffect(() => {
 		const getD = async () => {
 			const { data } = await fetch("/drugsinventory/report");
-			const sorted = data.map((d: { drug: string }) => {
-				return d.drug;
+			const sorted = data.map((d: { drug: { name: string } }) => {
+				return d.drug.name;
 			});
 			setDrugs(sorted);
 		};

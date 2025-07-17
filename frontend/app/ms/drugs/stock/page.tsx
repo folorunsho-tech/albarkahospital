@@ -25,7 +25,7 @@ const page = () => {
 		const sorted = data?.map((d: any) => {
 			return {
 				value: d?.id,
-				label: d?.drug,
+				label: d?.drug?.name,
 			};
 		});
 		setMapped(sorted);
@@ -50,7 +50,7 @@ const page = () => {
 				className='relative w-1/3 space-y-8'
 				onSubmit={async (e) => {
 					e.preventDefault();
-					await edit(`/drugsinventory/edit/${drug?.id}`, {
+					await edit(`/drugsinventory/gain/${drug?.id}`, {
 						added: added,
 						stock_qty: Number(drug?.stock_qty) + Number(added),
 						prevStock: drug?.stock_qty,

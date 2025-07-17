@@ -57,7 +57,7 @@ const DrugPurchase = () => {
 		<Table.Tr key={row?.id + String(i)}>
 			<Table.Td>{i + 1}</Table.Td>
 			<Table.Td>{format(new Date(row?.date), "dd/MM/yyyy")}</Table.Td>
-			<Table.Td>{row?.drug?.drug}</Table.Td>
+			<Table.Td>{row?.name}</Table.Td>
 			<Table.Td>
 				<NumberFormatter value={row?.quantity} thousandSeparator />
 			</Table.Td>
@@ -84,7 +84,7 @@ const DrugPurchase = () => {
 		<Table.Tr key={row?.id + +String(i)}>
 			<Table.Td>{i + 1}</Table.Td>
 			<Table.Td>{format(new Date(row?.date), "dd/MM/yyyy")}</Table.Td>
-			<Table.Td>{row?.drug?.drug}</Table.Td>
+			<Table.Td>{row?.name}</Table.Td>
 			<Table.Td>
 				<NumberFormatter value={row?.quantity} thousandSeparator />
 			</Table.Td>
@@ -98,12 +98,14 @@ const DrugPurchase = () => {
 	useEffect(() => {
 		async function getAll() {
 			const { data: drugs } = await fetch("/drugsinventory");
-			const drugsSorted = drugs?.map((d: { drug: string; id: string }) => {
-				return {
-					label: d.drug,
-					value: d.id,
-				};
-			});
+			const drugsSorted = drugs?.map(
+				(d: { drug: { name: string }; id: string }) => {
+					return {
+						label: d.drug?.name,
+						value: d.id,
+					};
+				}
+			);
 
 			setDrugsList(drugsSorted);
 		}

@@ -13,7 +13,7 @@ import { notifications } from "@mantine/notifications";
 const Backup = () => {
 	const [backingUp, setbackingUp] = React.useState(false);
 	const iconStyle = { width: rem(20), height: rem(20) };
-	const server = process.env.NEXT_PUBLIC_SERVER_API;
+	const server = process.env.NEXT_PUBLIC_SERVER_API||'http://localhost:8000';
 	const showBackedUp = (status: number) => {
 		if (status == 200) {
 			notifications.show({

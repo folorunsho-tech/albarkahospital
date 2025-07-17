@@ -1,12 +1,11 @@
 "use client";
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { userContext } from "@/context/User";
 import {
 	Divider,
 	Group,
-	Accordion,
 	ScrollAreaAutosize,
 	Text,
 } from "@mantine/core";

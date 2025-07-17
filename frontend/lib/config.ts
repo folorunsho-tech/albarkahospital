@@ -2,7 +2,7 @@ import axios from "axios";
 import { redirect } from "next/navigation";
 import { read_cookie } from "sfcookies";
 const api = axios.create({
-	baseURL: process.env.NEXT_PUBLIC_SERVER_API,
+	baseURL: process.env.NEXT_PUBLIC_SERVER_API||'http://localhost:8000',
 	responseType: "json",
 	// withCredentials: true,
 	timeout: 5000,

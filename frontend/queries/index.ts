@@ -141,6 +141,36 @@ export const usePostNormal = () => {
 	};
 	return { loading, post, data };
 };
+export const useCreate = () => {
+	const { user, token } = React.useContext(userContext);
+	const [loading, setLoading] = useState(false);
+	const [data, setData] = useState([]);
+	const post = async (url: string, postData: any) => {
+		setLoading(true);
+		const postquery = await axios.post(
+			url,
+			{
+				...postData,
+				createdById: user?.id,
+				updatedById: user?.id,
+			},
+			{
+				headers: {
+					Authorization: token,
+				},
+			}
+		);
+		setData(postquery.data);
+		setLoading(false);
+		showNotification(postquery.status);
+		return {
+			data: postquery.data,
+			headers: postquery.headers,
+			status: postquery.status,
+		};
+	};
+	return { loading, post, data };
+};
 export const usePost = () => {
 	const { user, token } = React.useContext(userContext);
 	const [loading, setLoading] = useState(false);

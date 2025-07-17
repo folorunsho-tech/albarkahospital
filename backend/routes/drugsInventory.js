@@ -16,11 +16,28 @@ const months = [
 	"November",
 	"December",
 ];
+router.get("/ids", async (req, res) => {
+	try {
+		const found = await prisma.drugsInventory.findMany({
+			select: {
+				drugId: true,
+			},
+		});
+		res.status(200).json(found);
+	} catch (error) {
+		res.status(500).json(error);
+	}
+});
 router.get("/", async (req, res) => {
 	try {
 		const found = await prisma.drugsInventory.findMany({
 			orderBy: {
-				drug: "asc",
+				drug: {
+					name: "asc",
+				},
+			},
+			include: {
+				drug: true,
 			},
 		});
 		res.status(200).json(found);
@@ -32,7 +49,9 @@ router.get("/report", async (req, res) => {
 	try {
 		const found = await prisma.drugsInventory.findMany({
 			orderBy: {
-				drug: "asc",
+				drug: {
+					name: "asc",
+				},
 			},
 			select: {
 				drug: true,
@@ -60,6 +79,11 @@ router.get("/:id", async (req, res) => {
 						drugHistory: true,
 					},
 				},
+				drug: {
+					select: {
+						name: true,
+					},
+				},
 			},
 		});
 		res.status(200).json(found);
@@ -69,42 +93,20 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/", async (req, res) => {
-	const {
-		drug_id,
-		stock_qty,
-		added,
-		rate,
-		prevStock,
-		createdById,
-		updatedById,
-		drug,
-	} = req.body;
+	const { drugs, createdById, updatedById } = req.body;
+	const toAdd = drugs.map((drug) => {
+		return {
+			createdById,
+			updatedById,
+			drugId: drug,
+		};
+	});
 	try {
-		const created = await prisma.drugsInventory.create({
-			data: {
-				drug_id,
-				stock_qty,
-				added,
-				rate,
-				createdById,
-				updatedById,
-				drug,
-			},
+		const created = await prisma.drugsInventory.createMany({
+			data: [...toAdd],
 		});
-		const drugHist = await prisma.stocksHistory.create({
-			data: {
-				drug_id: created.id,
-				updatedById: created.createdById,
-				stock_qty: prevStock,
-				added: created.added,
-				month: months[new Date().getMonth()],
-				year: new Date().getFullYear(),
-				updatedAt: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
-				name: created.drug,
-				type: "gain",
-			},
-		});
-		res.status(200).json({ created, drugHist });
+
+		res.status(200).json(created);
 	} catch (error) {
 		res.status(500).json(error);
 	}
@@ -121,7 +123,7 @@ router.post("/many", async (req, res) => {
 	}
 });
 
-router.post("/edit/:id", async (req, res) => {
+router.post("/gain/:id", async (req, res) => {
 	const { drug_id, stock_qty, added, rate, prevStock, updatedById } = req.body;
 	try {
 		const updated = await prisma.drugsInventory.update({
@@ -135,6 +137,9 @@ router.post("/edit/:id", async (req, res) => {
 				rate,
 				updatedById,
 			},
+			include: {
+				drug: true,
+			},
 		});
 		const drugHist = await prisma.stocksHistory.create({
 			data: {
@@ -145,7 +150,7 @@ router.post("/edit/:id", async (req, res) => {
 				month: months[new Date().getMonth()],
 				year: new Date().getFullYear(),
 				updatedAt: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
-				name: updated.drug,
+				name: updated.drug.name,
 				type: "gain",
 			},
 		});
@@ -168,6 +173,9 @@ router.post("/loss/:id", async (req, res) => {
 				rate,
 				updatedById,
 			},
+			include: {
+				drug: true,
+			},
 		});
 		const drugHist = await prisma.stocksHistory.create({
 			data: {
@@ -178,7 +186,7 @@ router.post("/loss/:id", async (req, res) => {
 				month: months[new Date().getMonth()],
 				year: new Date().getFullYear(),
 				updatedAt: new Date(new Date().setUTCHours(0, 0, 0, 0, 0)),
-				name: updated.drug,
+				name: updated.drug.name,
 				type: "loss",
 			},
 		});
@@ -192,11 +200,7 @@ router.post("/loss/:id", async (req, res) => {
 
 router.get("/purchases", async (req, res) => {
 	try {
-		const found = await prisma.drugPurchases.findMany({
-			include: {
-				drug: true,
-			},
-		});
+		const found = await prisma.drugPurchases.findMany({});
 
 		res.status(200).json(found);
 	} catch (error) {
@@ -211,7 +215,6 @@ router.post("/purchases", async (req, res) => {
 				...req.body,
 				date: new Date(new Date(req.body.date).setUTCHours(0, 0, 0, 0, 0)),
 			},
-			include: { drug: true },
 		});
 
 		res.status(200).json(created);
