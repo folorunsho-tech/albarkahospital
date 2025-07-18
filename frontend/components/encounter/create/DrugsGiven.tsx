@@ -51,7 +51,7 @@ const DrugsGiven = ({
 					data={drugsList?.map((drug: any) => {
 						return {
 							value: drug?.id,
-							label: `${drug?.drug} `,
+							label: `${drug?.drug?.name} `,
 						};
 					})}
 					className='w-[18rem]'
@@ -64,7 +64,7 @@ const DrugsGiven = ({
 					onChange={(value: any) => {
 						const found: any = drugsList.find((drug: any) => drug?.id == value);
 						setDrugId(value);
-						setDrugName(found.drug);
+						setDrugName(found.drug?.name);
 						setSelectedDrug(found);
 					}}
 					searchValue={search}

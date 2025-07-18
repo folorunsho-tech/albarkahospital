@@ -41,7 +41,7 @@ const DrugsGiven = ({ enc_id }: { enc_id: string | null }) => {
 		const sorted = data?.map((drug: any) => {
 			return {
 				value: drug?.id,
-				label: `${drug?.drug}`,
+				label: `${drug?.drug?.name}`,
 				disabled: drug?.stock_qty < 1 ? true : false,
 			};
 		});
@@ -50,7 +50,7 @@ const DrugsGiven = ({ enc_id }: { enc_id: string | null }) => {
 			return {
 				id: d?.id,
 				inv: d?.drug_id,
-				name: d?.drug?.drug,
+				name: d?.name,
 				rate: d?.rate,
 				prev: d?.quantity,
 				added: 0,
@@ -214,12 +214,11 @@ const DrugsGiven = ({ enc_id }: { enc_id: string | null }) => {
 											color='teal'
 											onClick={() => {
 												const found = drugsList?.find(
-													(d: any) => d?.drug == drug?.name
+													(d: any) => d?.drug?.name == drug?.name
 												);
 												const foundE = data?.find(
 													(d: any) => d?.id == drug?.id
 												);
-
 												setSelectedDrug(found);
 												setToEdit(foundE);
 												setDrugId(drug?.id);

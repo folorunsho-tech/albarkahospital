@@ -20,12 +20,13 @@ const page = () => {
 	const [loaded, setLoaded] = useState<any>("");
 	const rows = sortedData?.map((row, i) => (
 		<Table.Tr key={row?.id}>
-			<Table.Td>{new Date(row?.enc_date).toLocaleDateString()}</Table.Td>
-			<Table.Td>{row?.time}</Table.Td>
+			<Table.Td>
+				{new Date(row?.enc_date).toLocaleDateString() + " - " + row?.time}
+			</Table.Td>
 			<Table.Td>{row?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.patient?.name}</Table.Td>
 			<Table.Td>{row?.patient?.age}</Table.Td>
-			<Table.Td>{row?.admitted ? "True" : "False"}</Table.Td>
+			{/* <Table.Td>{row?.admitted ? "True" : "False"}</Table.Td> */}
 			<Table.Td>{row?.care?.name}</Table.Td>
 			<Table.Td>
 				{row?.diagnosis?.length > 0 ? (
@@ -47,12 +48,13 @@ const page = () => {
 
 	const printRows = sortedData?.map((row, i) => (
 		<Table.Tr key={row?.id}>
-			<Table.Td>{new Date(row?.enc_date).toLocaleDateString()}</Table.Td>
-			<Table.Td>{row?.time}</Table.Td>
+			<Table.Td>
+				{new Date(row?.enc_date).toLocaleDateString() + " - " + row?.time}
+			</Table.Td>
 			<Table.Td>{row?.patient?.hosp_no}</Table.Td>
 			<Table.Td>{row?.patient?.name}</Table.Td>
 			<Table.Td>{row?.patient?.age}</Table.Td>
-			<Table.Td>{row?.admitted ? "True" : "False"}</Table.Td>
+			{/* <Table.Td>{row?.admitted ? "True" : "False"}</Table.Td> */}
 			<Table.Td>{row?.care?.name}</Table.Td>
 			<Table.Td>
 				{row?.diagnosis?.length > 0 ? (
@@ -345,7 +347,8 @@ const page = () => {
 		if (criteria == "Under-5 Malaria") {
 			const isDiags = queryData.filter(
 				(d: any) =>
-					d?.diagnosis.length > 0 && ages.indexOf(d?.age) < ages.indexOf("5y")
+					d?.diagnosis.length > 0 &&
+					ages.indexOf(d?.patient?.age) < ages.indexOf("5y")
 			);
 			const found: any[] = [];
 			isDiags.forEach((enc: { diagnosis: any[] }) => {
@@ -367,7 +370,7 @@ const page = () => {
 		}
 		if (criteria == "New ANC Pts") {
 			const found = queryData?.filter(
-				(d: any) => d?._count?.anc > 0 && d?.care?.name == "ANC"
+				(d: any) => d?._count?.anc == 1 && d?.care?.name == "ANC"
 			);
 			setSortedData(found);
 		}
@@ -479,12 +482,11 @@ const page = () => {
 
 			<ReportsTable
 				headers={[
-					"ENC Date",
-					"ENC time",
+					"ENC Date-Time",
 					"Hosp No",
 					"Patient",
 					"Age",
-					"Admitted",
+					// "Admitted",
 					"Care",
 					"Diagnosis",
 					"Drugs Count",
@@ -493,12 +495,11 @@ const page = () => {
 					"Follow Up To",
 				]}
 				printHeaders={[
-					"ENC Date",
-					"ENC time",
+					"ENC Date-Time",
 					"Hosp No",
 					"Patient",
 					"Age",
-					"Admitted",
+					// "Admitted",
 					"Care",
 					"Diagnosis",
 					"Drugs Count",

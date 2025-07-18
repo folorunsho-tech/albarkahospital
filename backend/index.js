@@ -107,7 +107,9 @@ cron.schedule(
 				},
 
 				orderBy: {
-					drug: "asc",
+					drug: {
+						name: "asc",
+					},
 				},
 			});
 			const final = drugs.map((drug) => {

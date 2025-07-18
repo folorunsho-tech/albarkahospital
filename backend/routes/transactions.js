@@ -143,6 +143,46 @@ router.get("/:id", async (req, res) => {
 		console.log(error);
 	}
 });
+router.post("/byPatient", async (req, res) => {
+	const { value } = req.body;
+	try {
+		const found = await prisma.transaction.findMany({
+			where: {
+				patient: {
+					OR: [
+						{
+							name: value,
+						},
+						{
+							hosp_no: value,
+						},
+					],
+				},
+				balance: {
+					gt: 0,
+				},
+			},
+			include: {
+				items: {
+					include: {
+						fee: true,
+					},
+				},
+				reciepts: true,
+				patient: true,
+				updatedBy: {
+					select: {
+						username: true,
+					},
+				},
+			},
+		});
+		res.status(200).json(found);
+	} catch (error) {
+		res.status(500).json(error);
+		console.log(error);
+	}
+});
 router.post("/balance/:id", async (req, res) => {
 	const { balance, items, status, updatedById } = req.body;
 	const id = req.params.id.substring(0, 7);

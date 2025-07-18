@@ -23,6 +23,7 @@
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.477.0",
     "mysqldump": "^3.2.0",
+    "nanoid": "^5.1.5",
     "next": "15.2.1",
     "next-client-cookies": "^2.0.1",
     "react": "^19.0.0",
